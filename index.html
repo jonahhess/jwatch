@@ -128,6 +128,9 @@
       #quick-report {
         background-color: firebrick;
       }
+      .call-button {
+        background-color: royalblue;
+      }
     </style>
   </head>
 
@@ -147,11 +150,34 @@
               id="quick-report"
               aria-describedby="quick-desc"
               title="Quick report from your current location"
+              data-i18n="quickReport"
             >
               Quick report here
             </button>
             <div id="status" role="status" aria-live="polite"></div>
           </div>
+
+          <!-- Call Police -->
+          <button
+            id="call-police"
+            class="call-button"
+            aria-pressed="false"
+            title="Call Police"
+            data-i18n="callPolice"
+          >
+            Call Police
+          </button>
+
+          <!-- Call Emergency Contact-->
+          <button
+            id="call-emergency-contact"
+            class="call-button"
+            aria-pressed="false"
+            title="Call Emergency Contact"
+            data-i18n="callEmergencyContact"
+          >
+            Emergency Contact
+          </button>
 
           <button id="lang-toggle" aria-pressed="false" title="Toggle language">
             עברית / English
@@ -170,6 +196,9 @@
       <!-- User cached inputs (Name, Age) -->
       <section class="card" aria-labelledby="user-heading">
         <h2 id="user-heading" data-i18n="userHeading">Your info (cached)</h2>
+        <small class="hint" data-i18n="hint"
+          >Saved locally on this device</small
+        >
 
         <div class="inline-inputs" style="margin-top: 0.5rem">
           <label>
@@ -180,9 +209,6 @@
               placeholder="Optional name (or nickname)"
               autocomplete="name"
             />
-            <small class="hint" data-i18n="nameHint"
-              >Saved locally on this device</small
-            >
           </label>
 
           <label>
@@ -195,9 +221,16 @@
               placeholder="e.g. 12"
               inputmode="numeric"
             />
-            <small class="hint" data-i18n="ageHint"
-              >Saved locally on this device</small
-            >
+          </label>
+
+          <label>
+            <div style="font-weight: 600">Emergency Contact</div>
+            <input
+              id="user-emergency-contact"
+              type="phone"
+              placeholder="enter valid phone number"
+              inputmode="numeric"
+            />
           </label>
 
           <button
@@ -310,6 +343,9 @@
         en: {
           title: "South Jerusalem Watch",
           meta: "A simple community safety reporting demo (south Jerusalem)",
+          quickReport: "Quick report here",
+          callPolice: "Call Police",
+          callEmergencyContact: "Emergency Contact",
           toggle: "עברית / English",
           formHeading: "Report an incident",
           mapHeading: "Explore the map",
@@ -324,8 +360,7 @@
             "Tip: tap the map title to open My Maps in a new tab for full interaction.",
           quickBtn: "Quick report here",
           userHeading: "Your info (cached)",
-          nameHint: "Saved locally on this device",
-          ageHint: "Saved locally on this device",
+          hint: "Saved locally on this device",
           prefillHint:
             "The form will be prefilled with your location, cached name & age, and the current date/time.",
           toastGetting: "Trying to get your location...",
@@ -335,6 +370,9 @@
         he: {
           title: "משמר דרום ירושלים",
           meta: "גרסת הדגמה לדיווח קהילתי (דרום ירושלים)",
+          quickReport: "דיווח מהיר",
+          callPolice: "להתקשר למשטרה",
+          callEmergencyContact: "להתקשר לאיש קשר חירום",
           toggle: "English / עברית",
           formHeading: "דווח על תקרית",
           mapHeading: "מפה",
@@ -349,8 +387,7 @@
             "טיפ: הקישו על כותרת המפה כדי לפתוח את My Maps בכרטיסייה חדשה.",
           quickBtn: "דווח מהנייד",
           userHeading: "המידע שלך (נשמר במכשיר)",
-          nameHint: "נשמר מקומית במכשיר זה",
-          ageHint: "נשמר מקומית במכשיר זה",
+          hint: "נשמר מקומית במכשיר זה",
           prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
           toastGetting: "מנסה לקבל מיקום...",
           toastSuccess: "המיקום והמידע הוכנסו לטופס.",
@@ -400,43 +437,83 @@
         }
       }
 
-      /* --- User caching (Name & Age) --- */
+      /* --- User caching (Name, Age, Emergency Contact) --- */
       const NAME_KEY = "sjw-user-name";
       const AGE_KEY = "sjw-user-age";
+      const EMERGENCY_CONTACT_KEY = "sjw-user-emergency-contact";
 
       const nameInput = document.getElementById("user-name");
       const ageInput = document.getElementById("user-age");
+      const emergencyContactInput = document.getElementById(
+        "user-emergency-contact"
+      );
       const saveBtn = document.getElementById("save-user");
       const clearBtn = document.getElementById("clear-user");
 
       function loadUserCache() {
         const name = localStorage.getItem(NAME_KEY) || "";
         const age = localStorage.getItem(AGE_KEY) || "";
+        const emergencyContact =
+          localStorage.getItem(EMERGENCY_CONTACT_KEY) || "";
         nameInput.value = name;
         ageInput.value = age;
+        emergencyContactInput.value = emergencyContact;
       }
 
       function saveUserCache() {
         const name = nameInput.value.trim();
         const age = ageInput.value.trim();
+        const emergencyContact = emergencyContactInput.value.trim();
         if (name) localStorage.setItem(NAME_KEY, name);
         else localStorage.removeItem(NAME_KEY);
         if (age) localStorage.setItem(AGE_KEY, age);
         else localStorage.removeItem(AGE_KEY);
+        if (emergencyContact)
+          localStorage.setItem(EMERGENCY_CONTACT_KEY, emergencyContact);
+        else localStorage.removeItem(EMERGENCY_CONTACT_KEY);
         showStatus(currentLang === "he" ? "המידע נשמר" : "Info saved", 2000);
       }
 
       function clearUserCache() {
         localStorage.removeItem(NAME_KEY);
         localStorage.removeItem(AGE_KEY);
+        localStorage.removeItem(EMERGENCY_CONTACT_KEY);
         nameInput.value = "";
         ageInput.value = "";
+        emergencyContactInput.value = "";
         showStatus(currentLang === "he" ? "המידע נמחק" : "Info cleared", 2000);
       }
 
       saveBtn.addEventListener("click", saveUserCache);
       clearBtn.addEventListener("click", clearUserCache);
       loadUserCache();
+
+      /*Calling Functionality */
+      const callPoliceBtn = document.getElementById("call-police");
+      const callEmergencyContactBtn = document.getElementById(
+        "call-emergency-contact"
+      );
+
+      // Police number (hardcoded for Israel: 100)
+      const POLICE_NUMBER = "100";
+
+      callPoliceBtn.addEventListener("click", () => {
+        window.location.href = `tel:${POLICE_NUMBER}`;
+      });
+
+      callEmergencyContactBtn.addEventListener("click", () => {
+        const emergencyContact = localStorage.getItem(EMERGENCY_CONTACT_KEY);
+        if (!emergencyContact || emergencyContact.trim() === "") {
+          showStatus(
+            currentLang === "he"
+              ? "איש קשר חירום לא זוהה"
+              : "No emergency contact available",
+            3000
+          );
+          return;
+        }
+        window.location.href = `tel:${emergencyContact}`;
+      });
 
       /* --- Prefill build helpers --- */
       function formatDateISO(d) {
