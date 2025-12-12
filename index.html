@@ -1,154 +1,303 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="South Jerusalem Watch" />
     <title>South Jerusalem Watch</title>
 
+    <!-- Link to manifest (PWA) -->
+    <link rel="manifest" href="/manifest.json" />
+
     <style>
+      :root {
+        --bg: #f5f5f5;
+        --card: #fff;
+        --accent: #0f172a;
+        --muted: #666;
+        --radius: 12px;
+        --maxw: 900px;
+      }
+
+      html,
       body {
-        font-family: system-ui, sans-serif;
+        height: 100%;
         margin: 0;
-        padding: 0;
-        line-height: 1.5;
-        direction: ltr;
-        text-align: left;
-        background-color: #f5f5f5;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        background: var(--bg);
+        color: #111;
+        -webkit-font-smoothing: antialiased;
       }
 
       .container {
-        max-width: 900px;
+        max-width: var(--maxw);
         margin: 0 auto;
         padding: 1rem;
       }
 
-      h1,
-      h2 {
-        margin-top: 1rem;
+      header {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+      }
+      h1 {
+        margin: 0.25rem 0;
+        font-size: 1.35rem;
+      }
+      .controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      button {
+        border: 0;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        cursor: pointer;
+        background: var(--accent);
+        color: white;
+        font-weight: 600;
+      }
+      button.secondary {
+        background: #fff;
+        color: var(--accent);
+        border: 1px solid #ddd;
+        font-weight: 600;
       }
 
       .card {
-        background: #ffffff;
-        border-radius: 12px;
+        background: var(--card);
+        border-radius: var(--radius);
         padding: 1rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #ddd;
+        margin: 1rem 0;
+        border: 1px solid #e6e6e6;
       }
 
-      iframe {
+      .iframe-wrap {
+        position: relative;
         width: 100%;
-        border: none;
-        border-radius: 12px;
+        padding-top: 56.25%;
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
       }
 
-      #map-frame {
-        height: 600px;
+      @media (max-width: 600px) {
+        .iframe-wrap {
+          padding-top: 66.66%;
+        }
       }
 
-      #form-frame {
-        height: 500px;
+      .meta {
+        color: var(--muted);
+        font-size: 0.95rem;
       }
-
-      /* RTL adjustments */
-      html[dir="rtl"] body {
-        direction: rtl;
-        text-align: right;
+      .muted {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-top: 0.5rem;
       }
 
       html[dir="rtl"] .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-
-      html[dir="rtl"] .card {
         text-align: right;
       }
+      html[dir="rtl"] header {
+        flex-direction: row-reverse;
+      }
+      html[dir="rtl"] .controls {
+        flex-direction: row-reverse;
+      }
 
-      /* Language toggle button */
-      #lang-toggle {
-        margin: 1rem 0;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        background: #0f172a;
-        color: white;
-        font-weight: bold;
+      button:focus,
+      a:focus {
+        outline: 3px solid #b3c7ff;
+        outline-offset: 2px;
+      }
+
+      #toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 1rem;
+        background: #111;
+        color: #fff;
+        padding: 0.6rem 0.9rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-weight: 600;
+        display: none;
       }
     </style>
   </head>
+
   <body>
-    <main class="container">
-      <h1 data-i18n="title">South Jerusalem Watch</h1>
+    <main class="container" id="main">
+      <header>
+        <div>
+          <h1 data-i18n="title">South Jerusalem Watch</h1>
+          <div class="meta" data-i18n="meta">
+            A simple community safety reporting demo (south Jerusalem)
+          </div>
+        </div>
 
-      <!-- Language toggle -->
-      <button id="lang-toggle" data-i18n="toggle">עברית / English</button>
+        <div class="controls">
+          <button
+            id="quick-report"
+            aria-describedby="quick-desc"
+            title="Quick report from your current location"
+          >
+            Quick report here
+          </button>
 
-      <!-- Google Form iframe -->
-      <div class="card">
-        <h2 data-i18n="formHeading">Report an incident</h2>
-        <iframe
-          id="form-frame"
-          src="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true"
-          title="Report an incident"
-        >
-        </iframe>
+          <button id="lang-toggle" aria-pressed="false" title="Toggle language">
+            עברית / English
+          </button>
+        </div>
+      </header>
+
+      <div id="quick-desc" class="muted card">
+        <strong data-i18n="qrTitle">Quick report</strong>
+        <div data-i18n="qrText">
+          Use your phone to quickly send a short report with your location. The
+          form will be prefilled inside the app.
+        </div>
       </div>
 
-      <!-- Google Map iframe -->
-      <div class="card">
-        <h2 data-i18n="mapHeading">Explore the map</h2>
-        <iframe
-          id="map-frame"
-          src="https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en"
-          title="Incident map"
-        >
-        </iframe>
-      </div>
+      <!-- Embedded Google Form (will be replaced in-place with prefilled URL) -->
+      <section class="card" aria-labelledby="form-heading">
+        <h2 id="form-heading" data-i18n="formHeading">Report an incident</h2>
 
-      <div id="about-section" class="card">
-        <h2 data-i18n="about">About</h2>
-        <p data-i18n="desc">
-          This is a website dedicated to keeping kids safe on the streets
+        <div class="iframe-wrap" title="Incident report form">
+          <iframe
+            id="form-frame"
+            loading="lazy"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true"
+            title="Report an incident (Google Form)"
+            aria-label="Report an incident form"
+          ></iframe>
+        </div>
+      </section>
+
+      <!-- Embedded My Maps -->
+      <section class="card" aria-labelledby="map-heading">
+        <h2 id="map-heading" data-i18n="mapHeading">Explore the map</h2>
+
+        <div class="iframe-wrap">
+          <iframe
+            id="map-frame"
+            loading="lazy"
+            src="https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en"
+            title="Incident map"
+            aria-label="Incident map"
+          ></iframe>
+        </div>
+
+        <p class="muted" style="margin-top: 0.75rem" data-i18n="mapHint">
+          Tip: tap the map title to open My Maps in a new tab for full
+          interaction.
         </p>
-      </div>
+      </section>
+
+      <section id="about-section" class="card" aria-labelledby="about-heading">
+        <h2 id="about-heading" data-i18n="about">About</h2>
+        <p data-i18n="desc">
+          This is a website dedicated to keeping kids safe on the streets.
+        </p>
+
+        <p class="muted" data-i18n="privacy">
+          No authentication. Public data only. Do not include personal or
+          sensitive information.
+        </p>
+      </section>
+
+      <noscript class="card">
+        <strong
+          >JavaScript required for quick reporting and language toggle.</strong
+        >
+        <div>
+          If JavaScript is disabled you can still use the embedded Google Form
+          and map, but quick location-based reporting won't work.
+        </div>
+      </noscript>
     </main>
 
-    <script>
-      const toggleBtn = document.getElementById("lang-toggle");
-      const htmlEl = document.documentElement;
-      const mapFrame = document.getElementById("map-frame");
+    <div id="toast" role="status" aria-live="polite"></div>
 
-      // URLs for your forms/maps
-      const urls = {
-        map: {
-          en: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&noprof=1&hl=en",
-          he: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&noprof=1&hl=he",
-        },
+    <script>
+      const GOOGLE_FORM_BASE =
+        "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform";
+
+      const LOC_ENTRY = "entry.Address";
+
+      const mapUrls = {
+        en: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en",
+        he: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=he",
       };
 
-      // Text translations
       const translations = {
         en: {
           title: "South Jerusalem Watch",
+          meta: "A simple community safety reporting demo (south Jerusalem)",
           toggle: "עברית / English",
           formHeading: "Report an incident",
           mapHeading: "Explore the map",
           about: "About",
-          desc: "This is a website dedicated to keeping kids safe on the streets",
+          desc: "This is a website dedicated to keeping kids safe on the streets.",
+          privacy:
+            "No authentication. Public data only. Do not include personal or sensitive information.",
+          qrTitle: "Quick report",
+          qrText:
+            "Use your phone to quickly send a short report with your location. The form will be prefilled inside the app.",
+          mapHint:
+            "Tip: tap the map title to open My Maps in a new tab for full interaction.",
+          quickBtn: "Quick report here",
+          toastGetting: "Trying to get your location...",
+          toastSuccess: "Location inserted into form.",
+          toastFail: "Couldn't get location — loaded base form.",
         },
         he: {
           title: "משמר דרום ירושלים",
+          meta: "גרסת הדגמה לדיווח קהילתי (דרום ירושלים)",
           toggle: "English / עברית",
           formHeading: "דווח על תקרית",
           mapHeading: "מפה",
           about: "אודות",
-          desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב",
+          desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
+          privacy:
+            "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
+          qrTitle: "דיווח מהיר",
+          qrText:
+            "השתמשו בטלפון כדי לשלוח דיווח קצר עם המיקום שלכם. הטופס ימולא מראש בתוך האפליקציה.",
+          mapHint:
+            "טיפ: הקישו על כותרת המפה כדי לפתוח את My Maps בכרטיסייה חדשה.",
+          quickBtn: "דווח מהנייד",
+          toastGetting: "מנסה לקבל מיקום...",
+          toastSuccess: "המיקום הוכנס לטופס.",
+          toastFail: "לא ניתן לקבל מיקום — הטופס נטען ללא מיקום.",
         },
       };
 
-      let currentLang = "en";
+      const htmlEl = document.documentElement;
+      let currentLang = localStorage.getItem("sjw-lang") || "en";
+
+      function showToast(text, ms = 3000) {
+        const t = document.getElementById("toast");
+        t.textContent = text;
+        t.style.display = "block";
+        clearTimeout(t._timeout);
+        t._timeout = setTimeout(() => {
+          t.style.display = "none";
+        }, ms);
+      }
 
       function updateText(lang) {
         document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -157,23 +306,111 @@
             el.textContent = translations[lang][key];
           }
         });
+        const mapFrame = document.getElementById("map-frame");
+        if (mapFrame) mapFrame.src = mapUrls[lang] || mapUrls.en;
       }
 
-      toggleBtn.addEventListener("click", () => {
-        if (currentLang === "en") {
-          htmlEl.setAttribute("dir", "rtl");
-          htmlEl.setAttribute("lang", "he");
-          mapFrame.src = urls.map.he;
-          currentLang = "he";
-        } else {
-          htmlEl.setAttribute("dir", "ltr");
-          htmlEl.setAttribute("lang", "en");
-          mapFrame.src = urls.map.en;
-          currentLang = "en";
+      function applyLang(lang) {
+        currentLang = lang;
+        htmlEl.setAttribute("dir", lang === "he" ? "rtl" : "ltr");
+        htmlEl.setAttribute("lang", lang === "he" ? "he" : "en");
+        localStorage.setItem("sjw-lang", lang);
+        updateText(lang);
+        const toggle = document.getElementById("lang-toggle");
+        toggle.setAttribute("aria-pressed", lang === "he" ? "true" : "false");
+      }
+
+      applyLang(currentLang);
+      document.getElementById("lang-toggle").addEventListener("click", () => {
+        applyLang(currentLang === "en" ? "he" : "en");
+      });
+
+      // Build prefilled URL for a single Location field
+      function buildPrefillUrl(prefillParams) {
+        // Build URL like: <BASE>?usp=pp_url&entry.123=31.78,35.23&embedded=true
+        const usp = "usp=pp_url";
+        const params = new URLSearchParams(prefillParams);
+        params.set("embedded", "true");
+        return `${GOOGLE_FORM_BASE}?${usp}&${params.toString()}`;
+      }
+
+      // Quick-report flow: prefills one Location field with "lat,lon"
+      const quickBtn = document.getElementById("quick-report");
+      const formFrame = document.getElementById("form-frame");
+
+      quickBtn.addEventListener("click", () => {
+        quickBtn.disabled = true;
+        quickBtn.textContent = translations[currentLang].quickBtn + "…";
+        showToast(translations[currentLang].toastGetting, 4000);
+
+        // If LOC_ENTRY not configured, just reload the base embedded form
+        if (LOC_ENTRY.includes("YOUR")) {
+          formFrame.src = GOOGLE_FORM_BASE + "?embedded=true";
+          showToast(translations[currentLang].toastFail, 2500);
+          quickBtn.disabled = false;
+          quickBtn.textContent = translations[currentLang].quickBtn;
+          return;
         }
 
-        updateText(currentLang);
+        if (!navigator.geolocation) {
+          formFrame.src = GOOGLE_FORM_BASE + "?embedded=true";
+          showToast(translations[currentLang].toastFail, 2500);
+          quickBtn.disabled = false;
+          quickBtn.textContent = translations[currentLang].quickBtn;
+          return;
+        }
+
+        const opts = {
+          enableHighAccuracy: true,
+          maximumAge: 30_000,
+          timeout: 8000,
+        };
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude.toFixed(6);
+            const lon = pos.coords.longitude.toFixed(6);
+            const combined = `${lat},${lon}`; // Format compatible with My Maps markers
+            const prefill = {};
+            prefill[LOC_ENTRY] = combined;
+
+            const prefilledUrl = buildPrefillUrl(prefill);
+            formFrame.src = prefilledUrl;
+
+            showToast(translations[currentLang].toastSuccess, 2500);
+            quickBtn.disabled = false;
+            quickBtn.textContent = translations[currentLang].quickBtn;
+          },
+          (err) => {
+            console.warn("Geolocation failed:", err && err.message);
+            formFrame.src = GOOGLE_FORM_BASE + "?embedded=true";
+            showToast(translations[currentLang].toastFail, 2500);
+            quickBtn.disabled = false;
+            quickBtn.textContent = translations[currentLang].quickBtn;
+          },
+          opts
+        );
       });
+
+      // Accessibility: allow Enter/Space to toggle language
+      document
+        .getElementById("lang-toggle")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            e.target.click();
+          }
+        });
+
+      // Register service worker (registers /sw.js)
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((reg) => console.log("SW registered:", reg.scope))
+            .catch((err) => console.warn("SW register failed:", err));
+        });
+      }
     </script>
   </body>
 </html>
