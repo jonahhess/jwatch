@@ -6,7 +6,7 @@
     <meta name="description" content="South Jerusalem Watch" />
     <title>South Jerusalem Watch</title>
 
-    <!-- Link to manifest (PWA) -->
+    <!-- Manifest for PWA (keep if you already placed /manifest.json) -->
     <link rel="manifest" href="/manifest.json" />
 
     <style>
@@ -26,15 +26,12 @@
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
         background: var(--bg);
         color: #111;
-        -webkit-font-smoothing: antialiased;
       }
-
       .container {
         max-width: var(--maxw);
         margin: 0 auto;
         padding: 1rem;
       }
-
       header {
         display: flex;
         gap: 1rem;
@@ -50,7 +47,6 @@
         gap: 0.5rem;
         align-items: center;
       }
-
       button {
         border: 0;
         padding: 0.5rem 0.75rem;
@@ -60,13 +56,6 @@
         color: white;
         font-weight: 600;
       }
-      button.secondary {
-        background: #fff;
-        color: var(--accent);
-        border: 1px solid #ddd;
-        font-weight: 600;
-      }
-
       .card {
         background: var(--card);
         border-radius: var(--radius);
@@ -74,7 +63,6 @@
         margin: 1rem 0;
         border: 1px solid #e6e6e6;
       }
-
       .iframe-wrap {
         position: relative;
         width: 100%;
@@ -90,13 +78,11 @@
         height: 100%;
         border: 0;
       }
-
       @media (max-width: 600px) {
         .iframe-wrap {
           padding-top: 66.66%;
         }
       }
-
       .meta {
         color: var(--muted);
         font-size: 0.95rem;
@@ -106,35 +92,41 @@
         font-size: 0.95rem;
         margin-top: 0.5rem;
       }
-
       html[dir="rtl"] .container {
         text-align: right;
       }
       html[dir="rtl"] header {
         flex-direction: row-reverse;
       }
-      html[dir="rtl"] .controls {
-        flex-direction: row-reverse;
-      }
-
       button:focus,
       a:focus {
         outline: 3px solid #b3c7ff;
         outline-offset: 2px;
       }
-
-      #toast {
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 1rem;
-        background: #111;
-        color: #fff;
-        padding: 0.6rem 0.9rem;
+      .inline-inputs {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .inline-inputs input {
+        padding: 0.4rem 0.6rem;
         border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid #ddd;
+      }
+      #status {
+        min-width: 200px;
+        margin-left: 0.5rem;
+        color: #444;
         font-weight: 600;
-        display: none;
+      }
+      small.hint {
+        display: block;
+        color: var(--muted);
+        margin-top: 0.35rem;
+      }
+      #quick-report {
+        background-color: firebrick;
       }
     </style>
   </head>
@@ -150,13 +142,16 @@
         </div>
 
         <div class="controls">
-          <button
-            id="quick-report"
-            aria-describedby="quick-desc"
-            title="Quick report from your current location"
-          >
-            Quick report here
-          </button>
+          <div style="display: flex; align-items: center">
+            <button
+              id="quick-report"
+              aria-describedby="quick-desc"
+              title="Quick report from your current location"
+            >
+              Quick report here
+            </button>
+            <div id="status" role="status" aria-live="polite"></div>
+          </div>
 
           <button id="lang-toggle" aria-pressed="false" title="Toggle language">
             עברית / English
@@ -172,6 +167,64 @@
         </div>
       </div>
 
+      <!-- User cached inputs (Name, Age) -->
+      <section class="card" aria-labelledby="user-heading">
+        <h2 id="user-heading" data-i18n="userHeading">Your info (cached)</h2>
+
+        <div class="inline-inputs" style="margin-top: 0.5rem">
+          <label>
+            <div style="font-weight: 600">Name</div>
+            <input
+              id="user-name"
+              type="text"
+              placeholder="Optional name (or nickname)"
+              autocomplete="name"
+            />
+            <small class="hint" data-i18n="nameHint"
+              >Saved locally on this device</small
+            >
+          </label>
+
+          <label>
+            <div style="font-weight: 600">Age</div>
+            <input
+              id="user-age"
+              type="number"
+              min="0"
+              max="120"
+              placeholder="e.g. 12"
+              inputmode="numeric"
+            />
+            <small class="hint" data-i18n="ageHint"
+              >Saved locally on this device</small
+            >
+          </label>
+
+          <button
+            id="save-user"
+            style="
+              background: #fff;
+              color: var(--accent);
+              border: 1px solid #ddd;
+              font-weight: 600;
+            "
+          >
+            Save
+          </button>
+          <button
+            id="clear-user"
+            class="secondary"
+            style="
+              background: #fff;
+              color: var(--accent);
+              border: 1px solid #ddd;
+            "
+          >
+            Clear
+          </button>
+        </div>
+      </section>
+
       <!-- Embedded Google Form (will be replaced in-place with prefilled URL) -->
       <section class="card" aria-labelledby="form-heading">
         <h2 id="form-heading" data-i18n="formHeading">Report an incident</h2>
@@ -185,6 +238,11 @@
             aria-label="Report an incident form"
           ></iframe>
         </div>
+
+        <p class="muted" style="margin-top: 0.75rem" data-i18n="prefillHint">
+          The form will be prefilled with your location, cached name & age, and
+          the current date/time.
+        </p>
       </section>
 
       <!-- Embedded My Maps -->
@@ -230,19 +288,24 @@
       </noscript>
     </main>
 
-    <div id="toast" role="status" aria-live="polite"></div>
-
     <script>
       const GOOGLE_FORM_BASE =
         "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform";
 
-      const LOC_ENTRY = "entry.Address";
+      // Replace these placeholders with your real entry IDs from the prefilled link
+      const NAME_ENTRY = "entry.1563137864"; // Name short-text
+      const AGE_ENTRY = "entry.552093736"; // Age short-text/number
+      const LOC_ENTRY = "entry.1771840150"; // single Location field (lat,lon)
+      const DATE_ENTRY = "entry.123356142"; // Date short-text (YYYY-MM-DD)
+      const TIME_ENTRY = "entry.407216857"; // Time short-text (HH:MM)
 
+      /* Map URLs for language toggling (optional) */
       const mapUrls = {
         en: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en",
         he: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=he",
       };
 
+      /* Translations (keeps previous behavior) */
       const translations = {
         en: {
           title: "South Jerusalem Watch",
@@ -260,8 +323,13 @@
           mapHint:
             "Tip: tap the map title to open My Maps in a new tab for full interaction.",
           quickBtn: "Quick report here",
+          userHeading: "Your info (cached)",
+          nameHint: "Saved locally on this device",
+          ageHint: "Saved locally on this device",
+          prefillHint:
+            "The form will be prefilled with your location, cached name & age, and the current date/time.",
           toastGetting: "Trying to get your location...",
-          toastSuccess: "Location inserted into form.",
+          toastSuccess: "Location & info inserted into form.",
           toastFail: "Couldn't get location — loaded base form.",
         },
         he: {
@@ -280,24 +348,19 @@
           mapHint:
             "טיפ: הקישו על כותרת המפה כדי לפתוח את My Maps בכרטיסייה חדשה.",
           quickBtn: "דווח מהנייד",
+          userHeading: "המידע שלך (נשמר במכשיר)",
+          nameHint: "נשמר מקומית במכשיר זה",
+          ageHint: "נשמר מקומית במכשיר זה",
+          prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
           toastGetting: "מנסה לקבל מיקום...",
-          toastSuccess: "המיקום הוכנס לטופס.",
+          toastSuccess: "המיקום והמידע הוכנסו לטופס.",
           toastFail: "לא ניתן לקבל מיקום — הטופס נטען ללא מיקום.",
         },
       };
 
+      /* --- Utility functions --- */
       const htmlEl = document.documentElement;
       let currentLang = localStorage.getItem("sjw-lang") || "en";
-
-      function showToast(text, ms = 3000) {
-        const t = document.getElementById("toast");
-        t.textContent = text;
-        t.style.display = "block";
-        clearTimeout(t._timeout);
-        t._timeout = setTimeout(() => {
-          t.style.display = "none";
-        }, ms);
-      }
 
       function updateText(lang) {
         document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -321,45 +384,136 @@
       }
 
       applyLang(currentLang);
+
       document.getElementById("lang-toggle").addEventListener("click", () => {
         applyLang(currentLang === "en" ? "he" : "en");
       });
 
-      // Build prefilled URL for a single Location field
+      // Inline status (aria-live) helper
+      const statusEl = document.getElementById("status");
+      function showStatus(text, ms = 3000) {
+        if (!statusEl) return;
+        statusEl.textContent = text;
+        clearTimeout(statusEl._timeout);
+        if (ms > 0) {
+          statusEl._timeout = setTimeout(() => (statusEl.textContent = ""), ms);
+        }
+      }
+
+      /* --- User caching (Name & Age) --- */
+      const NAME_KEY = "sjw-user-name";
+      const AGE_KEY = "sjw-user-age";
+
+      const nameInput = document.getElementById("user-name");
+      const ageInput = document.getElementById("user-age");
+      const saveBtn = document.getElementById("save-user");
+      const clearBtn = document.getElementById("clear-user");
+
+      function loadUserCache() {
+        const name = localStorage.getItem(NAME_KEY) || "";
+        const age = localStorage.getItem(AGE_KEY) || "";
+        nameInput.value = name;
+        ageInput.value = age;
+      }
+
+      function saveUserCache() {
+        const name = nameInput.value.trim();
+        const age = ageInput.value.trim();
+        if (name) localStorage.setItem(NAME_KEY, name);
+        else localStorage.removeItem(NAME_KEY);
+        if (age) localStorage.setItem(AGE_KEY, age);
+        else localStorage.removeItem(AGE_KEY);
+        showStatus(currentLang === "he" ? "המידע נשמר" : "Info saved", 2000);
+      }
+
+      function clearUserCache() {
+        localStorage.removeItem(NAME_KEY);
+        localStorage.removeItem(AGE_KEY);
+        nameInput.value = "";
+        ageInput.value = "";
+        showStatus(currentLang === "he" ? "המידע נמחק" : "Info cleared", 2000);
+      }
+
+      saveBtn.addEventListener("click", saveUserCache);
+      clearBtn.addEventListener("click", clearUserCache);
+      loadUserCache();
+
+      /* --- Prefill build helpers --- */
+      function formatDateISO(d) {
+        // YYYY-MM-DD
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+      }
+      function formatTimeHHMM(d) {
+        // HH:MM (24h)
+        const hh = String(d.getHours()).padStart(2, "0");
+        const mm = String(d.getMinutes()).padStart(2, "0");
+        return `${hh}:${mm}`;
+      }
+
       function buildPrefillUrl(prefillParams) {
-        // Build URL like: <BASE>?usp=pp_url&entry.123=31.78,35.23&embedded=true
+        // Build URL like: <BASE>?usp=pp_url&entry.x=...&entry.y=...&embedded=true
         const usp = "usp=pp_url";
         const params = new URLSearchParams(prefillParams);
         params.set("embedded", "true");
         return `${GOOGLE_FORM_BASE}?${usp}&${params.toString()}`;
       }
 
-      // Quick-report flow: prefills one Location field with "lat,lon"
+      /* --- Quick-report flow (prefills single Location field + user & date/time) --- */
       const quickBtn = document.getElementById("quick-report");
       const formFrame = document.getElementById("form-frame");
 
       quickBtn.addEventListener("click", () => {
         quickBtn.disabled = true;
         quickBtn.textContent = translations[currentLang].quickBtn + "…";
-        showToast(translations[currentLang].toastGetting, 4000);
+        showStatus(translations[currentLang].toastGetting, 5000);
 
-        // If LOC_ENTRY not configured, just reload the base embedded form
-        if (LOC_ENTRY.includes("YOUR")) {
+        // read cached user info
+        const cachedName = localStorage.getItem(NAME_KEY) || "";
+        const cachedAge = localStorage.getItem(AGE_KEY) || "";
+
+        // Prepare date & time now (when the user initiates the report)
+        const now = new Date();
+        const dateStr = formatDateISO(now);
+        const timeStr = formatTimeHHMM(now);
+
+        // If LOC_ENTRY or others are not configured, fallback: just load base form
+        const missingEntry = [
+          LOC_ENTRY,
+          NAME_ENTRY,
+          AGE_ENTRY,
+          DATE_ENTRY,
+          TIME_ENTRY,
+        ].some((e) => e.includes("YOUR"));
+        if (missingEntry) {
+          // If you intentionally left some entries out, we still add what we can:
+          // Fallback: reload base embedded form
           formFrame.src = GOOGLE_FORM_BASE + "?embedded=true";
-          showToast(translations[currentLang].toastFail, 2500);
+          showStatus(translations[currentLang].toastFail, 3000);
           quickBtn.disabled = false;
           quickBtn.textContent = translations[currentLang].quickBtn;
           return;
         }
 
+        // If geolocation not supported: fallback to base form but still prefill name/age/date/time if desired
         if (!navigator.geolocation) {
-          formFrame.src = GOOGLE_FORM_BASE + "?embedded=true";
-          showToast(translations[currentLang].toastFail, 2500);
+          // Build prefill with only name/age/date/time (no location)
+          const prefill = {};
+          if (cachedName) prefill[NAME_ENTRY] = cachedName;
+          if (cachedAge) prefill[AGE_ENTRY] = cachedAge;
+          prefill[DATE_ENTRY] = dateStr;
+          prefill[TIME_ENTRY] = timeStr;
+          const prefilledUrl = buildPrefillUrl(prefill);
+          formFrame.src = prefilledUrl;
+          showStatus(translations[currentLang].toastFail, 3000);
           quickBtn.disabled = false;
           quickBtn.textContent = translations[currentLang].quickBtn;
           return;
         }
 
+        // Attempt geolocation
         const opts = {
           enableHighAccuracy: true,
           maximumAge: 30_000,
@@ -370,21 +524,35 @@
           (pos) => {
             const lat = pos.coords.latitude.toFixed(6);
             const lon = pos.coords.longitude.toFixed(6);
-            const combined = `${lat},${lon}`; // Format compatible with My Maps markers
+            const locCombined = `${lat},${lon}`; // format compatible with My Maps
+
+            // Build full prefill object
             const prefill = {};
-            prefill[LOC_ENTRY] = combined;
+            prefill[LOC_ENTRY] = locCombined;
+            if (cachedName) prefill[NAME_ENTRY] = cachedName;
+            if (cachedAge) prefill[AGE_ENTRY] = cachedAge;
+            prefill[DATE_ENTRY] = dateStr;
+            prefill[TIME_ENTRY] = timeStr;
 
             const prefilledUrl = buildPrefillUrl(prefill);
             formFrame.src = prefilledUrl;
 
-            showToast(translations[currentLang].toastSuccess, 2500);
+            showStatus(translations[currentLang].toastSuccess, 4000);
             quickBtn.disabled = false;
             quickBtn.textContent = translations[currentLang].quickBtn;
           },
           (err) => {
             console.warn("Geolocation failed:", err && err.message);
-            formFrame.src = GOOGLE_FORM_BASE + "?embedded=true";
-            showToast(translations[currentLang].toastFail, 2500);
+            // On error: prefill name/age/date/time without location
+            const prefill = {};
+            if (cachedName) prefill[NAME_ENTRY] = cachedName;
+            if (cachedAge) prefill[AGE_ENTRY] = cachedAge;
+            prefill[DATE_ENTRY] = dateStr;
+            prefill[TIME_ENTRY] = timeStr;
+            const prefilledUrl = buildPrefillUrl(prefill);
+            formFrame.src = prefilledUrl;
+
+            showStatus(translations[currentLang].toastFail, 4000);
             quickBtn.disabled = false;
             quickBtn.textContent = translations[currentLang].quickBtn;
           },
@@ -392,7 +560,7 @@
         );
       });
 
-      // Accessibility: allow Enter/Space to toggle language
+      // accessibility helpers
       document
         .getElementById("lang-toggle")
         .addEventListener("keydown", (e) => {
@@ -402,7 +570,7 @@
           }
         });
 
-      // Register service worker (registers /sw.js)
+      // Register service worker for PWA (if /sw.js exists)
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
           navigator.serviceWorker
