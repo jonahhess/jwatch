@@ -136,6 +136,14 @@
         flex-direction: row-reverse;
       }
 
+      html[dir="rtl"] header > div:first-child {
+        order: 2;
+      }
+
+      html[dir="rtl"] header > .controls {
+        order: 1;
+      }
+
       button:focus,
       a:focus {
         outline: 3px solid #b3c7ff;
