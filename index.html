@@ -160,6 +160,9 @@
         max-width: 28rem;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         display: none; /* hidden by default */
+
+        right: auto;
+        left: auto;
       }
 
       /* Arrow */
@@ -222,6 +225,31 @@
         color: var(--color-muted);
       }
 
+      .user-info-group {
+        position: relative;
+      }
+
+      .user-info-content {
+        position: absolute;
+        z-index: 10000;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 0.5rem;
+        padding: var(--space-3);
+        min-width: 16rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        display: none;
+
+        right: auto;
+        left: auto;
+        max-width: 90vw; /* never wider than viewport */
+        inset-inline-start: auto;
+        inset-inline-end: auto;
+      }
+      .user-info-content.show {
+        display: block;
+      }
+
       .user-fields {
         display: grid;
         gap: var(--space-2);
@@ -269,54 +297,122 @@
   </head>
 
   <body>
-    <main id="app">
+    <main class="container" id="main">
       <header>
-        <div class="app-title">
+        <div class="title-meta">
           <h1 data-i18n="title">South Jerusalem Watch</h1>
-          <p class="meta" data-i18n="meta">
+          <div class="meta" data-i18n="meta">
             A simple community safety reporting demo (south Jerusalem)
-          </p>
+          </div>
         </div>
 
-        <nav class="app-actions" aria-label="Primary actions">
-          <div class="actions-row">
-            <div class="action-inline">
-              <div class="quick-report-group">
-                <button
-                  id="quick-report"
-                  aria-describedby="quick-help"
-                  title="Quick report from your current location"
-                  data-i18n="quickReport"
-                >
-                  Quick report
-                </button>
+        <div class="header-controls">
+          <!-- Quick Report + Help -->
+          <div class="quick-report-group">
+            <button
+              id="quick-report"
+              aria-describedby="quick-help"
+              title="Quick report from your current location"
+              data-i18n="quickReport"
+            >
+              Quick report
+            </button>
 
-                <!-- Accessible help popover -->
-                <button
-                  id="quick-help-toggle"
-                  aria-expanded="false"
-                  aria-controls="quick-help-content"
-                  class="help-toggle"
-                >
-                  ?
-                </button>
+            <button
+              id="quick-help-toggle"
+              aria-expanded="false"
+              aria-controls="quick-help-content"
+              class="help-toggle"
+            >
+              ?
+            </button>
 
-                <div
-                  id="quick-help-content"
-                  class="help-content"
-                  role="tooltip"
-                  hidden
-                >
-                  <p data-i18n="qrText">
-                    Use your phone to quickly send a short report with your
-                    location. The form will be prefilled inside the app.
-                  </p>
-                </div>
-              </div>
-              <div id="status" role="status" aria-live="polite"></div>
+            <div
+              id="quick-help-content"
+              class="help-content"
+              role="tooltip"
+              hidden
+            >
+              <strong data-i18n="qrTitle">Quick report</strong>
+              <p data-i18n="qrText">
+                Use your phone to quickly send a short report with your
+                location. The form will be prefilled inside the app.
+              </p>
             </div>
+
+            <!-- User Info Popover -->
+            <div class="user-info-group">
+              <button
+                id="user-info-toggle"
+                aria-expanded="false"
+                aria-controls="user-info-content"
+                class="user-toggle"
+                title="Edit your personal info"
+              >
+                👤
+              </button>
+
+              <div
+                id="user-info-content"
+                class="user-info-content"
+                role="dialog"
+                hidden
+              >
+                <section aria-labelledby="user-heading">
+                  <h2 id="user-heading" data-i18n="userHeading">Your info</h2>
+                  <small class="hint" data-i18n="hint"
+                    >Saved locally on this device</small
+                  >
+
+                  <div class="inline-inputs">
+                    <label>
+                      <div class="label-bold" data-i18n="name">Name</div>
+                      <input id="user-name" type="text" autocomplete="name" />
+                    </label>
+
+                    <label>
+                      <div class="label-bold" data-i18n="age">Age</div>
+                      <input
+                        id="user-age"
+                        type="number"
+                        min="0"
+                        max="120"
+                        inputmode="numeric"
+                      />
+                    </label>
+
+                    <label>
+                      <div class="label-bold" data-i18n="emergencyContact">
+                        Emergency Contact
+                      </div>
+                      <input
+                        id="user-emergency-contact"
+                        type="phone"
+                        inputmode="numeric"
+                      />
+                    </label>
+
+                    <div class="button-group" style="margin-top: 0.5rem">
+                      <button id="save-user" class="btn-light" data-i18n="save">
+                        Save
+                      </button>
+                      <button
+                        id="clear-user"
+                        class="btn-light"
+                        data-i18n="clear"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            <div id="status" role="status" aria-live="polite"></div>
           </div>
 
+          <!-- Calls + Language Toggle -->
           <div class="button-group">
             <button
               id="call-police"
@@ -327,7 +423,6 @@
             >
               Police 📞
             </button>
-
             <button
               id="call-emergency-contact"
               class="call-button"
@@ -337,7 +432,6 @@
             >
               Emergency Contact 📞
             </button>
-
             <button
               id="lang-toggle"
               aria-pressed="false"
@@ -346,12 +440,30 @@
               עברית / English
             </button>
           </div>
-        </nav>
+        </div>
+        <!-- /.header-controls -->
       </header>
 
-      <section class="card" aria-labelledby="map-heading">
-        <h2 id="map-heading" data-i18n="mapHeading">Incident map</h2>
+      <!-- Main form section -->
+      <section class="card" aria-labelledby="form-heading">
+        <div class="iframe-wrap" title="Incident report form">
+          <iframe
+            id="form-frame"
+            loading="lazy"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true"
+            title="Report an incident (Google Form)"
+            aria-label="Report an incident form"
+          ></iframe>
+        </div>
 
+        <p class="muted" data-i18n="prefillHint">
+          The form will be prefilled with your location, cached name & age, and
+          the current date/time.
+        </p>
+      </section>
+
+      <!-- Map section -->
+      <section class="card" aria-labelledby="map-heading">
         <div class="iframe-wrap">
           <iframe
             id="map-frame"
@@ -368,89 +480,14 @@
         </p>
       </section>
 
-      <section class="card" aria-labelledby="form-heading">
-        <h2 id="form-heading" data-i18n="formHeading">Report an incident</h2>
-
-        <div class="iframe-wrap" title="Incident report form">
-          <iframe
-            id="form-frame"
-            loading="lazy"
-            src="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true"
-            title="Report an incident (Google Form)"
-            aria-label="Report an incident form"
-          ></iframe>
-        </div>
-
-        <p class="muted" data-i18n="prefillHint">
-          The form will be prefilled with your location, cached name &amp; age,
-          and the current date/time.
-        </p>
-      </section>
-
-      <section class="card" aria-labelledby="user-heading">
-        <h2 id="user-heading" data-i18n="userHeading">Your info</h2>
-        <p class="hint" data-i18n="hint">Saved locally on this device</p>
-
-        <div class="user-fields">
-          <label for="user-name" data-i18n="name">Name</label>
-          <input
-            id="user-name"
-            type="text"
-            placeholder="Optional name (or nickname)"
-            autocomplete="name"
-          />
-
-          <label for="user-age" data-i18n="age">Age</label>
-          <input
-            id="user-age"
-            type="number"
-            min="0"
-            max="120"
-            placeholder="e.g. 12"
-            inputmode="numeric"
-          />
-
-          <label for="user-emergency-contact" data-i18n="emergencyContact">
-            Emergency contact
-          </label>
-          <input
-            id="user-emergency-contact"
-            type="tel"
-            placeholder="Enter valid phone number"
-            inputmode="numeric"
-          />
-
-          <div class="button-group">
-            <button id="save-user" class="btn-light" data-i18n="save">
-              Save
-            </button>
-            <button id="clear-user" class="btn-light" data-i18n="clear">
-              Clear
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section id="about-section" class="card" aria-labelledby="about-heading">
-        <h2 id="about-heading" data-i18n="about">About</h2>
-        <p data-i18n="desc">
-          This is a website dedicated to keeping kids safe on the streets.
-        </p>
-
-        <p class="muted" data-i18n="privacy">
-          No authentication. Public data only. Do not include personal or
-          sensitive information.
-        </p>
-      </section>
-
       <noscript class="card">
-        <strong>
-          JavaScript required for quick reporting and language toggle.
-        </strong>
-        <p>
+        <strong
+          >JavaScript required for quick reporting and language toggle.</strong
+        >
+        <div>
           If JavaScript is disabled you can still use the embedded Google Form
           and map, but quick location-based reporting won't work.
-        </p>
+        </div>
       </noscript>
     </main>
 
@@ -463,6 +500,8 @@
         status: $("status"),
         toggle: $("quick-help-toggle"),
         content: $("quick-help-content"),
+        userToggle: $("user-info-toggle"),
+        userContent: $("user-info-content"),
         langToggle: $("lang-toggle"),
         form: $("form-frame"),
         map: $("map-frame"),
@@ -775,6 +814,23 @@
         if (!els.toggle.contains(e.target) && !els.content.contains(e.target)) {
           els.toggle.setAttribute("aria-expanded", "false");
           els.content.classList.remove("show");
+        }
+      });
+
+      /* --- Cache Popover--- */
+      els.userToggle.addEventListener("click", () => {
+        const isOpen = els.userToggle.getAttribute("aria-expanded") === "true";
+        els.userToggle.setAttribute("aria-expanded", String(!isOpen));
+        els.userContent.classList.toggle("show", !isOpen);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (
+          !els.userToggle.contains(e.target) &&
+          !els.userContent.contains(e.target)
+        ) {
+          els.userToggle.setAttribute("aria-expanded", "false");
+          els.userContent.classList.remove("show");
         }
       });
 
