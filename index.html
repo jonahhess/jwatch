@@ -551,14 +551,28 @@
       }
 
       function saveUser() {
-        Object.entries(KEYS).forEach(([k, key]) => {
-          const val = els.user[k].value.trim();
-          val ? localStorage.setItem(key, val) : localStorage.removeItem(key);
+        const isChange = Object.entries(KEYS).some(([k, storageKey]) => {
+          const input = els.user[k];
+          const val = input && input.value ? input.value.trim() : "";
+          const stored = localStorage.getItem(storageKey) || "";
+          return val !== stored;
+        });
+        if (!isChange) return;
+        Object.entries(KEYS).forEach(([k, storageKey]) => {
+          const el = els.user[k];
+          const val = el && el.value ? el.value.trim() : "";
+          val
+            ? localStorage.setItem(storageKey, val)
+            : localStorage.removeItem(storageKey);
         });
         showStatus(currentLang === "he" ? "המידע נשמר" : "Info saved", 2000);
       }
 
       function clearUser() {
+        const isCached = Object.values(KEYS).some(
+          (k) => localStorage.getItem(k) !== null
+        );
+        if (!isCached) return;
         Object.values(KEYS).forEach((k) => localStorage.removeItem(k));
         Object.values(els.user).forEach((el) => {
           if (el.tagName === "INPUT") el.value = "";
