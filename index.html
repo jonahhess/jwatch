@@ -54,15 +54,18 @@
         display: flex;
         gap: 0.5rem;
         align-items: center;
+        flex-wrap: wrap;
       }
 
       .controls-inline {
         display: flex;
         align-items: center;
+        width: 100%;
       }
 
       button {
         border: 0;
+        max-height: 35px;
         padding: 0.5rem 0.75rem;
         border-radius: 8px;
         cursor: pointer;
@@ -198,7 +201,7 @@
               title="Quick report from your current location"
               data-i18n="quickReport"
             >
-              Quick report here
+              Quick report
             </button>
             <div id="status" role="status" aria-live="polite"></div>
           </div>
@@ -210,7 +213,7 @@
             title="Call Police"
             data-i18n="callPolice"
           >
-            Call Police
+            Police 📞
           </button>
 
           <button
@@ -220,7 +223,7 @@
             title="Call Emergency Contact"
             data-i18n="callEmergencyContact"
           >
-            Emergency Contact
+            Emergency Contact 📞
           </button>
 
           <button id="lang-toggle" aria-pressed="false" title="Toggle language">
@@ -278,12 +281,14 @@
             />
           </label>
 
-          <button id="save-user" class="btn-light" data-i18n="save">
-            Save
-          </button>
-          <button id="clear-user" class="btn-light" data-i18n="clear">
-            Clear
-          </button>
+          <div id="buttons">
+            <button id="save-user" class="btn-light" data-i18n="save">
+              Save
+            </button>
+            <button id="clear-user" class="btn-light" data-i18n="clear">
+              Clear
+            </button>
+          </div>
         </div>
       </section>
 
@@ -414,9 +419,9 @@
         en: {
           title: "South Jerusalem Watch",
           meta: "A simple community safety reporting demo (south Jerusalem)",
-          quickReport: "Quick report here",
-          callPolice: "Call Police",
-          callEmergencyContact: "Call Emergency Contact",
+          quickReport: "Quick report",
+          callPolice: "Police   📞",
+          callEmergencyContact: "Emergency Contact  📞",
           toggle: "עברית / English",
           userHeading: "Your info",
           hint: "Saved locally on this device",
@@ -436,14 +441,14 @@
             "Use your phone to quickly send a short report with your location. The form will be prefilled inside the app.",
           mapHint:
             "Tip: tap the map title to open My Maps in a new tab for full interaction.",
-          quickBtn: "Quick report here",
+          quickBtn: "Quick report",
         },
         he: {
           title: "משמר דרום ירושלים",
           meta: "גרסת הדגמה לדיווח קהילתי (דרום ירושלים)",
           quickReport: "דיווח מהיר",
-          callPolice: "להתקשר למשטרה",
-          callEmergencyContact: "להתקשר לאיש קשר חירום",
+          callPolice: "להתקשר למשטרה 📞",
+          callEmergencyContact: "להתקשר לאיש קשר חירום 📞",
           toggle: "English / עברית",
           userHeading: "המידע שלך",
           hint: "נשמר מקומית במכשיר זה",
