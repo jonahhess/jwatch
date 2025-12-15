@@ -6,290 +6,318 @@
     <meta name="description" content="South Jerusalem Watch" />
     <title>South Jerusalem Watch</title>
 
-    <link rel="icon" href="/favicon-16x16.png" type="image/x-icon" />
+    <link rel="icon" href="/favicon-16x16.png" type="image/png" />
     <link rel="manifest" href="/manifest.json" />
 
     <style>
       :root {
-        --bg: #f5f5f5;
-        --card: #fff;
-        --accent: #0f172a;
-        --muted: #666;
-        --radius: 12px;
-        --maxw: 900px;
+        /* Spacing scale */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 1rem;
+        --space-4: 1.5rem;
+        --space-5: 2rem;
+
+        /* Typography */
+        --font-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+
+        --text-base: 1rem;
+        --text-small: 0.875rem;
+        --text-large: 1.25rem;
+
+        /* Colors (neutral on purpose) */
+        --color-bg: #f7f7f7;
+        --color-surface: #ffffff;
+        --color-text: #1a1a1a;
+        --color-muted: #666;
+        --color-border: #ddd;
+        --color-accent: #0a66c2;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
       }
 
-      html,
+      html {
+        font-family: var(--font-base);
+        font-size: 100%;
+        line-height: 1.5;
+      }
+
       body {
-        height: 100%;
         margin: 0;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-        background: var(--bg);
-        color: #111;
+        background: var(--color-bg);
+        color: var(--color-text);
       }
 
-      .container {
-        max-width: var(--maxw);
-        margin: 0 auto;
-        padding: 1rem;
+      #app {
+        max-width: 48rem;
+        margin-inline: auto;
+        padding: var(--space-3);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
       }
 
       header {
         display: flex;
-        gap: 1rem;
-        align-items: center;
-        justify-content: space-between;
+        flex-direction: column;
+        gap: var(--space-3);
       }
 
-      h1 {
-        margin: 0.25rem 0;
-        font-size: 1.35rem;
-      }
-
-      h2 {
+      .app-title h1 {
+        font-size: 1.5rem;
         margin: 0;
       }
 
-      .controls {
+      .meta {
+        font-size: var(--text-small);
+        color: var(--color-muted);
+      }
+
+      header,
+      .actions-row {
+        position: relative; /* keep for layout */
+        z-index: 0; /* ensure popover is above */
+        overflow: visible; /* most common culprit */
+      }
+
+      .actions-row {
         display: flex;
-        gap: 0.5rem;
-        align-items: center;
         flex-wrap: wrap;
+        gap: var(--space-2);
       }
 
-      .controls-inline {
+      .app-actions {
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex: 0 1 auto;
-        min-width: 0;
-        /* anchor the quick/status group to the start edge in LTR */
-        margin-inline-end: auto;
-      }
-
-      @media (max-width: 600px) {
-        header {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 0.5rem;
-        }
-        /* stack header blocks; keep controls anchored to start (or end in RTL) */
-        .controls {
-          justify-content: flex-start;
-          width: 100%;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
-        .controls-inline {
-          justify-content: flex-start;
-        }
-        /* ensure buttons line up on the same row when possible */
-        .controls > button,
-        .controls .controls-inline > button {
-          flex: 0 1 auto;
-        }
-        /* let status shrink so it doesn't push layout */
-        #status {
-          max-width: 18ch;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
+        flex-direction: column;
+        gap: var(--space-2);
       }
 
       button {
-        border: 0;
-        max-height: 35px;
-        padding: 0.5rem 0.75rem;
-        border-radius: 8px;
+        font: inherit;
+        padding: var(--space-2) var(--space-3);
+        border-radius: 0.5rem;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
         cursor: pointer;
-        background: var(--accent);
-        color: white;
-        font-weight: 600;
-        text-align: center;
-      }
-
-      /* Prevent buttons from wrapping onto multiple lines; truncate long labels */
-      .controls > button,
-      .controls .controls-inline > button {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        min-width: 0;
-        max-width: 40ch;
       }
 
-      .btn-light {
-        background: #fff;
-        color: var(--accent);
-        border: 1px solid #ddd;
-        font-weight: 600;
+      button:hover {
+        background: #f0f0f0;
       }
 
-      #quick-report {
-        background-color: firebrick;
+      .button-group {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
       }
 
-      .call-button {
-        background-color: royalblue;
-      }
-
-      .card {
-        background: var(--card);
-        border-radius: var(--radius);
-        padding: 1rem;
-        margin: 1rem 0;
-        border: 1px solid #e6e6e6;
-      }
-
-      .iframe-wrap {
+      .quick-report-group {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
         position: relative;
-        width: 100%;
-        padding-top: 56.25%;
-        border-radius: var(--radius);
-        overflow: hidden;
       }
 
-      iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: 0;
+      /* Toggle button ? */
+      .help-toggle {
+        list-style: none;
+        cursor: pointer;
+        font-weight: bold;
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+        width: 1.75rem;
+        height: 1.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-surface);
+        padding: 0;
       }
 
-      @media (max-width: 600px) {
-        .iframe-wrap {
-          padding-top: 66.66%;
-        }
-      }
-
-      @media (min-width: 360px) and (max-width: 616px) {
-        .controls {
-          justify-content: flex-start;
-        }
-        html[dir="rtl"] .controls {
-          justify-content: flex-end;
-        }
-      }
-
-      @media (max-width: 420px) {
-        .controls > button,
-        .controls .controls-inline > button {
-          white-space: normal;
-          overflow: visible;
-          text-overflow: unset;
-          max-width: none;
-          padding: 0.35rem 0.5rem;
-        }
-        #quick-report {
-          text-align: center;
-        }
-        #status {
-          max-width: 12ch;
-          font-size: 0.95rem;
-        }
-      }
-
-      .meta,
-      .muted,
-      small.hint {
-        color: var(--muted);
-        font-size: 0.95rem;
-      }
-
-      .muted {
-        margin-top: 0.5rem;
-      }
-
-      html[dir="rtl"] .container {
-        text-align: right;
-      }
-
-      @media (min-width: 601px) {
-        html[dir="rtl"] header {
-          flex-direction: row-reverse;
-        }
-        html[dir="rtl"] header > div:first-child {
-          order: 2;
-        }
-        html[dir="rtl"] header > .controls {
-          order: 1;
-        }
-        html[dir="rtl"] .controls-inline {
-          margin-inline-start: auto;
-          margin-inline-end: 0;
-        }
-      }
-
-      button:focus,
-      a:focus {
-        outline: 3px solid #b3c7ff;
+      .help-toggle:focus-visible {
+        outline: 2px solid var(--color-accent);
         outline-offset: 2px;
       }
 
-      #buttons {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        flex-wrap: wrap;
+      /* Popover content */
+      .help-content {
+        position: absolute;
+        inset-block-start: calc(100% + var(--space-2));
+        inset-inline-end: 0;
+        z-index: 10000;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 0.5rem;
+        padding: calc(var(--space-3) * 1.5);
+        min-width: 16rem;
+        max-width: 28rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        display: none; /* hidden by default */
       }
 
-      .inline-inputs {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        flex-wrap: wrap;
-        margin-top: 0.5rem;
+      /* Arrow */
+      .help-content::before {
+        content: "";
+        position: absolute;
+        width: 0.75rem;
+        height: 0.75rem;
+        background: var(--color-surface);
+        border-left: 1px solid var(--color-border);
+        border-top: 1px solid var(--color-border);
+        transform: rotate(45deg);
+        inset-block-start: -0.35rem;
+        inset-inline-end: 0.75rem;
+        z-index: 10001;
       }
 
-      .inline-inputs input {
-        padding: 0.4rem 0.6rem;
-        border-radius: 8px;
-        border: 1px solid #ddd;
+      /* Typography inside popover */
+      .help-content strong {
+        display: block;
+        margin-block-end: var(--space-1);
       }
 
-      #status {
-        min-width: 200px;
-        margin-left: 0.5rem;
-        color: #444;
-        font-weight: 600;
+      .help-content p {
+        margin: 0;
+        font-size: var(--text-small);
+        color: var(--color-muted);
       }
 
-      .label-bold {
-        font-weight: 600;
+      /* Animation */
+      .help-content.show {
+        display: block;
+        animation: fade-in 120ms ease-out;
       }
-      button:disabled {
-        background-color: lightgray;
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card {
+        background: var(--color-surface);
+        border-radius: 0.75rem;
+        padding: var(--space-3);
+        border: 1px solid var(--color-border);
+      }
+
+      .muted {
+        color: var(--color-muted);
+      }
+
+      .hint {
+        font-size: var(--text-small);
+        color: var(--color-muted);
+      }
+
+      .user-fields {
+        display: grid;
+        gap: var(--space-2);
+      }
+
+      label {
+        font-size: var(--text-small);
+      }
+
+      input {
+        font: inherit;
+        padding: var(--space-2);
+        border-radius: 0.5rem;
+        border: 1px solid var(--color-border);
+      }
+
+      .iframe-wrap {
+        width: 100%;
+        overflow: hidden;
+        border-radius: 0.5rem;
+      }
+
+      iframe {
+        width: 100%;
+        min-height: 20rem;
+        border: 0;
+      }
+
+      @media (min-width: 48rem) {
+        header {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .app-row {
+          align-items: flex-end;
+        }
+      }
+
+      html[dir="rtl"] {
+        direction: rtl;
       }
     </style>
   </head>
 
   <body>
-    <main class="container" id="main">
+    <main id="app">
       <header>
-        <div>
+        <div class="app-title">
           <h1 data-i18n="title">South Jerusalem Watch</h1>
-          <div class="meta" data-i18n="meta">
+          <p class="meta" data-i18n="meta">
             A simple community safety reporting demo (south Jerusalem)
-          </div>
+          </p>
         </div>
 
-        <div class="controls">
-          <div class="controls-inline">
-            <button
-              id="quick-report"
-              aria-describedby="quick-desc"
-              title="Quick report from your current location"
-              data-i18n="quickReport"
-            >
-              Quick report
-            </button>
-            <div id="status" role="status" aria-live="polite"></div>
+        <nav class="app-actions" aria-label="Primary actions">
+          <div class="actions-row">
+            <div class="action-inline">
+              <div class="quick-report-group">
+                <button
+                  id="quick-report"
+                  aria-describedby="quick-help"
+                  title="Quick report from your current location"
+                  data-i18n="quickReport"
+                >
+                  Quick report
+                </button>
+
+                <!-- Accessible help popover -->
+                <button
+                  id="quick-help-toggle"
+                  aria-expanded="false"
+                  aria-controls="quick-help-content"
+                  class="help-toggle"
+                >
+                  ?
+                </button>
+
+                <div
+                  id="quick-help-content"
+                  class="help-content"
+                  role="tooltip"
+                  hidden
+                >
+                  <p data-i18n="qrText">
+                    Use your phone to quickly send a short report with your
+                    location. The form will be prefilled inside the app.
+                  </p>
+                </div>
+              </div>
+              <div id="status" role="status" aria-live="polite"></div>
+            </div>
           </div>
 
-          <div id="buttons">
+          <div class="button-group">
             <button
               id="call-police"
               class="call-button"
@@ -318,87 +346,12 @@
               עברית / English
             </button>
           </div>
-        </div>
+        </nav>
       </header>
 
-      <div id="quick-desc" class="muted card">
-        <strong data-i18n="qrTitle">Quick report</strong>
-        <div data-i18n="qrText">
-          Use your phone to quickly send a short report with your location. The
-          form will be prefilled inside the app.
-        </div>
-      </div>
-
-      <section class="card" aria-labelledby="user-heading">
-        <h2 id="user-heading" data-i18n="userHeading">Your info</h2>
-        <small class="hint" data-i18n="hint">
-          Saved locally on this device
-        </small>
-
-        <div class="inline-inputs">
-          <label>
-            <div class="label-bold" data-i18n="name">Name</div>
-            <input
-              id="user-name"
-              type="text"
-              placeholder="Optional name (or nickname)"
-              autocomplete="name"
-            />
-          </label>
-
-          <label>
-            <div class="label-bold" data-i18n="age">Age</div>
-            <input
-              id="user-age"
-              type="number"
-              min="0"
-              max="120"
-              placeholder="e.g. 12"
-              inputmode="numeric"
-            />
-          </label>
-
-          <label>
-            <div class="label-bold" data-i18n="emergencyContact">
-              Emergency Contact
-            </div>
-            <input
-              id="user-emergency-contact"
-              type="phone"
-              placeholder="enter valid phone number"
-              inputmode="numeric"
-            />
-          </label>
-
-          <div id="buttons">
-            <button id="save-user" class="btn-light" data-i18n="save">
-              Save
-            </button>
-            <button id="clear-user" class="btn-light" data-i18n="clear">
-              Clear
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section class="card" aria-labelledby="form-heading">
-        <div class="iframe-wrap" title="Incident report form">
-          <iframe
-            id="form-frame"
-            loading="lazy"
-            src="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true"
-            title="Report an incident (Google Form)"
-            aria-label="Report an incident form"
-          ></iframe>
-        </div>
-
-        <p class="muted" data-i18n="prefillHint">
-          The form will be prefilled with your location, cached name & age, and
-          the current date/time.
-        </p>
-      </section>
-
       <section class="card" aria-labelledby="map-heading">
+        <h2 id="map-heading" data-i18n="mapHeading">Incident map</h2>
+
         <div class="iframe-wrap">
           <iframe
             id="map-frame"
@@ -413,6 +366,69 @@
           Tip: tap the map title to open My Maps in a new tab for full
           interaction.
         </p>
+      </section>
+
+      <section class="card" aria-labelledby="form-heading">
+        <h2 id="form-heading" data-i18n="formHeading">Report an incident</h2>
+
+        <div class="iframe-wrap" title="Incident report form">
+          <iframe
+            id="form-frame"
+            loading="lazy"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true"
+            title="Report an incident (Google Form)"
+            aria-label="Report an incident form"
+          ></iframe>
+        </div>
+
+        <p class="muted" data-i18n="prefillHint">
+          The form will be prefilled with your location, cached name &amp; age,
+          and the current date/time.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="user-heading">
+        <h2 id="user-heading" data-i18n="userHeading">Your info</h2>
+        <p class="hint" data-i18n="hint">Saved locally on this device</p>
+
+        <div class="user-fields">
+          <label for="user-name" data-i18n="name">Name</label>
+          <input
+            id="user-name"
+            type="text"
+            placeholder="Optional name (or nickname)"
+            autocomplete="name"
+          />
+
+          <label for="user-age" data-i18n="age">Age</label>
+          <input
+            id="user-age"
+            type="number"
+            min="0"
+            max="120"
+            placeholder="e.g. 12"
+            inputmode="numeric"
+          />
+
+          <label for="user-emergency-contact" data-i18n="emergencyContact">
+            Emergency contact
+          </label>
+          <input
+            id="user-emergency-contact"
+            type="tel"
+            placeholder="Enter valid phone number"
+            inputmode="numeric"
+          />
+
+          <div class="button-group">
+            <button id="save-user" class="btn-light" data-i18n="save">
+              Save
+            </button>
+            <button id="clear-user" class="btn-light" data-i18n="clear">
+              Clear
+            </button>
+          </div>
+        </div>
       </section>
 
       <section id="about-section" class="card" aria-labelledby="about-heading">
@@ -431,12 +447,13 @@
         <strong>
           JavaScript required for quick reporting and language toggle.
         </strong>
-        <div>
+        <p>
           If JavaScript is disabled you can still use the embedded Google Form
           and map, but quick location-based reporting won't work.
-        </div>
+        </p>
       </noscript>
     </main>
+
     <script>
       /* --- DOM helpers --- */
       const $ = (id) => document.getElementById(id);
@@ -444,6 +461,8 @@
       const els = {
         html: document.documentElement,
         status: $("status"),
+        toggle: $("quick-help-toggle"),
+        content: $("quick-help-content"),
         langToggle: $("lang-toggle"),
         form: $("form-frame"),
         map: $("map-frame"),
@@ -654,6 +673,13 @@
         if (els.user && els.user.clear) els.user.clear.disabled = !hasCached;
       }
 
+      function updateEmergencyContactButtonState() {
+        const hasNumber = localStorage.getItem(KEYS.emergency);
+        if (els.buttons && els.buttons.emergency) {
+          els.buttons.emergency.disabled = !hasNumber;
+        }
+      }
+
       function saveUser() {
         const isChange = Object.entries(KEYS).some(([k, storageKey]) => {
           const input = els.user[k];
@@ -672,6 +698,7 @@
         showStatus(currentLang === "he" ? "המידע נשמר" : "Info saved", 2000);
         updateSaveState();
         updateClearState();
+        updateEmergencyContactButtonState();
       }
 
       function updateSaveState() {
@@ -696,6 +723,7 @@
         showStatus(currentLang === "he" ? "המידע נמחק" : "Info cleared", 2000);
         updateSaveState();
         updateClearState();
+        updateEmergencyContactButtonState();
       }
 
       els.user.save.addEventListener("click", saveUser);
@@ -712,15 +740,6 @@
       );
       els.buttons.emergency.addEventListener("click", () => {
         const number = localStorage.getItem(KEYS.emergency);
-        if (!number) {
-          showStatus(
-            currentLang === "he"
-              ? "איש קשר חירום לא זוהה"
-              : "No emergency contact available",
-            3000
-          );
-          return;
-        }
         window.location.href = `tel:${number}`;
       });
 
@@ -744,10 +763,26 @@
         els.form.src = buildPrefillUrl(prefill);
       });
 
+      /* --- Popover Functionality --- */
+
+      els.toggle.addEventListener("click", () => {
+        const isOpen = els.toggle.getAttribute("aria-expanded") === "true";
+        els.toggle.setAttribute("aria-expanded", String(!isOpen));
+        els.content.classList.toggle("show", !isOpen);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!els.toggle.contains(e.target) && !els.content.contains(e.target)) {
+          els.toggle.setAttribute("aria-expanded", "false");
+          els.content.classList.remove("show");
+        }
+      });
+
       /* --- Init --- */
       loadUser();
       updateSaveState();
       updateClearState();
+      updateEmergencyContactButtonState();
       applyLang(currentLang);
 
       /* --- Service Worker --- */
