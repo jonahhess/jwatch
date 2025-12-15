@@ -286,7 +286,7 @@
           <iframe
             id="map-frame"
             loading="lazy"
-            src="https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en"
+            src="https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en&noprof=1"
             title="Incident map"
             aria-label="Incident map"
           ></iframe>
@@ -323,19 +323,33 @@
 
     <script>
       const GOOGLE_FORM_BASE =
-        "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform";
+        "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true";
 
-      // Replace these placeholders with your real entry IDs from the prefilled link
-      const NAME_ENTRY = "entry.1563137864"; // Name short-text
-      const AGE_ENTRY = "entry.552093736"; // Age short-text/number
-      const LOC_ENTRY = "entry.1771840150"; // single Location field (lat,lon)
-      const DATE_ENTRY = "entry.123356142"; // Date short-text (YYYY-MM-DD)
-      const TIME_ENTRY = "entry.407216857"; // Time short-text (HH:MM)
+      const entries = {
+        en: {
+          name: "entry.1563137864",
+          age: "entry.552093736",
+          location: "entry.1771840150",
+          date: "entry.123356142",
+          time: "entry.407216857",
+        },
+        he: {
+          name: "entry.1351340282",
+          age: "entry.1932330829",
+          location: "entry.477369262",
+          date: "entry.411715491",
+          time: "entry.462606047",
+        },
+      };
 
-      /* Map URLs for language toggling (optional) */
+      const formUrls = {
+        en: "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true",
+        he: "https://docs.google.com/forms/d/e/1FAIpQLSe5tQtDXNzq-4zxHuJaeFwXiPQx4y3krkY90cXyXVDLACMryA/viewform?embedded=true",
+      };
+
       const mapUrls = {
-        en: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en",
-        he: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=he",
+        en: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en&noprof=1",
+        he: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=he&noprof=1",
       };
 
       /* Translations (keeps previous behavior) */
@@ -363,9 +377,6 @@
           hint: "Saved locally on this device",
           prefillHint:
             "The form will be prefilled with your location, cached name & age, and the current date/time.",
-          toastGetting: "Trying to get your location...",
-          toastSuccess: "Location & info inserted into form.",
-          toastFail: "Couldn't get location — loaded base form.",
         },
         he: {
           title: "משמר דרום ירושלים",
@@ -389,9 +400,6 @@
           userHeading: "המידע שלך (נשמר במכשיר)",
           hint: "נשמר מקומית במכשיר זה",
           prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
-          toastGetting: "מנסה לקבל מיקום...",
-          toastSuccess: "המיקום והמידע הוכנסו לטופס.",
-          toastFail: "לא ניתן לקבל מיקום — הטופס נטען ללא מיקום.",
         },
       };
 
@@ -406,6 +414,8 @@
             el.textContent = translations[lang][key];
           }
         });
+        const formFrame = document.getElementById("form-frame");
+        if (formFrame) formFrame.src = formUrls[lang] || formUrls.en;
         const mapFrame = document.getElementById("map-frame");
         if (mapFrame) mapFrame.src = mapUrls[lang] || mapUrls.en;
       }
@@ -523,6 +533,7 @@
         const day = String(d.getDate()).padStart(2, "0");
         return `${y}-${m}-${day}`;
       }
+
       function formatTimeHHMM(d) {
         // HH:MM (24h)
         const hh = String(d.getHours()).padStart(2, "0");
@@ -534,19 +545,42 @@
         // Build URL like: <BASE>?usp=pp_url&entry.x=...&entry.y=...&embedded=true
         const usp = "usp=pp_url";
         const params = new URLSearchParams(prefillParams);
-        params.set("embedded", "true");
-        return `${GOOGLE_FORM_BASE}?${usp}&${params.toString()}`;
+        const url = `${
+          formUrls[currentLang] || GOOGLE_FORM_BASE
+        }?${usp}&${params.toString()}`;
+        return url;
+      }
+
+      async function getLocation(prefill) {
+        const opts = {
+          enableHighAccuracy: true,
+          maximumAge: 30_000,
+          timeout: 8000,
+        };
+
+        if (!navigator.geolocation) {
+          return "";
+        }
+
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, opts);
+          });
+
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          return `${lat},${lon}`; // format compatible with My Maps
+        } catch (err) {
+          // permission denied, timeout, etc.
+          return "";
+        }
       }
 
       /* --- Quick-report flow (prefills single Location field + user & date/time) --- */
       const quickBtn = document.getElementById("quick-report");
       const formFrame = document.getElementById("form-frame");
 
-      quickBtn.addEventListener("click", () => {
-        quickBtn.disabled = true;
-        quickBtn.textContent = translations[currentLang].quickBtn + "…";
-        showStatus(translations[currentLang].toastGetting, 5000);
-
+      quickBtn.addEventListener("click", async () => {
         // read cached user info
         const cachedName = localStorage.getItem(NAME_KEY) || "";
         const cachedAge = localStorage.getItem(AGE_KEY) || "";
@@ -556,85 +590,18 @@
         const dateStr = formatDateISO(now);
         const timeStr = formatTimeHHMM(now);
 
-        // If LOC_ENTRY or others are not configured, fallback: just load base form
-        const missingEntry = [
-          LOC_ENTRY,
-          NAME_ENTRY,
-          AGE_ENTRY,
-          DATE_ENTRY,
-          TIME_ENTRY,
-        ].some((e) => e.includes("YOUR"));
-        if (missingEntry) {
-          // If you intentionally left some entries out, we still add what we can:
-          // Fallback: reload base embedded form
-          formFrame.src = GOOGLE_FORM_BASE + "?embedded=true";
-          showStatus(translations[currentLang].toastFail, 3000);
-          quickBtn.disabled = false;
-          quickBtn.textContent = translations[currentLang].quickBtn;
-          return;
-        }
+        const prefill = {};
+        if (cachedName) prefill[entries[currentLang].name] = cachedName;
+        if (cachedAge) prefill[entries[currentLang].age] = cachedAge;
+        prefill[entries[currentLang].date] = dateStr;
+        prefill[entries[currentLang].time] = timeStr;
 
-        // If geolocation not supported: fallback to base form but still prefill name/age/date/time if desired
-        if (!navigator.geolocation) {
-          // Build prefill with only name/age/date/time (no location)
-          const prefill = {};
-          if (cachedName) prefill[NAME_ENTRY] = cachedName;
-          if (cachedAge) prefill[AGE_ENTRY] = cachedAge;
-          prefill[DATE_ENTRY] = dateStr;
-          prefill[TIME_ENTRY] = timeStr;
-          const prefilledUrl = buildPrefillUrl(prefill);
-          formFrame.src = prefilledUrl;
-          showStatus(translations[currentLang].toastFail, 3000);
-          quickBtn.disabled = false;
-          quickBtn.textContent = translations[currentLang].quickBtn;
-          return;
-        }
+        const location = await getLocation();
+        console.log(location);
+        if (location) prefill[entries[currentLang].location] = location;
 
-        // Attempt geolocation
-        const opts = {
-          enableHighAccuracy: true,
-          maximumAge: 30_000,
-          timeout: 8000,
-        };
-
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const lat = pos.coords.latitude.toFixed(6);
-            const lon = pos.coords.longitude.toFixed(6);
-            const locCombined = `${lat},${lon}`; // format compatible with My Maps
-
-            // Build full prefill object
-            const prefill = {};
-            prefill[LOC_ENTRY] = locCombined;
-            if (cachedName) prefill[NAME_ENTRY] = cachedName;
-            if (cachedAge) prefill[AGE_ENTRY] = cachedAge;
-            prefill[DATE_ENTRY] = dateStr;
-            prefill[TIME_ENTRY] = timeStr;
-
-            const prefilledUrl = buildPrefillUrl(prefill);
-            formFrame.src = prefilledUrl;
-
-            showStatus(translations[currentLang].toastSuccess, 4000);
-            quickBtn.disabled = false;
-            quickBtn.textContent = translations[currentLang].quickBtn;
-          },
-          (err) => {
-            console.warn("Geolocation failed:", err && err.message);
-            // On error: prefill name/age/date/time without location
-            const prefill = {};
-            if (cachedName) prefill[NAME_ENTRY] = cachedName;
-            if (cachedAge) prefill[AGE_ENTRY] = cachedAge;
-            prefill[DATE_ENTRY] = dateStr;
-            prefill[TIME_ENTRY] = timeStr;
-            const prefilledUrl = buildPrefillUrl(prefill);
-            formFrame.src = prefilledUrl;
-
-            showStatus(translations[currentLang].toastFail, 4000);
-            quickBtn.disabled = false;
-            quickBtn.textContent = translations[currentLang].quickBtn;
-          },
-          opts
-        );
+        const prefilledUrl = buildPrefillUrl(prefill);
+        formFrame.src = prefilledUrl;
       });
 
       // accessibility helpers
