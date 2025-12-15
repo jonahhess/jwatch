@@ -233,7 +233,7 @@
 
         <div class="inline-inputs">
           <label>
-            <div class="label-bold">Name</div>
+            <div class="label-bold" data-i18n="name">Name</div>
             <input
               id="user-name"
               type="text"
@@ -243,7 +243,7 @@
           </label>
 
           <label>
-            <div class="label-bold">Age</div>
+            <div class="label-bold" data-i18n="age">Age</div>
             <input
               id="user-age"
               type="number"
@@ -255,7 +255,9 @@
           </label>
 
           <label>
-            <div class="label-bold">Emergency Contact</div>
+            <div class="label-bold" data-i18n="emergencyContact">
+              Emergency Contact
+            </div>
             <input
               id="user-emergency-contact"
               type="phone"
@@ -264,8 +266,12 @@
             />
           </label>
 
-          <button id="save-user" class="btn-light">Save</button>
-          <button id="clear-user" class="btn-light">Clear</button>
+          <button id="save-user" class="btn-light" data-i18n="save">
+            Save
+          </button>
+          <button id="clear-user" class="btn-light" data-i18n="clear">
+            Clear
+          </button>
         </div>
       </section>
 
@@ -402,9 +408,18 @@
           meta: "A simple community safety reporting demo (south Jerusalem)",
           quickReport: "Quick report here",
           callPolice: "Call Police",
-          callEmergencyContact: "Emergency Contact",
+          callEmergencyContact: "Call Emergency Contact",
           toggle: "עברית / English",
+          userHeading: "Your info (cached)",
+          hint: "Saved locally on this device",
+          name: "Name",
+          age: "Age",
+          emergencyContact: "Emergency Contact",
+          save: "Save",
+          clear: "Clear",
           formHeading: "Report an incident",
+          prefillHint:
+            "The form will be prefilled with your location, cached name & age, and the current date/time.",
           mapHeading: "Explore the map",
           about: "About",
           desc: "This is a website dedicated to keeping kids safe on the streets.",
@@ -416,10 +431,6 @@
           mapHint:
             "Tip: tap the map title to open My Maps in a new tab for full interaction.",
           quickBtn: "Quick report here",
-          userHeading: "Your info (cached)",
-          hint: "Saved locally on this device",
-          prefillHint:
-            "The form will be prefilled with your location, cached name & age, and the current date/time.",
         },
         he: {
           title: "משמר דרום ירושלים",
@@ -428,7 +439,15 @@
           callPolice: "להתקשר למשטרה",
           callEmergencyContact: "להתקשר לאיש קשר חירום",
           toggle: "English / עברית",
+          userHeading: "המידע שלך (נשמר במכשיר)",
+          hint: "נשמר מקומית במכשיר זה",
+          name: "שם",
+          age: "גיל",
+          emergencyContact: "איש קשר חירום",
+          save: "שמור",
+          clear: "מחק",
           formHeading: "דווח על תקרית",
+          prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
           mapHeading: "מפה",
           about: "אודות",
           desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
@@ -440,9 +459,6 @@
           mapHint:
             "טיפ: הקישו על כותרת המפה כדי לפתוח את My Maps בכרטיסייה חדשה.",
           quickBtn: "דווח מהנייד",
-          userHeading: "המידע שלך (נשמר במכשיר)",
-          hint: "נשמר מקומית במכשיר זה",
-          prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
         },
       };
 
