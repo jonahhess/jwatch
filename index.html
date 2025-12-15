@@ -60,7 +60,40 @@
       .controls-inline {
         display: flex;
         align-items: center;
-        width: 100%;
+        gap: 0.5rem;
+        flex: 0 1 auto;
+        min-width: 0;
+      }
+
+      @media (max-width: 600px) {
+        header {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.5rem;
+        }
+        /* stack header blocks but keep controls centered internally */
+        .controls {
+          justify-content: center;
+          width: 100%;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+        .controls-inline {
+          justify-content: center;
+          width: 100%;
+        }
+        /* ensure buttons line up on the same row when possible */
+        .controls > button,
+        .controls .controls-inline > button {
+          flex: 0 1 auto;
+        }
+        /* let status shrink so it doesn't push layout */
+        #status {
+          max-width: 18ch;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
       }
 
       button {
@@ -72,6 +105,17 @@
         background: var(--accent);
         color: white;
         font-weight: 600;
+        text-align: center;
+      }
+
+      /* Prevent buttons from wrapping onto multiple lines; truncate long labels */
+      .controls > button,
+      .controls .controls-inline > button {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+        max-width: 40ch;
       }
 
       .btn-light {
@@ -83,6 +127,7 @@
 
       #quick-report {
         background-color: firebrick;
+        margin-right: auto;
       }
 
       .call-button {
@@ -153,6 +198,14 @@
         outline-offset: 2px;
       }
 
+      #buttons {
+        margin-right: auto;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
       .inline-inputs {
         display: flex;
         gap: 0.5rem;
@@ -206,29 +259,35 @@
             <div id="status" role="status" aria-live="polite"></div>
           </div>
 
-          <button
-            id="call-police"
-            class="call-button"
-            aria-pressed="false"
-            title="Call Police"
-            data-i18n="callPolice"
-          >
-            Police 📞
-          </button>
+          <div id="buttons">
+            <button
+              id="call-police"
+              class="call-button"
+              aria-pressed="false"
+              title="Call Police"
+              data-i18n="callPolice"
+            >
+              Police 📞
+            </button>
 
-          <button
-            id="call-emergency-contact"
-            class="call-button"
-            aria-pressed="false"
-            title="Call Emergency Contact"
-            data-i18n="callEmergencyContact"
-          >
-            Emergency Contact 📞
-          </button>
+            <button
+              id="call-emergency-contact"
+              class="call-button"
+              aria-pressed="false"
+              title="Call Emergency Contact"
+              data-i18n="callEmergencyContact"
+            >
+              Emergency Contact 📞
+            </button>
 
-          <button id="lang-toggle" aria-pressed="false" title="Toggle language">
-            עברית / English
-          </button>
+            <button
+              id="lang-toggle"
+              aria-pressed="false"
+              title="Toggle language"
+            >
+              עברית / English
+            </button>
+          </div>
         </div>
       </header>
 
