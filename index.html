@@ -75,6 +75,18 @@
         margin: auto;
       }
 
+      .container {
+        padding-left: var(--space-3);
+        padding-right: var(--space-3);
+      }
+
+      @media (max-width: 400px) {
+        .container {
+          padding-left: 0.75rem;
+          padding-right: 0.75rem;
+        }
+      }
+
       .offline-banner {
         background-color: #fffbcc; /* light yellow */
         color: #333;
@@ -742,14 +754,28 @@
       window.addEventListener("online", updateOnlineStatus);
       window.addEventListener("offline", updateOnlineStatus);
 
-      // Initialize on load
-      updateOnlineStatus();
+      /* --- Popover focus helper --- */
+      const popovers = document.querySelectorAll(".popover");
+
+      popovers.forEach((popover) => {
+        popover.addEventListener("click", (e) => {
+          const isInput =
+            e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA";
+          if (!isInput) {
+            // Remove focus from any input inside this popover
+            popover
+              .querySelectorAll("input, textarea")
+              .forEach((input) => input.blur());
+          }
+        });
+      });
 
       /* --- Init --- */
       loadUser();
       updateSaveState();
       updateClearState();
       updateEmergencyContactButtonState();
+      updateOnlineStatus();
       applyLang(currentLang);
 
       /* --- Service Worker --- */
