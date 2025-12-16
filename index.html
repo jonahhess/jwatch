@@ -176,10 +176,6 @@
         text-overflow: ellipsis;
       }
 
-      button:hover {
-        background: #f0f0f0;
-      }
-
       .button-group {
         display: flex;
         gap: var(--space-2);
@@ -221,9 +217,13 @@
         cursor: pointer;
       }
 
-      /* Hover / active polish */
-      .popover-close:hover {
-        background: #ddd;
+      @media (hover: hover) {
+        button:hover {
+          background: #f0f0f0;
+        }
+        .popover-close:hover {
+          background: #ddd;
+        }
       }
 
       .popover-close:active {
