@@ -76,6 +76,47 @@
         -webkit-text-size-adjust: 100%;
       }
 
+      .title-meta {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        column-gap: 0.75rem;
+        align-items: center;
+      }
+
+      /* Logo: align with title row only */
+      #logo-container {
+        grid-column: 1;
+        grid-row: 1;
+        margin-top: 0.75rem;
+      }
+
+      #logo-container img {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        display: block;
+      }
+
+      /* Title */
+      .title-meta h1 {
+        grid-column: 2;
+        grid-row: 1;
+
+        margin: 0;
+        font-size: 1.25rem;
+        line-height: 1.2;
+      }
+
+      /* Meta text below title */
+      .title-meta .meta {
+        grid-column: 2;
+        grid-row: 2;
+
+        font-size: 0.875rem;
+        color: #666;
+      }
+
       section {
         margin: var(--space-2);
       }
@@ -274,7 +315,10 @@
 
       <header>
         <div class="title-meta">
-          <h1 data-i18n="title">South Jerusalem Watch</h1>
+          <div id="logo-container">
+            <img src="/favicon.ico" alt="South Jerusalem Watch Logo" />
+          </div>
+          <h1 data-i18n="title">South JLM Watch</h1>
           <div class="meta" data-i18n="meta">
             A simple community safety reporting demo (south Jerusalem)
           </div>
@@ -544,7 +588,7 @@
       /* --- Translations --- */
       const translations = {
         en: {
-          title: "South Jerusalem Watch",
+          title: "South JLM Watch",
           meta: "A simple community safety reporting demo (south Jerusalem)",
           offline:
             "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
