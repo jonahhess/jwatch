@@ -153,6 +153,11 @@
         }
       }
 
+      #status {
+        min-height: 1.5rem; /* matches typical toast height */
+        margin-top: 0.5rem;
+      }
+
       .card {
         background: var(--color-surface);
         border-radius: 0.75rem;
@@ -473,6 +478,8 @@
         en: {
           title: "South Jerusalem Watch",
           meta: "A simple community safety reporting demo (south Jerusalem)",
+          offline:
+            "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
           quickReport: "Quick report",
           callPolice: "Police   📞",
           callEmergencyContact: "Emergency Contact  📞",
@@ -500,6 +507,7 @@
         he: {
           title: "משמר דרום ירושלים",
           meta: "גרסת הדגמה לדיווח קהילתי (דרום ירושלים)",
+          offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
           quickReport: "דיווח מהיר",
           callPolice: "להתקשר למשטרה 📞",
           callEmergencyContact: "להתקשר לאיש קשר חירום 📞",
