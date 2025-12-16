@@ -1,21 +1,21 @@
 {
   "name": "South Jerusalem Watch",
   "short_name": "SJ Watch",
-  "start_url": "/",
-  "scope": "/",
+  "description": "Quick incident reporting for South Jerusalem.",
+  "start_url": "/jwatch/",
+  "scope": "/jwatch/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#f5f5f5",
   "theme_color": "#0f172a",
-  "description": "Quick incident reporting for South Jerusalem.",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "/jwatch/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/jwatch/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

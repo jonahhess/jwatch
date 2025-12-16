@@ -1,11 +1,15 @@
 const CACHE_NAME = "sjw-shell-v2";
 
+const GHPATH = "/jwatch";
+
+const APP_PREFIX = "sjw_";
+
 const ASSETS = [
-  "/",
-  "/index.html",
-  "/manifest.json",
-  "/icons/icon-192.png",
-  "/icons/icon-512.png",
+  `${GHPATH}/`,
+  `${GHPATH}//index.html`,
+  `${GHPATH}//manifest.json`,
+  `${GHPATH}//icons/icon-192.png`,
+  `${GHPATH}//icons/icon-512.png`,
   // add CSS / JS files here if separate
 ];
 
