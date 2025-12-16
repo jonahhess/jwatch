@@ -22,7 +22,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <!-- Manifest -->
-    <link rel="manifest" href="manifest.json" />
+    <link rel="canonical" href="https://jonahhess.github.io/jwatch/" />
+    <link rel="manifest" href="/jwatch/manifest.json" />
 
     <title>South Jerusalem Watch</title>
 
@@ -751,7 +752,7 @@
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker
-            .register("sw.js")
+            .register("/jwatch/sw.js", { scope: "/jwatch/" })
             .then((reg) => console.log("SW registered:", reg.scope))
             .catch((err) => console.warn("SW register failed:", err));
         });
