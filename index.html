@@ -120,84 +120,23 @@
         flex-wrap: wrap;
       }
 
-      .quick-report-group {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        position: relative;
-        margin-bottom: 0.5rem;
-      }
-
-      /* Toggle button ? */
-      .help-toggle {
-        list-style: none;
-        cursor: pointer;
-        font-weight: bold;
-        border: 1px solid var(--color-border);
-        border-radius: 50%;
-        width: 1.75rem;
-        height: 1.75rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--color-surface);
-        padding: 0;
-      }
-
-      .help-toggle:focus-visible {
-        outline: 2px solid var(--color-accent);
-        outline-offset: 2px;
-      }
-
-      /* Popover content */
-      .help-content {
-        position: absolute;
-        inset-block-start: calc(100% + var(--space-2));
-        inset-inline-end: 0;
-        z-index: 10000;
+      .popover {
         background: var(--color-surface);
         border: 1px solid var(--color-border);
         border-radius: 0.5rem;
         padding: calc(var(--space-3) * 1.5);
-        min-width: 16rem;
-        max-width: 28rem;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        display: none; /* hidden by default */
 
-        right: auto;
-        left: auto;
+        max-width: min(28rem, 90vw);
       }
 
-      /* Arrow */
-      .help-content::before {
-        content: "";
-        position: absolute;
-        width: 0.75rem;
-        height: 0.75rem;
-        background: var(--color-surface);
-        border-left: 1px solid var(--color-border);
-        border-top: 1px solid var(--color-border);
-        transform: rotate(45deg);
-        inset-block-start: -0.35rem;
-        inset-inline-end: 0.75rem;
-        z-index: 10001;
+      /* Wider variant for forms */
+      .popover--wide {
+        max-width: min(32rem, 95vw);
       }
 
-      /* Typography inside popover */
-      .help-content strong {
-        display: block;
-        margin-block-end: var(--space-1);
-      }
-
-      .help-content p {
-        margin: 0;
-        font-size: var(--text-small);
-        color: var(--color-muted);
-      }
-
-      /* Animation */
-      .help-content.show {
-        display: block;
+      /* Optional: animation */
+      .popover:popover-open {
         animation: fade-in 120ms ease-out;
       }
 
@@ -226,31 +165,6 @@
       .hint {
         font-size: var(--text-small);
         color: var(--color-muted);
-      }
-
-      .user-info-group {
-        position: relative;
-      }
-
-      .user-info-content {
-        position: absolute;
-        z-index: 10000;
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: 0.5rem;
-        padding: var(--space-3);
-        min-width: 16rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        display: none;
-
-        right: auto;
-        left: auto;
-        max-width: 90vw; /* never wider than viewport */
-        inset-inline-start: auto;
-        inset-inline-end: auto;
-      }
-      .user-info-content.show {
-        display: block;
       }
 
       .user-fields {
@@ -310,7 +224,6 @@
         </div>
 
         <div class="header-controls">
-          <!-- Quick Report + Help -->
           <div class="quick-report-group">
             <button
               id="quick-report"
@@ -320,95 +233,75 @@
             >
               Quick report
             </button>
-
             <button
-              id="quick-help-toggle"
-              aria-expanded="false"
-              aria-controls="quick-help-content"
-              class="help-toggle"
+              popovertarget="quick-help"
+              popovertargetaction="toggle"
+              class="icon-button"
+              aria-label="Help"
             >
               ?
             </button>
 
-            <div
-              id="quick-help-content"
-              class="help-content"
-              role="tooltip"
-              hidden
-            >
+            <div id="quick-help" popover class="popover">
               <strong data-i18n="qrTitle">Quick report</strong>
               <p data-i18n="qrText">
                 Use your phone to quickly send a short report with your
-                location. The form will be prefilled inside the app.
+                location.
               </p>
             </div>
 
-            <!-- User Info Popover -->
-            <div class="user-info-group">
-              <button
-                id="user-info-toggle"
-                aria-expanded="false"
-                aria-controls="user-info-content"
-                class="user-toggle"
-                title="Edit your personal info"
-              >
-                👤
-              </button>
+            <button
+              type="button"
+              popovertarget="user-info"
+              popovertargetaction="toggle"
+              class="user-toggle"
+              title="Edit your personal info"
+            >
+              👤
+            </button>
 
-              <div
-                id="user-info-content"
-                class="user-info-content"
-                role="dialog"
-                hidden
-              >
-                <section aria-labelledby="user-heading">
-                  <h2 id="user-heading" data-i18n="userHeading">Your info</h2>
-                  <small class="hint" data-i18n="hint"
-                    >Saved locally on this device</small
-                  >
+            <div id="user-info" popover class="popover popover--wide">
+              <h2 data-i18n="userHeading">Your info</h2>
+              <small class="hint" data-i18n="hint">
+                Saved locally on this device
+              </small>
 
-                  <div class="inline-inputs">
-                    <label>
-                      <div class="label-bold" data-i18n="name">Name</div>
-                      <input id="user-name" type="text" autocomplete="name" />
-                    </label>
+              <div class="inline-inputs">
+                <label>
+                  <div class="label-bold" data-i18n="name">Name</div>
+                  <input id="user-name" type="text" autocomplete="name" />
+                </label>
 
-                    <label>
-                      <div class="label-bold" data-i18n="age">Age</div>
-                      <input
-                        id="user-age"
-                        type="number"
-                        min="0"
-                        max="120"
-                        inputmode="numeric"
-                      />
-                    </label>
+                <label>
+                  <div class="label-bold" data-i18n="age">Age</div>
+                  <input
+                    id="user-age"
+                    type="number"
+                    min="0"
+                    max="120"
+                    inputmode="numeric"
+                  />
+                </label>
 
-                    <label>
-                      <div class="label-bold" data-i18n="emergencyContact">
-                        Emergency Contact
-                      </div>
-                      <input
-                        id="user-emergency-contact"
-                        type="phone"
-                        inputmode="numeric"
-                      />
-                    </label>
-
-                    <div class="button-group" style="margin-top: 0.5rem">
-                      <button id="save-user" class="btn-light" data-i18n="save">
-                        Save
-                      </button>
-                      <button
-                        id="clear-user"
-                        class="btn-light"
-                        data-i18n="clear"
-                      >
-                        Clear
-                      </button>
-                    </div>
+                <label>
+                  <div class="label-bold" data-i18n="emergencyContact">
+                    Emergency Contact
                   </div>
-                </section>
+                  <input
+                    id="user-emergency-contact"
+                    type="phone"
+                    inputmode="numeric"
+                  />
+                </label>
+
+                <div class="button-group" style="margin-top: 0.5rem">
+                  <button id="save-user" class="btn-light" data-i18n="save">
+                    Save
+                  </button>
+                  <button id="clear-user" class="btn-light" data-i18n="clear">
+                    Clear
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -444,7 +337,6 @@
             </button>
           </div>
         </div>
-        <!-- /.header-controls -->
       </header>
 
       <!-- Main form section -->
@@ -812,37 +704,37 @@
         els.form.src = buildPrefillUrl(prefill);
       });
 
-      /* --- Popover Functionality --- */
+      // /* --- Popover Functionality --- */
 
-      els.toggle.addEventListener("click", () => {
-        const isOpen = els.toggle.getAttribute("aria-expanded") === "true";
-        els.toggle.setAttribute("aria-expanded", String(!isOpen));
-        els.content.classList.toggle("show", !isOpen);
-      });
+      // els.toggle.addEventListener("click", () => {
+      //   const isOpen = els.toggle.getAttribute("aria-expanded") === "true";
+      //   els.toggle.setAttribute("aria-expanded", String(!isOpen));
+      //   els.content.classList.toggle("show", !isOpen);
+      // });
 
-      document.addEventListener("click", (e) => {
-        if (!els.toggle.contains(e.target) && !els.content.contains(e.target)) {
-          els.toggle.setAttribute("aria-expanded", "false");
-          els.content.classList.remove("show");
-        }
-      });
+      // document.addEventListener("click", (e) => {
+      //   if (!els.toggle.contains(e.target) && !els.content.contains(e.target)) {
+      //     els.toggle.setAttribute("aria-expanded", "false");
+      //     els.content.classList.remove("show");
+      //   }
+      // });
 
-      /* --- Cache Popover--- */
-      els.userToggle.addEventListener("click", () => {
-        const isOpen = els.userToggle.getAttribute("aria-expanded") === "true";
-        els.userToggle.setAttribute("aria-expanded", String(!isOpen));
-        els.userContent.classList.toggle("show", !isOpen);
-      });
+      // /* --- Cache Popover--- */
+      // els.userToggle.addEventListener("click", () => {
+      //   const isOpen = els.userToggle.getAttribute("aria-expanded") === "true";
+      //   els.userToggle.setAttribute("aria-expanded", String(!isOpen));
+      //   els.userContent.classList.toggle("show", !isOpen);
+      // });
 
-      document.addEventListener("click", (e) => {
-        if (
-          !els.userToggle.contains(e.target) &&
-          !els.userContent.contains(e.target)
-        ) {
-          els.userToggle.setAttribute("aria-expanded", "false");
-          els.userContent.classList.remove("show");
-        }
-      });
+      // document.addEventListener("click", (e) => {
+      //   if (
+      //     !els.userToggle.contains(e.target) &&
+      //     !els.userContent.contains(e.target)
+      //   ) {
+      //     els.userToggle.setAttribute("aria-expanded", "false");
+      //     els.userContent.classList.remove("show");
+      //   }
+      // });
 
       /* --- Init --- */
       loadUser();
