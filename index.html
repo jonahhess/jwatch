@@ -360,6 +360,7 @@
               </p>
             </div>
 
+            <!--- User Info Popover --->
             <button
               type="button"
               popovertarget="user-info"
@@ -414,18 +415,36 @@
                 </label>
 
                 <div class="button-group">
-                  <button id="save-user" class="btn-light" data-i18n="save">
-                    Save
-                  </button>
-                  <button id="clear-user" class="btn-light" data-i18n="clear">
-                    Clear
-                  </button>
+                  <button id="save-user" data-i18n="save">Save</button>
+                  <button id="clear-user" data-i18n="clear">Clear</button>
                 </div>
               </div>
               <div id="status" role="status" aria-live="polite"></div>
             </div>
           </div>
 
+          <!--- Custom Location Button -->
+          <div id="location">
+            <form id="location-form">
+              <input
+                id="input-location"
+                type="text"
+                inputmode="numeric"
+                title="6 digit latitude followed by 6 digit longitude"
+                pattern="[0-9]{6}:[0-9]{6}"
+                placeholder="Current Location"
+              />
+              <button id="save-location" data-i18n="save" disabled>Save</button>
+              <button
+                id="clear-location"
+                data-i18n="clear"
+                type="reset"
+                disabled
+              >
+                Clear
+              </button>
+            </form>
+          </div>
           <!-- Calls + Language Toggle -->
           <div class="button-group">
             <button
@@ -527,6 +546,12 @@
         userToggle: $("user-info-toggle"),
         userContent: $("user-info-content"),
         langToggle: $("lang-toggle"),
+        location: {
+          form: $("location-form"),
+          input: $("input-location"),
+          save: $("save-location"),
+          clear: $("clear-location"),
+        },
         form: $("form-frame"),
         map: $("map-frame"),
         buttons: {
@@ -704,6 +729,12 @@
         });
         if (els.form) els.form.src = formUrls[lang] || formUrls.en;
         if (els.map) els.map.src = mapUrls[lang] || mapUrls.en;
+        document.getElementById("input-location").placeholder =
+          lang === "en" ? "Current Location" : "מיקום נוכחי";
+        document.getElementById("input-location").title =
+          lang === "en"
+            ? "6 digit latitude : 6 digit longitude"
+            : "שש ספרות קו אורך : שש ספרות קו רוחב";
       }
 
       function applyLang(lang) {
@@ -799,6 +830,17 @@
       els.user.age.addEventListener("input", updateSaveState);
       els.user.emergency.addEventListener("input", updateSaveState);
 
+      /* --- Close popover on iframe click --- */
+      window.addEventListener("blur", function () {
+        // Use a slight delay to ensure document.activeElement has updated
+        setTimeout(function () {
+          if (document.activeElement.tagName === "IFRAME") {
+            document.getElementById("quick-help").hidePopover?.();
+            document.getElementById("user-info").hidePopover?.();
+          }
+        }, 0);
+      });
+
       /* --- Call buttons --- */
       els.buttons.police.addEventListener(
         "click",
@@ -807,6 +849,26 @@
       els.buttons.emergency.addEventListener("click", () => {
         const number = localStorage.getItem(KEYS.emergency);
         window.location.href = `tel:${number}`;
+      });
+
+      /* --- Custom Location --- */
+      let customLocation = "";
+
+      els.location.form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        customLocation = els.location.input.value;
+        els.location.save.disabled = true;
+        els.location.clear.disabled = !els.location.input.value;
+      });
+
+      els.location.clear.addEventListener("click", () => {
+        els.location.input.value = "";
+        els.location.clear.disabled = true;
+      });
+
+      els.location.input.addEventListener("input", () => {
+        els.location.save.disabled =
+          customLocation === els.location.input.value;
       });
 
       /* --- Quick report --- */
@@ -823,7 +885,7 @@
         prefill[e.date] = formatDateISO(now);
         prefill[e.time] = formatTimeHHMM(now);
 
-        const loc = await getLocation();
+        const loc = customLocation || (await getLocation());
         if (loc) prefill[e.location] = loc;
 
         els.form.src = buildPrefillUrl(prefill);
