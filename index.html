@@ -345,24 +345,26 @@
               class="call-button"
               aria-pressed="false"
               aria-label="Call Emergency Contact"
-            >📞</button>
+            >
+              📞
+            </button>
           </div>
         </section>
-        
+
         <section class="card" id="button-section">
-        <button
-          id="call-police"
-          class="call-button"
-          aria-pressed="false"
-          aria-label="Call Police"
-          data-i18n="callPolice"
-        ></button>
-        <button
-          id="lang-toggle"
-          aria-pressed="false"
-          aria-label="Toggle language"
-          data-i18n="toggle"
-        ></button>
+          <button
+            id="call-police"
+            class="call-button"
+            aria-pressed="false"
+            aria-label="Call Police"
+            data-i18n="callPolice"
+          ></button>
+          <button
+            id="lang-toggle"
+            aria-pressed="false"
+            aria-label="Toggle language"
+            data-i18n="toggle"
+          ></button>
         </section>
       </header>
 
@@ -1016,9 +1018,9 @@
         els.formDate.type = "text";
         els.formTime.value = "";
         els.formTime.type = "text";
-        els.listItems.forEach(item => item.classList.remove('selected');
+        els.listItems.forEach((item) => item.classList.remove("selected"));
         els.formDesc.value = "";
-        
+
         resumed = false;
       });
 
