@@ -1106,14 +1106,16 @@
       }
 
       /* --- Submit Form --- */
-      let resumed = false;
 
-      els.form.addEventListener("submit", function (e) {
+      function finalizeSubmit() {
         els.formSection.style.display = "none";
-
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
-        if (resumed) return;
+        els.form.submit();
+      }
+
+      els.form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
         const now = new Date();
 
@@ -1125,21 +1127,22 @@
           els.formTime.value = now.toTimeString().slice(0, 5);
         }
 
-        if (!els.location.value && navigator.geolocation) {
-          e.preventDefault();
-
+        if (els.location.value) {
+          finalizeSubmit();
+        } else if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (pos) => {
               els.location.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-              resumed = true;
-              els.form.submit();
+              finalizeSubmit();
             },
             () => {
               els.location.value = "unknown";
-              resumed = true;
-              els.form.submit();
+              finalizeSubmit();
             }
           );
+        } else {
+          els.location.value = "unknown";
+          finalizeSubmit();
         }
       });
 
