@@ -1108,6 +1108,25 @@
 
       /* --- Submit Form --- */
 
+      // Helper to get geolocation as a promise
+      const getLocation = () =>
+        new Promise((resolve) => {
+          if (!navigator.geolocation) return resolve("unknown");
+
+          navigator.geolocation.getCurrentPosition(
+            (pos) => resolve(`${pos.coords.latitude}, ${pos.coords.longitude}`),
+            (err) => {
+              console.warn("Geolocation error:", err);
+              resolve("unknown");
+            },
+            {
+              enableHighAccuracy: true, // try for more precise location
+              timeout: 5000, // wait up to 5 seconds
+              maximumAge: 0, // don't use cached location
+            }
+          );
+        });
+
       function finalizeSubmit() {
         els.form.submit();
         els.formSection.style.display = "none";
@@ -1115,38 +1134,19 @@
         els.anotherReport.hidden = false;
       }
 
-      els.form.addEventListener("submit", function (e) {
+      els.form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const now = new Date();
 
-        if (!els.formDate.value) {
-          els.formDate.value = now.toISOString().split("T")[0];
-        }
+        // Fill date and time if empty
+        els.formDate.value ||= now.toISOString().split("T")[0];
+        els.formTime.value ||= now.toTimeString().slice(0, 5);
 
-        if (!els.formTime.value) {
-          els.formTime.value = now.toTimeString().slice(0, 5);
-        }
+        // Fill location if empty
+        els.location.value ||= await getLocation();
 
-        if (!els.location.value) {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (pos) => {
-                els.location.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-                finalizeSubmit();
-              },
-              () => {
-                els.location.value = "unknown";
-                finalizeSubmit();
-              }
-            );
-          } else {
-            els.location.value = "unknown";
-            finalizeSubmit();
-          }
-        } else {
-          finalizeSubmit();
-        }
+        finalizeSubmit();
       });
 
       function resetIncidentTypes() {
