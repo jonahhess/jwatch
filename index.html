@@ -720,6 +720,7 @@
         userToggle: $("user-info-toggle"),
         userContent: $("user-info-content"),
         langToggle: $("lang-toggle"),
+        formSection: $("form-section"),
         form: $("google-form"),
         location: $("location"),
         formDate: $("form-date"),
@@ -1108,7 +1109,8 @@
       let resumed = false;
 
       els.form.addEventListener("submit", function (e) {
-        els.form.style.display = "none";
+        els.formSection.style.display = "none";
+
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
         if (resumed) return;
@@ -1133,6 +1135,7 @@
               els.form.submit();
             },
             () => {
+              els.location.value = "unknown";
               resumed = true;
               els.form.submit();
             }
@@ -1153,9 +1156,9 @@
       }
 
       els.anotherReport.addEventListener("click", () => {
-        els.form.style.display = "initial";
+        els.formSection.style.display = "block";
         els.successMessage.hidden = true;
-        els.anotherReport.hidden = false;
+        els.anotherReport.hidden = true;
         els.location.value = "";
         els.formDate.value = "";
         els.formDate.type = "text";
