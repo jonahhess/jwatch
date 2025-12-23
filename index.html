@@ -1108,10 +1108,10 @@
       /* --- Submit Form --- */
 
       function finalizeSubmit() {
+        els.form.submit();
         els.formSection.style.display = "none";
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
-        els.form.submit();
       }
 
       els.form.addEventListener("submit", function (e) {
@@ -1127,21 +1127,23 @@
           els.formTime.value = now.toTimeString().slice(0, 5);
         }
 
-        if (els.location.value) {
-          finalizeSubmit();
-        } else if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              els.location.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-              finalizeSubmit();
-            },
-            () => {
-              els.location.value = "unknown";
-              finalizeSubmit();
-            }
-          );
+        if (!els.location.value) {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                els.location.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                finalizeSubmit();
+              },
+              () => {
+                els.location.value = "unknown";
+                finalizeSubmit();
+              }
+            );
+          } else {
+            els.location.value = "unknown";
+            finalizeSubmit();
+          }
         } else {
-          els.location.value = "unknown";
           finalizeSubmit();
         }
       });
