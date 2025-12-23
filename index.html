@@ -160,10 +160,6 @@
         overflow: visible; /* most common culprit */
       }
 
-      .quick-report-group {
-        margin-bottom: var(--space-1);
-      }
-
       button {
         font: inherit;
         padding: var(--space-2) var(--space-3);
@@ -183,76 +179,8 @@
         margin-top: var(--space-2);
       }
 
-      .popover {
-        background: var(--color-surface);
-        border: 1px solid var(--color-border);
-        border-radius: var(--space-2);
-        padding: calc(var(--space-3) * 1.5);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        max-width: min(28rem, 90vw);
-        position: relative;
-      }
-
-      /* Close button */
-      .popover-close {
-        position: absolute;
-        inset-block-start: 0; /* top */
-        inset-inline-end: 0; /* right in LTR, left in RTL */
-
-        width: 1.75rem;
-        height: 1.75rem;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        background: #eee;
-        color: #555;
-
-        border: none;
-        border-radius: 0.375rem;
-
-        font-size: var(--text-large);
-        line-height: 1;
-        cursor: pointer;
-      }
-
-      @media (hover: hover) {
-        button:hover {
-          background: #f0f0f0;
-        }
-        .popover-close:hover {
-          background: #ddd;
-        }
-      }
-
-      .popover-close:active {
-        background: #ccc;
-      }
-
-      /* Wider variant for forms */
-      .popover--wide {
-        max-width: min(32rem, 95vw);
-      }
-
-      /* Optional: animation */
-      .popover:popover-open {
-        animation: fade-in 120ms ease-out;
-      }
-
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-          transform: translateY(-4px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
       #status {
-        min-height: var(--space-4); /* matches typical toast height */
+        min-height: var(--space-4);
         margin-top: var(--space-2);
       }
 
@@ -298,6 +226,85 @@
       html[dir="rtl"] {
         direction: rtl;
       }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        row-gap: 1rem;
+      }
+
+      .form-row {
+        width: 100%;
+      }
+
+      label span {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      input,
+      textarea,
+      select,
+      button {
+        width: 100%;
+        font-size: 1rem;
+        padding: 0.6rem;
+      }
+
+      .inline-controls {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .inline-controls input {
+        flex: 1;
+      }
+
+      select[multiple] {
+        min-height: 8rem;
+      }
+
+      .picker-button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+      }
+
+      .modal-sheet {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: #fff;
+        border-radius: 16px 16px 0 0;
+        padding: 1rem;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .option-list {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0;
+      }
+
+      .option-list li {
+        padding: 0.75rem;
+        border-bottom: 1px solid #eee;
+        font-size: 1rem;
+      }
+
+      .option-list li.selected {
+        background: #e6f0ff;
+        font-weight: 600;
+      }
     </style>
   </head>
 
@@ -324,176 +331,176 @@
           </div>
         </div>
 
-        <div class="header-controls">
-          <div class="quick-report-group">
-            <button
-              id="quick-report"
-              aria-describedby="quick-help"
-              aria-label="Quick report from your current location"
-              data-i18n="quickReport"
-            >
-              Quick report
-            </button>
-            <button
-              popovertarget="quick-help"
-              popovertargetaction="toggle"
-              class="icon-button"
-              aria-label="Help"
-            >
-              ?
-            </button>
+        <div id="status" role="status" aria-live="polite"></div>
 
-            <div id="quick-help" popover class="popover">
-              <button
-                type="button"
-                class="popover-close"
-                popovertarget="quick-help"
-                popovertargetaction="hide"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-              <strong data-i18n="qrTitle">Quick report</strong>
-              <p data-i18n="qrText">
-                Use your phone to quickly send a short report with your
-                location.
-              </p>
-            </div>
-
-            <!--- User Info Popover --->
-            <button
-              type="button"
-              popovertarget="user-info"
-              popovertargetaction="toggle"
-              class="user-toggle"
-              aria-label="Edit your personal info"
-            >
-              👤
-            </button>
-
-            <div id="user-info" popover class="popover popover--wide">
-              <button
-                type="button"
-                class="popover-close"
-                popovertarget="user-info"
-                popovertargetaction="hide"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-              <h2 data-i18n="userHeading">Your info</h2>
-              <small class="hint" data-i18n="hint">
-                Saved locally on this device
-              </small>
-
-              <div class="inline-inputs">
-                <label>
-                  <div class="label-bold" data-i18n="name">Name</div>
-                  <input id="user-name" type="text" autocomplete="name" />
-                </label>
-
-                <label>
-                  <div class="label-bold" data-i18n="age">Age</div>
-                  <input
-                    id="user-age"
-                    type="number"
-                    min="0"
-                    max="120"
-                    inputmode="numeric"
-                  />
-                </label>
-
-                <label>
-                  <div class="label-bold" data-i18n="emergencyContact">
-                    Emergency Contact
-                  </div>
-                  <input
-                    id="user-emergency-contact"
-                    type="phone"
-                    inputmode="numeric"
-                  />
-                </label>
-
-                <div class="button-group">
-                  <button id="save-user" data-i18n="save">Save</button>
-                  <button id="clear-user" data-i18n="clear">Clear</button>
-                </div>
-              </div>
-              <div id="status" role="status" aria-live="polite"></div>
-            </div>
+        <!-- Calls + Language Toggle -->
+        <div class="button-group">
+          <div id="emergency" style="display: flex; width: 100%">
+            <input
+              id="user-emergency-contact"
+              type="tel"
+              pattern="/d{3}-/d{3}-/d{4}"
+            />
+            <button id="save-emergency" type="button">Save</button>
+            <button id="clear-emergency" type="button">Clear</button>
           </div>
-
-          <!--- Custom Location Button -->
-          <div id="location">
-            <form id="location-form">
-              <input
-                id="input-location"
-                type="text"
-                inputmode="numeric"
-                title="6 digit latitude followed by 6 digit longitude"
-                pattern="[0-9]{6}:[0-9]{6}"
-                placeholder="Current Location"
-              />
-              <button id="save-location" data-i18n="save" disabled>Save</button>
-              <button
-                id="clear-location"
-                data-i18n="clear"
-                type="reset"
-                disabled
-              >
-                Clear
-              </button>
-            </form>
-          </div>
-          <!-- Calls + Language Toggle -->
-          <div class="button-group">
-            <button
-              id="call-police"
-              class="call-button"
-              aria-pressed="false"
-              aria-label="Call Police"
-              data-i18n="callPolice"
-            >
-              Police 📞
-            </button>
-            <button
-              id="call-emergency-contact"
-              class="call-button"
-              aria-pressed="false"
-              aria-label="Call Emergency Contact"
-              data-i18n="callEmergencyContact"
-            >
-              Emergency Contact 📞
-            </button>
-            <button
-              id="lang-toggle"
-              aria-pressed="false"
-              aria-label="Toggle language"
-              data-i18n="toggle"
-            >
-              עברית 🇮🇱
-            </button>
-          </div>
+          <button
+            id="call-police"
+            class="call-button"
+            aria-pressed="false"
+            aria-label="Call Police"
+            data-i18n="callPolice"
+          >
+            Police 📞
+          </button>
+          <button
+            id="call-emergency-contact"
+            class="call-button"
+            aria-pressed="false"
+            aria-label="Call Emergency Contact"
+            data-i18n="callEmergencyContact"
+          >
+            Emergency Contact 📞
+          </button>
+          <button
+            id="lang-toggle"
+            aria-pressed="false"
+            aria-label="Toggle language"
+            data-i18n="toggle"
+          >
+            עברית 🇮🇱
+          </button>
         </div>
       </header>
 
-      <!-- Main form section -->
-      <section class="card" aria-labelledby="form-heading">
-        <div class="iframe-wrap" aria-label="Incident report form">
-          <iframe
-            id="form-frame"
-            loading="lazy"
-            src="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true"
-            aria-label="Report an incident (Google Form)"
-            aria-label="Report an incident form"
-          ></iframe>
+      <!--- New Form entries-->
+      <section class="card" id="form-section">
+        <form
+          id="google-form"
+          action="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/formResponse"
+          method="POST"
+          target="hidden_iframe"
+        >
+          <div class="form-grid">
+            <!-- Name -->
+            <div class="form-row">
+              <label>
+                <span data-i18n="form.name">Name</span>
+                <div class="inline-controls">
+                  <input
+                    id="user-name"
+                    type="text"
+                    name="entry.1563137864"
+                    autocomplete="name"
+                  />
+                  <button id="save-name" type="button">Save</button>
+                  <button id="clear-name" type="button">Clear</button>
+                </div>
+              </label>
+            </div>
+
+            <!-- Age -->
+            <div class="form-row">
+              <label>
+                <span data-i18n="form.age">Age</span>
+                <div class="inline-controls">
+                  <input
+                    id="user-age"
+                    type="number"
+                    name="entry.552093736"
+                    min="0"
+                    value="0"
+                  />
+                  <button id="save-age" type="button">Save</button>
+                  <button id="clear-age" type="button">Clear</button>
+                </div>
+              </label>
+            </div>
+
+            <!-- Location -->
+            <div class="form-row">
+              <label>
+                <span id="location" data-i18n="form.location">Location</span>
+                <input
+                  type="text"
+                  name="entry.1771840150"
+                  placeholder="Current Location"
+                />
+              </label>
+            </div>
+
+            <!-- Date -->
+            <div class="form-row">
+              <label>
+                <span data-i18n="form.date">Date</span>
+                <input
+                  id="form-date"
+                  type="text"
+                  name="entry.123356142"
+                  placeholder="Current Date"
+                />
+              </label>
+            </div>
+
+            <!-- Time -->
+            <div class="form-row">
+              <label>
+                <span data-i18n="form.time">Time</span>
+                <input
+                  id="form-time"
+                  type="text"
+                  name="entry.407216857"
+                  placeholder="Current Time"
+                />
+              </label>
+            </div>
+
+            <!-- Type (Dropdown) -->
+            <div class="form-row">
+              <label>
+                <span data-i18n="form.type">Type</span>
+                <button
+                  type="button"
+                  id="open-type-picker"
+                  class="picker-button"
+                >
+                  Select incident type(s)
+                </button>
+              </label>
+
+              <!-- Hidden container for generated inputs -->
+              <div id="type-hidden-inputs"></div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-row">
+              <label>
+                <span data-i18n="form.description">Description</span>
+                <textarea name="entry.737097719"></textarea>
+              </label>
+            </div>
+
+            <!-- Submit -->
+            <div class="form-row">
+              <button id="submit-button" type="submit" data-i18n="form.submit">
+                Submit
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div id="form-success" hidden data-i18n="form.success">
+          Thank you! Your response has been sent.
         </div>
 
-        <p class="muted" data-i18n="prefillHint">
-          The form will be prefilled with your location, cached name & age, and
-          the current date/time.
-        </p>
+        <iframe
+          name="hidden_iframe"
+          id="hidden_iframe"
+          style="display: none"
+        ></iframe>
       </section>
+
+      <button id="another-report" hidden>Submit another report</button>
 
       <!-- Map section -->
       <section class="card" aria-labelledby="map-heading">
@@ -521,14 +528,35 @@
       </section>
 
       <noscript class="card">
-        <strong
-          >JavaScript required for quick reporting and language toggle.</strong
-        >
-        <div>
-          If JavaScript is disabled you can still use the embedded Google Form
-          and map, but quick location-based reporting won't work.
-        </div>
+        <strong>JavaScript required for reporting and language toggle.</strong>
       </noscript>
+
+      <div id="type-modal" class="modal" hidden>
+        <div class="modal-sheet">
+          <h3>Select all that apply</h3>
+
+          <ul class="option-list">
+            <li data-value="Disturbing staring">Disturbing staring</li>
+            <li data-value="Following on foot">Following on foot</li>
+            <li data-value="Following in car">Following in car</li>
+            <li data-value="Mocking or pointing">Mocking or pointing</li>
+            <li data-value="Whistling or catcalling">
+              Whistling or catcalling
+            </li>
+            <li data-value="Honking">Honking</li>
+            <li data-value="Yelling">Yelling</li>
+            <li data-value="Unwanted conversation attempt">
+              Unwanted conversation attempt
+            </li>
+            <li data-value="Unwanted pickup attempt">
+              Unwanted pickup attempt
+            </li>
+            <li data-value="Other">Other (describe below)</li>
+          </ul>
+
+          <button type="button" id="close-type-picker">Done</button>
+        </div>
+      </div>
     </main>
 
     <script>
@@ -539,38 +567,37 @@
         html: document.documentElement,
         main: $("main"),
         offlineBanner: $("offline-banner"),
-        quickReportButton: $("quick-report"),
         status: $("status"),
-        toggle: $("quick-help-toggle"),
-        content: $("quick-help-content"),
         userToggle: $("user-info-toggle"),
         userContent: $("user-info-content"),
         langToggle: $("lang-toggle"),
-        location: {
-          form: $("location-form"),
-          input: $("input-location"),
-          save: $("save-location"),
-          clear: $("clear-location"),
-        },
-        form: $("form-frame"),
+        form: $("google-form"),
+        location: $("location"),
+        formDate: $("form-date"),
+        formTime: $("form-time"),
+        submitButton: $("submit-button"),
+        successMessage: $("form-success"),
+        anotherReport: $("another-report"),
         map: $("map-frame"),
         buttons: {
-          quick: $("quick-report"),
           police: $("call-police"),
           emergency: $("call-emergency-contact"),
         },
-        user: {
-          name: $("user-name"),
-          age: $("user-age"),
-          emergency: $("user-emergency-contact"),
-          save: $("save-user"),
-          clear: $("clear-user"),
-        },
+        name: $("user-name"),
+        age: $("user-age"),
+        saveName: $("save-name"),
+        clearName: $("clear-name"),
+        saveAge: $("save-age"),
+        clearAge: $("clear-age"),
+        emergency: $("user-emergency-contact"),
+        saveEmergency: $("save-emergency"),
+        clearEmergency: $("clear-emergency"),
       };
 
       /* --- Constants --- */
       const GOOGLE_FORM_BASE =
         "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true";
+
       const GOOGLE_MAP_BASE =
         "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en&noprof=1";
       const POLICE_NUMBER = "100";
@@ -582,32 +609,9 @@
       };
 
       /* --- URLs --- */
-      const formUrls = {
-        en: GOOGLE_FORM_BASE,
-        he: "https://docs.google.com/forms/d/e/1FAIpQLSe5tQtDXNzq-4zxHuJaeFwXiPQx4y3krkY90cXyXVDLACMryA/viewform?embedded=true",
-      };
-
       const mapUrls = {
         en: GOOGLE_MAP_BASE,
         he: "https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=he&noprof=1",
-      };
-
-      /* --- Google Form entries mapping --- */
-      const entries = {
-        en: {
-          name: "entry.1563137864",
-          age: "entry.552093736",
-          location: "entry.1771840150",
-          date: "entry.123356142",
-          time: "entry.407216857",
-        },
-        he: {
-          name: "entry.1351340282",
-          age: "entry.1932330829",
-          location: "entry.477369262",
-          date: "entry.411715491",
-          time: "entry.462606047",
-        },
       };
 
       /* --- Translations --- */
@@ -617,7 +621,6 @@
           meta: "A simple community safety reporting demo (south Jerusalem)",
           offline:
             "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
-          quickReport: "Quick report",
           callPolice: "Police 📞",
           callEmergencyContact: "Emergency Contact 📞",
           toggle: "עברית 🇮🇱",
@@ -634,18 +637,13 @@
           desc: "This is a website dedicated to keeping kids safe on the streets.",
           privacy:
             "No authentication. Public data only. Do not include personal or sensitive information.",
-          qrTitle: "Quick report",
-          qrText:
-            "Use your phone to quickly send a short report with your location. The form will be prefilled inside the app.",
           mapHint:
             "Tip: tap the map title to open My Maps in a new tab for full interaction.",
-          quickBtn: "Quick report",
         },
         he: {
           title: "משמר דרום ירושלים",
           meta: "גרסת הדגמה לדיווח קהילתי (דרום ירושלים)",
           offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
-          quickReport: "דיווח מהיר",
           callPolice: " למשטרה 📞",
           callEmergencyContact: " לאיש קשר חירום 📞",
           toggle: "English 🇺🇸",
@@ -661,12 +659,8 @@
           desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
           privacy:
             "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
-          qrTitle: "דיווח מהיר",
-          qrText:
-            "השתמשו בטלפון כדי לשלוח דיווח קצר עם המיקום שלכם. הטופס ימולא מראש בתוך האפליקציה.",
           mapHint:
             "טיפ: הקישו על כותרת המפה כדי לפתוח את My Maps בכרטיסייה חדשה.",
-          quickBtn: "דווח מהנייד",
         },
       };
 
@@ -681,45 +675,6 @@
           showStatus._t = setTimeout(() => (els.status.textContent = ""), ms);
       }
 
-      function formatDateISO(d) {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${y}-${m}-${day}`;
-      }
-
-      function formatTimeHHMM(d) {
-        const hh = String(d.getHours()).padStart(2, "0");
-        const mm = String(d.getMinutes()).padStart(2, "0");
-        return `${hh}:${mm}`;
-      }
-
-      function buildPrefillUrl(prefill) {
-        const usp = "usp=pp_url";
-        const params = new URLSearchParams(prefill);
-        return `${
-          formUrls[currentLang] || GOOGLE_FORM_BASE
-        }?${usp}&${params.toString()}`;
-      }
-
-      async function getLocation() {
-        if (!navigator.geolocation) return "";
-        try {
-          const pos = await new Promise((res, rej) =>
-            navigator.geolocation.getCurrentPosition(res, rej, {
-              enableHighAccuracy: true,
-              maximumAge: 30000,
-              timeout: 8000,
-            })
-          );
-          return `${pos.coords.latitude.toFixed(
-            6
-          )},${pos.coords.longitude.toFixed(6)}`;
-        } catch {
-          return "";
-        }
-      }
-
       /* --- Language --- */
       function updateText(lang) {
         document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -727,14 +682,7 @@
           if (translations[lang] && translations[lang][key])
             el.textContent = translations[lang][key];
         });
-        if (els.form) els.form.src = formUrls[lang] || formUrls.en;
         if (els.map) els.map.src = mapUrls[lang] || mapUrls.en;
-        document.getElementById("input-location").placeholder =
-          lang === "en" ? "Current Location" : "מיקום נוכחי";
-        document.getElementById("input-location").title =
-          lang === "en"
-            ? "6 digit latitude : 6 digit longitude"
-            : "שש ספרות קו אורך : שש ספרות קו רוחב";
       }
 
       function applyLang(lang) {
@@ -758,171 +706,248 @@
 
       /* --- User cache --- */
       function loadUser() {
-        els.user.name.value = localStorage.getItem(KEYS.name) || "";
-        els.user.age.value = localStorage.getItem(KEYS.age) || "";
-        els.user.emergency.value = localStorage.getItem(KEYS.emergency) || "";
+        els.name.value = localStorage.getItem(KEYS.name) || "";
+        els.age.value = localStorage.getItem(KEYS.age) || "";
+        els.emergency.value = localStorage.getItem(KEYS.emergency) || "";
       }
 
-      function updateClearState() {
-        const hasCached = Object.values(KEYS).some(
-          (k) => localStorage.getItem(k) !== null
-        );
-        if (els.user && els.user.clear) els.user.clear.disabled = !hasCached;
+      function saveName() {
+        const val = els.name.value.trim();
+        const stored = localStorage.getItem(KEYS.name) || "";
+
+        if (val === stored) return;
+
+        val
+          ? localStorage.setItem(KEYS.name, val)
+          : localStorage.removeItem(KEYS.name);
+
+        showStatus("Name saved", 2000);
+        updateNameState();
       }
 
-      function updateEmergencyContactButtonState() {
-        const hasNumber = localStorage.getItem(KEYS.emergency);
-        if (els.buttons && els.buttons.emergency) {
-          els.buttons.emergency.disabled = !hasNumber;
-        }
+      function clearName() {
+        if (localStorage.getItem(KEYS.name) === null) return;
+
+        localStorage.removeItem(KEYS.name);
+        els.name.value = "";
+
+        showStatus("Name cleared", 2000);
+        updateNameState();
       }
 
-      function saveUser() {
-        const isChange = Object.entries(KEYS).some(([k, storageKey]) => {
-          const input = els.user[k];
-          const val = input && input.value ? input.value.trim() : "";
-          const stored = localStorage.getItem(storageKey) || "";
-          return val !== stored;
-        });
-        if (!isChange) return;
-        Object.entries(KEYS).forEach(([k, storageKey]) => {
-          const el = els.user[k];
-          const val = el && el.value ? el.value.trim() : "";
-          val
-            ? localStorage.setItem(storageKey, val)
-            : localStorage.removeItem(storageKey);
-        });
-        showStatus(currentLang === "he" ? "המידע נשמר" : "Info saved", 2000);
-        updateSaveState();
-        updateClearState();
-        updateEmergencyContactButtonState();
+      function saveAge() {
+        const val = els.age.value.trim();
+        const stored = localStorage.getItem(KEYS.age) || "";
+
+        if (val === stored) return;
+
+        val
+          ? localStorage.setItem(KEYS.age, val)
+          : localStorage.removeItem(KEYS.age);
+
+        showStatus("Age saved", 2000);
+        updateAgeState();
       }
 
-      function updateSaveState() {
-        const hasChange = Object.entries(KEYS).some(([k, storageKey]) => {
-          const input = els.user[k];
-          const val = input && input.value ? input.value.trim() : "";
-          const stored = localStorage.getItem(storageKey) || "";
-          return val !== stored;
-        });
-        if (els.user && els.user.save) els.user.save.disabled = !hasChange;
+      function clearAge() {
+        if (localStorage.getItem(KEYS.age) === null) return;
+
+        localStorage.removeItem(KEYS.age);
+        els.age.value = "";
+
+        showStatus("Age cleared", 2000);
+        updateAgeState();
       }
 
-      function clearUser() {
-        const isCached = Object.values(KEYS).some(
-          (k) => localStorage.getItem(k) !== null
-        );
-        if (!isCached) return;
-        Object.values(KEYS).forEach((k) => localStorage.removeItem(k));
-        Object.values(els.user).forEach((el) => {
-          if (el.tagName === "INPUT") el.value = "";
-        });
-        showStatus(currentLang === "he" ? "המידע נמחק" : "Info cleared", 2000);
-        updateSaveState();
-        updateClearState();
-        updateEmergencyContactButtonState();
+      function updateNameState() {
+        const val = els.name.value.trim();
+        const stored = localStorage.getItem(KEYS.name) || "";
+
+        els.saveName.disabled = val === stored;
+        els.clearName.disabled = stored === "";
       }
 
-      els.user.save.addEventListener("click", saveUser);
-      els.user.clear.addEventListener("click", clearUser);
+      function updateAgeState() {
+        const val = els.age.value.trim();
+        const stored = localStorage.getItem(KEYS.age) || "";
 
-      els.user.name.addEventListener("input", updateSaveState);
-      els.user.age.addEventListener("input", updateSaveState);
-      els.user.emergency.addEventListener("input", updateSaveState);
+        els.saveAge.disabled = val === stored;
+        els.clearAge.disabled = stored === "";
+      }
 
-      /* --- Close popover on iframe click --- */
-      window.addEventListener("blur", function () {
-        // Use a slight delay to ensure document.activeElement has updated
-        setTimeout(function () {
-          if (document.activeElement.tagName === "IFRAME") {
-            document.getElementById("quick-help").hidePopover?.();
-            document.getElementById("user-info").hidePopover?.();
-          }
-        }, 0);
-      });
+      els.saveName.addEventListener("click", saveName);
+      els.clearName.addEventListener("click", clearName);
+
+      els.saveAge.addEventListener("click", saveAge);
+      els.clearAge.addEventListener("click", clearAge);
+
+      els.name.addEventListener("input", updateNameState);
+      els.age.addEventListener("input", updateAgeState);
+
+      /* --- Emegency Contact --- */
+
+      function saveEmergency() {
+        const val = els.emergency.value.trim();
+        const stored = localStorage.getItem(KEYS.emergency) || "";
+
+        if (val === stored) return;
+
+        val
+          ? localStorage.setItem(KEYS.emergency, val)
+          : localStorage.removeItem(KEYS.emergency);
+
+        showStatus("Emergency contact saved", 2000);
+        updateEmergencyState();
+      }
+
+      function clearEmergency() {
+        if (localStorage.getItem(KEYS.emergency) === null) return;
+
+        localStorage.removeItem(KEYS.emergency);
+        els.emergency.value = "";
+
+        showStatus("Emergency contact cleared", 2000);
+        updateEmergencyState();
+      }
+
+      function updateEmergencyState() {
+        const val = els.emergency.value.trim();
+        const stored = localStorage.getItem(KEYS.emergency) || "";
+
+        els.saveEmergency.disabled = val === stored;
+        els.clearEmergency.disabled = stored === "";
+        els.buttons.emergency.disabled = !stored;
+      }
+
+      els.saveEmergency.addEventListener("click", saveEmergency);
+      els.clearEmergency.addEventListener("click", clearEmergency);
+      els.emergency.addEventListener("input", updateEmergencyState);
 
       /* --- Call buttons --- */
       els.buttons.police.addEventListener(
         "click",
         () => (window.location.href = `tel:${POLICE_NUMBER}`)
       );
+
       els.buttons.emergency.addEventListener("click", () => {
         const number = localStorage.getItem(KEYS.emergency);
         window.location.href = `tel:${number}`;
-      });
-
-      /* --- Custom Location --- */
-      let customLocation = "";
-
-      els.location.form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        customLocation = els.location.input.value;
-        els.location.save.disabled = true;
-        els.location.clear.disabled = !els.location.input.value;
-      });
-
-      els.location.clear.addEventListener("click", () => {
-        els.location.input.value = "";
-        els.location.clear.disabled = true;
-      });
-
-      els.location.input.addEventListener("input", () => {
-        els.location.save.disabled =
-          customLocation === els.location.input.value;
-      });
-
-      /* --- Quick report --- */
-      els.buttons.quick.addEventListener("click", async () => {
-        const now = new Date();
-        const cachedName = localStorage.getItem(KEYS.name) || "";
-        const cachedAge = localStorage.getItem(KEYS.age) || "";
-        const e = entries[currentLang];
-        const prefill = {};
-
-        if (cachedName) prefill[e.name] = cachedName;
-        if (cachedAge) prefill[e.age] = cachedAge;
-
-        prefill[e.date] = formatDateISO(now);
-        prefill[e.time] = formatTimeHHMM(now);
-
-        const loc = customLocation || (await getLocation());
-        if (loc) prefill[e.location] = loc;
-
-        els.form.src = buildPrefillUrl(prefill);
       });
 
       // /* --- Offline Detection --- */
       function updateOnlineStatus() {
         els.main.classList.toggle("offline", !navigator.onLine);
         els.offlineBanner.hidden = navigator.onLine;
-        els.quickReportButton.disabled = !navigator.onLine;
+        els.submitButton.disabled = !navigator.onLine;
       }
 
       // Listen for changes
       window.addEventListener("online", updateOnlineStatus);
       window.addEventListener("offline", updateOnlineStatus);
 
-      /* --- Popover focus helper --- */
-      const popovers = document.querySelectorAll(".popover");
+      /* --- Input Type Hack --- */
+      els.formDate.addEventListener("click", () => {
+        if (els.formDate.type !== "date") els.formDate.type = "date";
+      });
 
-      popovers.forEach((popover) => {
-        popover.addEventListener("click", (e) => {
-          const isInput =
-            e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA";
-          if (!isInput) {
-            // Remove focus from any input inside this popover
-            popover
-              .querySelectorAll("input, textarea")
-              .forEach((input) => input.blur());
-          }
+      els.formTime.addEventListener("click", () => {
+        if (els.formTime.type !== "time") els.formTime.type = "time";
+      });
+
+      /* --- Modal --- */
+      const modal = document.getElementById("type-modal");
+      const openBtn = document.getElementById("open-type-picker");
+      const closeBtn = document.getElementById("close-type-picker");
+      const listItems = document.querySelectorAll(".option-list li");
+      const hiddenInputs = document.getElementById("type-hidden-inputs");
+
+      openBtn.addEventListener("click", () => {
+        modal.hidden = false;
+      });
+
+      closeBtn.addEventListener("click", () => {
+        modal.hidden = true;
+        syncHiddenInputs();
+        updateButtonText();
+      });
+
+      listItems.forEach((item) => {
+        item.addEventListener("click", () => {
+          item.classList.toggle("selected");
         });
+      });
+
+      function syncHiddenInputs() {
+        hiddenInputs.innerHTML = "";
+
+        document
+          .querySelectorAll(".option-list li.selected")
+          .forEach((item) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "entry.373709611";
+            input.value = item.dataset.value;
+            hiddenInputs.appendChild(input);
+          });
+      }
+
+      function updateButtonText() {
+        const selected = document.querySelectorAll(".option-list li.selected");
+        openBtn.textContent =
+          selected.length === 0
+            ? "Select incident type(s)"
+            : `${selected.length} selected`;
+      }
+
+      /* --- Submit Form --- */
+      let resumed = false;
+
+      els.form.addEventListener("submit", function (e) {
+        els.form.style.display = "none";
+        els.successMessage.hidden = false;
+        els.anotherReport.hidden = false;
+        if (resumed) return;
+
+        const now = new Date();
+
+        if (!els.formDate.value) {
+          els.formDate.value = now.toISOString().split("T")[0];
+        }
+
+        if (!els.formTime.value) {
+          els.formTime.value = now.toTimeString().slice(0, 5);
+        }
+
+        if (!els.location.value && navigator.geolocation) {
+          e.preventDefault();
+
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              els.location.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+              resumed = true;
+              els.form.submit();
+            },
+            () => {
+              resumed = true;
+              els.form.submit();
+            }
+          );
+        }
+      });
+
+      /* --- Form --- */
+      els.anotherReport.addEventListener("click", () => {
+        els.form.style.display = "initial";
+        els.successMessage.hidden = true;
+        els.anotherReport.hidden = false;
+        resumed = false;
       });
 
       /* --- Init --- */
       loadUser();
-      updateSaveState();
-      updateClearState();
-      updateEmergencyContactButtonState();
+      updateNameState();
+      updateAgeState();
+      updateEmergencyState();
       updateOnlineStatus();
       applyLang(currentLang);
 
