@@ -172,11 +172,10 @@
         text-overflow: ellipsis;
       }
 
-      .button-group {
+      #emergency {
         display: flex;
-        gap: var(--space-2);
-        flex-wrap: wrap;
-        margin-top: var(--space-2);
+        width: 100%;
+        gap: var(--space-1);
       }
 
       #status {
@@ -254,11 +253,7 @@
 
       .inline-controls {
         display: flex;
-        gap: 0.5rem;
-      }
-
-      .inline-controls input {
-        flex: 1;
+        gap: var(--space-2);
       }
 
       select[multiple] {
@@ -333,44 +328,45 @@
 
         <div id="status" role="status" aria-live="polite"></div>
 
-        <!-- Calls + Language Toggle -->
-        <div class="button-group">
-          <div id="emergency" style="display: flex; width: 100%">
+        <div class="card">
+          <label
+            for="user-emergency-contact"
+            data-i18n="emergencyContact"
+          ></label>
+          <div id="emergency">
             <input
               id="user-emergency-contact"
               type="tel"
               pattern="/d{3}-/d{3}-/d{4}"
             />
-            <button id="save-emergency" type="button">Save</button>
-            <button id="clear-emergency" type="button">Clear</button>
+            <button id="save-emergency" type="button" data-i18n="save"></button>
+            <button
+              id="clear-emergency"
+              type="button"
+              data-i18n="clear"
+            ></button>
+            <button
+              id="call-emergency-contact"
+              class="call-button"
+              aria-pressed="false"
+              aria-label="Call Emergency Contact"
+              data-i18n="callEmergencyContact"
+            ></button>
           </div>
-          <button
-            id="call-police"
-            class="call-button"
-            aria-pressed="false"
-            aria-label="Call Police"
-            data-i18n="callPolice"
-          >
-            Police 📞
-          </button>
-          <button
-            id="call-emergency-contact"
-            class="call-button"
-            aria-pressed="false"
-            aria-label="Call Emergency Contact"
-            data-i18n="callEmergencyContact"
-          >
-            Emergency Contact 📞
-          </button>
-          <button
-            id="lang-toggle"
-            aria-pressed="false"
-            aria-label="Toggle language"
-            data-i18n="toggle"
-          >
-            עברית 🇮🇱
-          </button>
         </div>
+        <button
+          id="call-police"
+          class="call-button"
+          aria-pressed="false"
+          aria-label="Call Police"
+          data-i18n="callPolice"
+        ></button>
+        <button
+          id="lang-toggle"
+          aria-pressed="false"
+          aria-label="Toggle language"
+          data-i18n="toggle"
+        ></button>
       </header>
 
       <!--- New Form entries-->
@@ -385,7 +381,7 @@
             <!-- Name -->
             <div class="form-row">
               <label>
-                <span data-i18n="form.name">Name</span>
+                <span data-i18n="name"></span>
                 <div class="inline-controls">
                   <input
                     id="user-name"
@@ -393,8 +389,16 @@
                     name="entry.1563137864"
                     autocomplete="name"
                   />
-                  <button id="save-name" type="button">Save</button>
-                  <button id="clear-name" type="button">Clear</button>
+                  <button
+                    id="save-name"
+                    type="button"
+                    data-i18n="save"
+                  ></button>
+                  <button
+                    id="clear-name"
+                    type="button"
+                    data-i18n="clear"
+                  ></button>
                 </div>
               </label>
             </div>
@@ -402,7 +406,7 @@
             <!-- Age -->
             <div class="form-row">
               <label>
-                <span data-i18n="form.age">Age</span>
+                <span data-i18n="age"></span>
                 <div class="inline-controls">
                   <input
                     id="user-age"
@@ -411,8 +415,12 @@
                     min="0"
                     value="0"
                   />
-                  <button id="save-age" type="button">Save</button>
-                  <button id="clear-age" type="button">Clear</button>
+                  <button id="save-age" type="button" data-i18n="save"></button>
+                  <button
+                    id="clear-age"
+                    type="button"
+                    data-i18n="clear"
+                  ></button>
                 </div>
               </label>
             </div>
@@ -420,11 +428,11 @@
             <!-- Location -->
             <div class="form-row">
               <label>
-                <span id="location" data-i18n="form.location">Location</span>
+                <span id="location" data-i18n="location"></span>
                 <input
                   type="text"
                   name="entry.1771840150"
-                  placeholder="Current Location"
+                  data-i18nplaceholder="currentLocation"
                 />
               </label>
             </div>
@@ -432,12 +440,12 @@
             <!-- Date -->
             <div class="form-row">
               <label>
-                <span data-i18n="form.date">Date</span>
+                <span data-i18n="date"></span>
                 <input
                   id="form-date"
                   type="text"
                   name="entry.123356142"
-                  placeholder="Current Date"
+                  data-i18nplaceholder="currentDate"
                 />
               </label>
             </div>
@@ -445,12 +453,12 @@
             <!-- Time -->
             <div class="form-row">
               <label>
-                <span data-i18n="form.time">Time</span>
+                <span data-i18n="time"></span>
                 <input
                   id="form-time"
                   type="text"
                   name="entry.407216857"
-                  placeholder="Current Time"
+                  data-i18nplaceholder="currentTime"
                 />
               </label>
             </div>
@@ -458,14 +466,13 @@
             <!-- Type (Dropdown) -->
             <div class="form-row">
               <label>
-                <span data-i18n="form.type">Type</span>
+                <span data-i18n="type"></span>
                 <button
                   type="button"
                   id="open-type-picker"
                   class="picker-button"
-                >
-                  Select incident type(s)
-                </button>
+                  data-i18n="select"
+                ></button>
               </label>
 
               <!-- Hidden container for generated inputs -->
@@ -475,23 +482,23 @@
             <!-- Description -->
             <div class="form-row">
               <label>
-                <span data-i18n="form.description">Description</span>
+                <span data-i18n="description"></span>
                 <textarea name="entry.737097719"></textarea>
               </label>
             </div>
 
             <!-- Submit -->
             <div class="form-row">
-              <button id="submit-button" type="submit" data-i18n="form.submit">
-                Submit
-              </button>
+              <button
+                id="submit-button"
+                type="submit"
+                data-i18n="submit"
+              ></button>
             </div>
           </div>
         </form>
 
-        <div id="form-success" hidden data-i18n="form.success">
-          Thank you! Your response has been sent.
-        </div>
+        <div id="form-success" hidden data-i18n="success"></div>
 
         <iframe
           name="hidden_iframe"
@@ -514,17 +521,12 @@
           ></iframe>
         </div>
 
-        <p class="muted" data-i18n="mapHint">
-          Tip: tap the map title to open My Maps in a new tab for full
-          interaction.
-        </p>
+        <p class="muted" data-i18n="mapHint"></p>
       </section>
 
       <section id="about-section" class="card">
-        <h2 data-i18n="about">About</h2>
-        <p data-i18n="desc">
-          This is a website dedicated to keeping kids safe on the streets
-        </p>
+        <h2 data-i18n="about"></h2>
+        <p data-i18n="desc"></p>
       </section>
 
       <noscript class="card">
@@ -533,28 +535,41 @@
 
       <div id="type-modal" class="modal" hidden>
         <div class="modal-sheet">
-          <h3>Select all that apply</h3>
+          <h3 data-i18n="typeModalTitle"></h3>
 
           <ul class="option-list">
-            <li data-value="Disturbing staring">Disturbing staring</li>
-            <li data-value="Following on foot">Following on foot</li>
-            <li data-value="Following in car">Following in car</li>
-            <li data-value="Mocking or pointing">Mocking or pointing</li>
-            <li data-value="Whistling or catcalling">
-              Whistling or catcalling
-            </li>
-            <li data-value="Honking">Honking</li>
-            <li data-value="Yelling">Yelling</li>
-            <li data-value="Unwanted conversation attempt">
-              Unwanted conversation attempt
-            </li>
-            <li data-value="Unwanted pickup attempt">
-              Unwanted pickup attempt
-            </li>
-            <li data-value="Other">Other (describe below)</li>
+            <li
+              data-i18n="disturbingStaring"
+              data-value="disturbingStaring"
+            ></li>
+            <li data-i18n="followingOnFoot" data-value="followingOnFoot"></li>
+            <li data-i18n="followingInCar" data-value="followingInCar"></li>
+            <li
+              data-i18n="mockingOrPointing"
+              data-value="mockingOrPointing"
+            ></li>
+            <li
+              data-i18n="whistlingOrCatcalling"
+              data-value="whistlingOrCatcalling"
+            ></li>
+            <li data-i18n="honking" data-value="honking"></li>
+            <li data-i18n="yelling" data-value="yelling"></li>
+            <li
+              data-i18n="unwantedConversationAttempt"
+              data-value="unwantedConversationAttempt"
+            ></li>
+            <li
+              data-i18n="unwantedPickupAttempt"
+              data-value="unwantedPickupAttempt"
+            ></li>
+            <li data-i18n="other" data-value="other"></li>
           </ul>
 
-          <button type="button" id="close-type-picker">Done</button>
+          <button
+            type="button"
+            id="close-type-picker"
+            data-i18n="done"
+          ></button>
         </div>
       </div>
     </main>
@@ -626,11 +641,18 @@
           toggle: "עברית 🇮🇱",
           userHeading: "Your info",
           hint: "Saved locally on this device",
+          emergencyContact: "Emergency Contact",
           name: "Name",
           age: "Age",
-          emergencyContact: "Emergency Contact",
+          location: "Location",
+          date: "Date",
+          time: "Time",
           save: "Save",
           clear: "Clear",
+          select: "Select incident type(s)",
+          selected: "selected",
+          description: "Description",
+          submit: "Submit",
           prefillHint:
             "The form will be prefilled with your location, cached name & age, and the current date/time.",
           about: "About",
@@ -639,6 +661,18 @@
             "No authentication. Public data only. Do not include personal or sensitive information.",
           mapHint:
             "Tip: tap the map title to open My Maps in a new tab for full interaction.",
+          typeModalTitle: "Select all that apply",
+          disturbingStaring: "Disturbing staring",
+          followingOnFoot: "Following on foot",
+          followingInCar: "Following in car",
+          mockingOrPointing: "Mocking or pointing",
+          whistlingOrCatcalling: "Whistling or catcalling",
+          honking: "Honking",
+          yelling: "Yelling",
+          unwantedConversationAttempt: "Unwanted conversation attempt",
+          unwantedPickupAttempt: "Unwanted pickup attempt",
+          other: "Other (describe below)",
+          done: "Done",
         },
         he: {
           title: "משמר דרום ירושלים",
@@ -649,11 +683,18 @@
           toggle: "English 🇺🇸",
           userHeading: "המידע שלך",
           hint: "נשמר מקומית במכשיר זה",
+          emergencyContact: "איש קשר חירום",
           name: "שם",
           age: "גיל",
-          emergencyContact: "איש קשר חירום",
+          location: "מיקום",
+          date: "תאריך",
+          time: "זמן",
           save: "שמור",
           clear: "מחק",
+          select: "בחרו מתוך האופציות הבאות",
+          selected: "נבחרו",
+          description: "הסבר",
+          submit: "הגשה",
           prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
           about: "אודות",
           desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
@@ -661,6 +702,31 @@
             "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
           mapHint:
             "טיפ: הקישו על כותרת המפה כדי לפתוח את My Maps בכרטיסייה חדשה.",
+          typeModalTitle: "בחר/י את כל האפשרויות המתאימות",
+          disturbingStaring: "בהייה מטרידה",
+          followingOnFoot: "מעקב רגלי",
+          followingInCar: "מעקב ברכב",
+          mockingOrPointing: "לעג או הצבעה",
+          whistlingOrCatcalling: "שריקות או קריאות",
+          honking: "צפירה",
+          yelling: "צעקות",
+          unwantedConversationAttempt: "ניסיון שיחה לא רצוי",
+          unwantedPickupAttempt: "ניסיון התחלה לא רצוי",
+          other: "אחר (פירוט למטה)",
+          done: "סיים",
+        },
+      };
+
+      const placeholders = {
+        en: {
+          currentLocation: "Current Location",
+          currentDate: "Current Date",
+          currentTime: "Current Time",
+        },
+        he: {
+          currentLocation: "מיקום נוכחי",
+          currentDate: "תאריך עדכני",
+          currentTime: "זמן נוכחי",
         },
       };
 
@@ -682,7 +748,14 @@
           if (translations[lang] && translations[lang][key])
             el.textContent = translations[lang][key];
         });
+        document.querySelectorAll("[data-i18nplaceholder]").forEach((el) => {
+          const key = el.dataset.i18nplaceholder;
+          if (placeholders[lang] && placeholders[lang][key])
+            el.placeholder = placeholders[lang][key];
+        });
+
         if (els.map) els.map.src = mapUrls[lang] || mapUrls.en;
+        updateButtonText();
       }
 
       function applyLang(lang) {
@@ -893,10 +966,15 @@
 
       function updateButtonText() {
         const selected = document.querySelectorAll(".option-list li.selected");
-        openBtn.textContent =
-          selected.length === 0
-            ? "Select incident type(s)"
-            : `${selected.length} selected`;
+
+        if (selected.length === 0) {
+          openBtn.textContent = translations[currentLang].select;
+        } else if (selected.length === 1) {
+          openBtn.textContent = selected[0].textContent;
+        } else {
+          openBtn.textContent =
+            translations[currentLang].selected + " " + selected.length;
+        }
       }
 
       /* --- Submit Form --- */
