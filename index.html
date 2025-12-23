@@ -480,7 +480,7 @@
             <div class="form-row">
               <label>
                 <span data-i18n="description"></span>
-                <textarea name="entry.737097719"></textarea>
+                <textarea id="form-desc" name="entry.737097719"></textarea>
               </label>
             </div>
 
@@ -587,6 +587,7 @@
         location: $("location"),
         formDate: $("form-date"),
         formTime: $("form-time"),
+        formDesc: $("form-desc"),
         submitButton: $("submit-button"),
         successMessage: $("form-success"),
         anotherReport: $("another-report"),
@@ -1010,6 +1011,14 @@
         els.form.style.display = "initial";
         els.successMessage.hidden = true;
         els.anotherReport.hidden = false;
+        els.location.value = "";
+        els.formDate.value = "";
+        els.formDate.type = "text";
+        els.formTime.value = "";
+        els.formTime.type = "text";
+        els.listItems.forEach(item => item.classList.remove('selected');
+        els.formDesc.value = "";
+        
         resumed = false;
       });
 
