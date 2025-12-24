@@ -139,11 +139,6 @@
         z-index: 1001;
       }
 
-      .offline iframe {
-        opacity: 0.5;
-        pointer-events: none; /* prevents confusing clicks */
-      }
-
       header {
         display: flex;
         flex-direction: column;
@@ -210,18 +205,6 @@
         padding: var(--space-2);
         border-radius: var(--space-2);
         border: 1px solid var(--color-border);
-      }
-
-      .iframe-wrap {
-        width: 100%;
-        overflow: hidden;
-        border-radius: var(--space-2);
-      }
-
-      iframe {
-        width: 100%;
-        min-height: 20rem;
-        border: 0;
       }
 
       html[dir="rtl"] {
