@@ -28,6 +28,14 @@
       href="https://jonahhess.github.io/jwatch/manifest.json"
     />
 
+    <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-o9N1j7kP5QbX0rF2E1zvKpM8bU7gXkNf+Dn1f2nYkGU="
+    crossorigin=""
+  />
+
     <title>South Jerusalem Watch</title>
 
     <style>
@@ -360,6 +368,14 @@
       .option-list input:focus-visible + span {
         outline: 2px so;
       }
+
+      #map {
+      height: 400px;
+      width: 100%;
+      margin-bottom: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
     </style>
   </head>
 
@@ -573,20 +589,11 @@
       <button id="another-report" data-i18n="submitAnother" hidden></button>
 
       <!-- Map section -->
-      <section class="card" aria-labelledby="map-heading">
-        <div class="iframe-wrap">
-          <iframe
-            id="map-frame"
-            loading="lazy"
-            src="https://www.google.com/maps/d/u/0/embed?mid=1lU5wC1eUf-2G_CqscFUypTQIDBxRxr0&ehbc=2E312F&hl=en&noprof=1"
-            aria-label="Incident map"
-            aria-label="Incident map"
-          ></iframe>
+      <section class="card" id="map-section">
+        <div id="map"></div>
+        <div class="hint" data-i18n="mapHint">
         </div>
-
-        <p class="muted" data-i18n="mapHint"></p>
-      </section>
-
+        </section>
       <section id="about-section" class="card">
         <h2 data-i18n="about"></h2>
         <p data-i18n="desc"></p>
@@ -596,6 +603,7 @@
         <strong>JavaScript required for reporting and language toggle.</strong>
       </noscript>
 
+      <!-- Dialog -->
       <dialog id="type-modal">
         <div class="modal-sheet">
           <h3 data-i18n="typeModalTitle"></h3>
@@ -709,8 +717,11 @@
       </dialog>
     </main>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-      /* --- DOM helpers --- */
+
+ /* --- DOM helpers --- */
       const $ = (id) => document.getElementById(id);
 
       const els = {
@@ -730,7 +741,7 @@
         submitButton: $("submit-button"),
         successMessage: $("form-success"),
         anotherReport: $("another-report"),
-        map: $("map-frame"),
+        map: $("map"),
         buttons: {
           police: $("call-police"),
           emergency: $("call-emergency-contact"),
@@ -751,6 +762,203 @@
         hiddenInputs: $("type-hidden-inputs"),
       };
 
+/*********************************************************
+ * CONFIG
+ *********************************************************/
+
+const MAP_CENTER = [31.758837, 35.200000]; // default map center
+const MAP_ZOOM = 13;
+
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5GK9JffVcBGw4sN4Wda3jKCIdGBibjFMsHHIc1Xsc85sJvAVXson-B7v2L5imp-PdQy623QxA8J_R/pub?output=csv"
+
+/*********************************************************
+ * STATE
+ *********************************************************/
+
+let mapInitialized = false;
+let map;
+let incidentLayer;
+let draftLayer;
+let draftMarker;
+
+/*********************************************************
+ * UTILITIES
+ *********************************************************/
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+function loadCSS(href) {
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = href;
+  document.head.appendChild(l);
+}
+
+function updateLocationInput(lat, lng) {
+  if (!els.location) return;
+  els.location.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+}
+
+/*********************************************************
+ * MAP INITIALIZATION
+ *********************************************************/
+
+async function initMap() {
+  if (mapInitialized) return;
+  mapInitialized = true;
+
+  // Load Leaflet assets
+  loadCSS('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+  await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
+
+  // Create map
+  map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Layers
+  incidentLayer = L.layerGroup().addTo(map);
+  draftLayer = L.layerGroup().addTo(map);
+
+  // Load incidents
+  loadIncidents();
+
+  // Enable draft marker placement
+  enableDraftMarker();
+
+  // Fix size if container was hidden
+  setTimeout(() => map.invalidateSize(), 0);
+}
+
+/*********************************************************
+ * DATA LOADING (READ SIDE)
+ *********************************************************/
+
+function loadIncidents() {
+  if (!SHEET_URL) return;
+
+  fetch(SHEET_URL)
+    .then(res => res.text())
+    .then(csv => {
+      parseCSV(csv).forEach(addIncidentMarker);
+    })
+    .catch(err => console.error('Incident load failed:', err));
+}
+
+function parseCSV(csv) {
+  const lines = csv.trim().split('\n');
+  const headers = lines.shift().split(',');
+
+  return lines.map(line => {
+    const values = line.split(',');
+    const obj = {};
+    headers.forEach((h, i) => {
+      obj[h.trim()] = values[i]?.trim();
+    });
+    return obj;
+  });
+}
+
+function addIncidentMarker(row) {
+  if (!row.location) return;
+
+  const [lat, lng] = row.location.split(',').map(Number);
+  if (isNaN(lat) || isNaN(lng)) return;
+
+  const popup = `
+    <strong>${row.incident_type || 'Incident'}</strong><br>
+    ${row.description || ''}
+  `;
+
+  L.marker([lat, lng])
+    .bindPopup(popup)
+    .addTo(incidentLayer);
+}
+
+/*********************************************************
+ * DRAFT MARKER (WRITE SIDE)
+ *********************************************************/
+
+function enableDraftMarker() {
+  map.on('click', (e) => {
+    const { lat, lng } = e.latlng;
+
+    draftLayer.clearLayers();
+
+    draftMarker = L.marker([lat, lng], {
+      draggable: true,
+      opacity: 0.85
+    }).addTo(draftLayer);
+
+    updateLocationInput(lat, lng);
+
+    draftMarker.on('dragend', (ev) => {
+      const pos = ev.target.getLatLng();
+      updateLocationInput(pos.lat, pos.lng);
+    });
+  });
+}
+
+/*********************************************************
+ * LAZY LOAD TRIGGER
+ *********************************************************/
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!els.map) return;
+
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      initMap();
+      observer.disconnect();
+    }
+  }, { rootMargin: '200px' });
+
+  observer.observe(els.map);
+});
+
+function looksLikeCoordinates(value) {
+  return /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(value);
+}
+
+async function geocodeLocationText(text) {
+  const url =
+    "https://nominatim.openstreetmap.org/search?" +
+    new URLSearchParams({
+      q: text,
+      format: "json",
+      limit: 1
+    });
+
+  const res = await fetch(url, {
+    headers: {
+      Accept: "application/json"
+    }
+  });
+
+  if (!res.ok) return null;
+
+  const results = await res.json();
+  if (!results.length) return null;
+
+  const lat = Number(results[0].lat);
+  const lng = Number(results[0].lon);
+
+  if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+
+  return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+}
+     
+     
       /* --- Constants --- */
       const GOOGLE_FORM_BASE =
         "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true";
@@ -802,7 +1010,7 @@
           privacy:
             "No authentication. Public data only. Do not include personal or sensitive information.",
           mapHint:
-            "Tip: tap the map title to open My Maps in a new tab for full interaction.",
+            "Click on the map to drop a pin. The location field will be set to it automatically.",
           typeModalTitle: "Select all that apply",
           disturbingStaring: "Disturbing staring",
           followingOnFoot: "Following on foot",
@@ -843,7 +1051,7 @@
           privacy:
             "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
           mapHint:
-            "טיפ: הקישו על כותרת המפה כדי לפתוח את My Maps בכרטיסייה חדשה.",
+            "לחיצה על המפה יעדכן את שדה המיקום בטופס למעלה",
           typeModalTitle: "בחר/י את כל האפשרויות המתאימות",
           disturbingStaring: "בהייה מטרידה",
           followingOnFoot: "מעקב רגלי",
@@ -1143,8 +1351,17 @@
         els.formDate.value ||= now.toISOString().split("T")[0];
         els.formTime.value ||= now.toTimeString().slice(0, 5);
 
-        // Fill location if empty
-        els.location.value ||= await getLocation();
+        // Fill location or convert text → coordinates
+        if (!els.location.value) {
+          els.location.value = await getLocation();
+        } else if (!looksLikeCoordinates(els.location.value)) {
+          const coords = await geocodeLocationText(els.location.value);
+          if (!coords) {
+            alert("Could not resolve location. Please be more specific.");
+            return;
+          }
+          els.location.value = coords;
+        }
 
         finalizeSubmit();
       });
