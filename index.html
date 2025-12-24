@@ -40,7 +40,7 @@
         --space-5: 2rem;
 
         /* Typography */
-        --font-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        --font-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
           Roboto, Helvetica, Arial, sans-serif;
 
         --text-base: 1rem;
@@ -59,7 +59,7 @@
       *::before,
       *::after {
         box-sizing: border-box;
-          -webkit-tap-highlight-color: transparent;
+        -webkit-tap-highlight-color: transparent;
       }
 
       html {
@@ -166,7 +166,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-             -webkit-tap-highlight-color: initial;
+        -webkit-tap-highlight-color: initial;
       }
 
       #emergency {
@@ -207,7 +207,7 @@
         border: 1px solid var(--color-border);
       }
 
-      html[dir="rtl"] {
+      html[dir='rtl'] {
         direction: rtl;
       }
 
@@ -251,38 +251,37 @@
         font-size: 1rem;
       }
 
-  dialog {
-  position: fixed;
-  inset: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
+      dialog {
+        position: fixed;
+        inset: 0;
+        margin: 0;
+        padding: 0;
+        border: none;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-  background: transparent;
-  z-index: 1000;
-}
+        background: transparent;
+        z-index: 1000;
+      }
 
-/* Native dialog backdrop */
-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.4);
-}
+      /* Native dialog backdrop */
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.4);
+      }
 
-.modal-sheet {
-  width: min(90vw, 480px);
-  max-height: 80vh;
+      .modal-sheet {
+        width: min(90vw, 480px);
+        max-height: 80vh;
 
-  background: #fff;
-  border-radius: 12px;
-  padding: 1rem;
+        background: #fff;
+        border-radius: 12px;
+        padding: 1rem;
 
-  overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      }
 
       /* Reset list appearance */
       .option-list {
@@ -313,7 +312,7 @@ dialog::backdrop {
       }
 
       /* Hide native checkbox but keep it accessible */
-      .option-list input[type="checkbox"] {
+      .option-list input[type='checkbox'] {
         position: absolute;
         opacity: 0;
         pointer-events: none;
@@ -330,7 +329,7 @@ dialog::backdrop {
       }
 
       .option-list input:checked + span::before {
-        content: "✓";
+        content: '✓';
         display: inline-block;
         margin-inline-end: 0.5rem;
       }
@@ -341,21 +340,20 @@ dialog::backdrop {
       }
 
       #map {
-      height: 400px;
-      width: 100%;
-      margin-bottom: 0.75rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    
-    #user-emergency-contact:disabled {
-opacity: 0.6;
-  color: #cccccc;
-    }
-    #submit-button {
-    color: black;
-    }
-    
+        height: 400px;
+        width: 100%;
+        margin-bottom: 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      #user-emergency-contact:disabled {
+        opacity: 0.6;
+        color: #cccccc;
+      }
+      #submit-button {
+        color: black;
+      }
     </style>
   </head>
 
@@ -571,9 +569,8 @@ opacity: 0.6;
       <!-- Map section -->
       <section class="card" id="map-section">
         <div id="map"></div>
-        <div class="hint" data-i18n="mapHint">
-        </div>
-        </section>
+        <div class="hint" data-i18n="mapHint"></div>
+      </section>
       <section id="about-section" class="card">
         <h2 data-i18n="about"></h2>
         <p data-i18n="desc"></p>
@@ -698,180 +695,190 @@ opacity: 0.6;
     </main>
 
     <!-- Leaflet JS -->
-     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
 
-     <script>
- /* --- DOM helpers --- */
-      const $ = (id) => document.getElementById(id);
+    <script>
+      /* --- DOM helpers --- */
+      const $ = id => document.getElementById(id);
 
       const els = {
         html: document.documentElement,
-        main: $("main"),
-        offlineBanner: $("offline-banner"),
-        status: $("status"),
-        userToggle: $("user-info-toggle"),
-        userContent: $("user-info-content"),
-        langToggle: $("lang-toggle"),
-        formSection: $("form-section"),
-        form: $("google-form"),
-        location: $("location"),
-        formDate: $("form-date"),
-        formTime: $("form-time"),
-        formDesc: $("form-desc"),
-        submitButton: $("submit-button"),
-        successMessage: $("form-success"),
-        anotherReport: $("another-report"),
-        map: $("map"),
+        main: $('main'),
+        offlineBanner: $('offline-banner'),
+        status: $('status'),
+        userToggle: $('user-info-toggle'),
+        userContent: $('user-info-content'),
+        langToggle: $('lang-toggle'),
+        formSection: $('form-section'),
+        form: $('google-form'),
+        location: $('location'),
+        formDate: $('form-date'),
+        formTime: $('form-time'),
+        formDesc: $('form-desc'),
+        submitButton: $('submit-button'),
+        successMessage: $('form-success'),
+        anotherReport: $('another-report'),
+        map: $('map'),
         buttons: {
-          police: $("call-police"),
-          emergency: $("call-emergency-contact"),
+          police: $('call-police'),
+          emergency: $('call-emergency-contact')
         },
-        name: $("user-name"),
-        age: $("user-age"),
-        saveName: $("save-name"),
-        clearName: $("clear-name"),
-        saveAge: $("save-age"),
-        clearAge: $("clear-age"),
-        emergency: $("user-emergency-contact"),
-        saveEmergency: $("save-emergency"),
-        clearEmergency: $("clear-emergency"),
-        modal: $("type-modal"),
-        openBtn: $("open-type-picker"),
-        closeBtn: $("close-type-picker"),
-        listItems: document.querySelectorAll(".option-list li"),
-        hiddenInputs: $("type-hidden-inputs"),
+        name: $('user-name'),
+        age: $('user-age'),
+        saveName: $('save-name'),
+        clearName: $('clear-name'),
+        saveAge: $('save-age'),
+        clearAge: $('clear-age'),
+        emergency: $('user-emergency-contact'),
+        saveEmergency: $('save-emergency'),
+        clearEmergency: $('clear-emergency'),
+        modal: $('type-modal'),
+        openBtn: $('open-type-picker'),
+        closeBtn: $('close-type-picker'),
+        listItems: document.querySelectorAll('.option-list li'),
+        hiddenInputs: $('type-hidden-inputs')
       };
 
-/*********************************************************
- * CONFIG
- *********************************************************/
+      /*********************************************************
+       * CONFIG
+       *********************************************************/
 
-const MAP_CENTER = [31.758837, 35.200000]; // default map center
-const MAP_ZOOM = 13;
+      const MAP_CENTER = [31.758837, 35.2]; // default map center
+      const MAP_ZOOM = 13;
 
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5GK9JffVcBGw4sN4Wda3jKCIdGBibjFMsHHIc1Xsc85sJvAVXson-B7v2L5imp-PdQy623QxA8J_R/pub?output=csv"
+      const SHEET_URL =
+        'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5GK9JffVcBGw4sN4Wda3jKCIdGBibjFMsHHIc1Xsc85sJvAVXson-B7v2L5imp-PdQy623QxA8J_R/pub?output=csv';
 
-/*********************************************************
- * STATE
- *********************************************************/
+      /*********************************************************
+       * STATE
+       *********************************************************/
 
-let mapInitialized = false;
-let map;
-let incidentLayer;
-let draftLayer;
-let draftMarker;
+      let mapInitialized = false;
+      let map;
+      let incidentLayer;
+      let draftLayer;
+      let draftMarker;
 
-/*********************************************************
- * UTILITIES
- *********************************************************/
+      /*********************************************************
+       * UTILITIES
+       *********************************************************/
 
-function loadScript(src) {
-  return new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.onload = resolve;
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = src;
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
 
-function loadCSS(href) {
-  const l = document.createElement('link');
-  l.rel = 'stylesheet';
-  l.href = href;
-  document.head.appendChild(l);
-}
+      function loadCSS(href) {
+        const l = document.createElement('link');
+        l.rel = 'stylesheet';
+        l.href = href;
+        document.head.appendChild(l);
+      }
 
-function updateLocationInput(lat, lng) {
-  if (!els.location) return;
-  els.location.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-}
+      function updateLocationInput(lat, lng) {
+        if (!els.location) return;
+        els.location.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      }
 
-/*********************************************************
- * MAP INITIALIZATION
- *********************************************************/
+      /*********************************************************
+       * MAP INITIALIZATION
+       *********************************************************/
 
-async function initMap() {
-  if (mapInitialized) return;
-  mapInitialized = true;
+      async function initMap() {
+        if (mapInitialized) return;
+        mapInitialized = true;
 
-  // Load Leaflet assets
-  loadCSS('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
-  await Promise.all([loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'), loadScript("https://unpkg.com/papaparse@5.4.1/papaparse.min.js")]);
+        // Load Leaflet assets
+        loadCSS('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+        await Promise.all([
+          loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'),
+          loadScript('https://unpkg.com/papaparse@5.4.1/papaparse.min.js')
+        ]);
 
-  // Create map
-  map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
+        // Create map
+        map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-  // Layers
-  incidentLayer = L.layerGroup().addTo(map);
-  draftLayer = L.layerGroup().addTo(map);
+        // Layers
+        incidentLayer = L.layerGroup().addTo(map);
+        draftLayer = L.layerGroup().addTo(map);
 
-  // Load incidents
-  loadIncidents();
+        // Load incidents
+        loadIncidents();
 
-  // Enable draft marker placement
-  enableDraftMarker();
+        // Enable draft marker placement
+        enableDraftMarker();
 
-  // Fix size if container was hidden
-  setTimeout(() => map.invalidateSize(), 0);
-}
+        // Fix size if container was hidden
+        setTimeout(() => map.invalidateSize(), 0);
+      }
 
-/*********************************************************
- * DATA LOADING (READ SIDE)
- *********************************************************/
+      /*********************************************************
+       * DATA LOADING (READ SIDE)
+       *********************************************************/
 
-function normalizeRow(raw) {
-  return {
-    timestamp: raw["Timestamp"],
-    name: raw["Your name (optional)"],
-    age: raw["Age"],
-    location: raw["Location of incident (address and/or coordinates) "],
-    date: raw["Date of incident (YYYY-MM-DD)"],
-    time: raw["Time of incident (HH:MM (24h))"],
-    incident_type: raw["Type of incident "],
-    description: raw["Description of incident and/or individuals"]
-  };
-}
+      function normalizeRow(raw) {
+        return {
+          timestamp: raw['Timestamp'],
+          name: raw['Your name (optional)'],
+          age: raw['Age'],
+          location: raw['Location of incident (address and/or coordinates) '],
+          date: raw['Date of incident (YYYY-MM-DD)'],
+          time: raw['Time of incident (HH:MM (24h))'],
+          incident_type: raw['Type of incident '],
+          description: raw['Description of incident and/or individuals']
+        };
+      }
 
-function escapeHTML(str) {
-  return String(str).replace(/[&<>"']/g, c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[c]));
-}
+      function escapeHTML(str) {
+        return String(str).replace(
+          /[&<>"']/g,
+          c =>
+            ({
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              '"': '&quot;',
+              "'": '&#39;'
+            }[c])
+        );
+      }
 
- function parseCSV(csvText) {
-  const result = Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true
-  });
-  return result.data;
-}
+      function parseCSV(csvText) {
+        const result = Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true
+        });
+        return result.data;
+      }
 
-function buildIncidentPopup(row) {
-  const fields = [
-    ["Type", row.incident_type],
-    ["Description", row.description],
-    ["Date", row.date],
-    ["Time", row.time],
-    ["Location", row.location],
-    ["Age", row.age],
-    ["Reported by", row.name],
-    ["Submitted", row.timestamp]
-  ];
+      function buildIncidentPopup(row) {
+        const fields = [
+          ['Type', row.incident_type],
+          ['Description', row.description],
+          ['Date', row.date],
+          ['Time', row.time],
+          ['Location', row.location],
+          ['Age', row.age],
+          ['Reported by', row.name],
+          ['Submitted', row.timestamp]
+        ];
 
-  return `
+        return `
     <div class="popup">
-      <strong>${row.incident_type || "Incident"}</strong>
+      <strong>${row.incident_type || 'Incident'}</strong>
       <table>
         ${fields
           .filter(([, value]) => value)
@@ -883,220 +890,219 @@ function buildIncidentPopup(row) {
               </tr>
             `
           )
-          .join("")}
+          .join('')}
       </table>
     </div>
   `;
-}
+      }
 
-function loadIncidents() {
-  if (!SHEET_URL) return;
+      function loadIncidents() {
+        if (!SHEET_URL) return;
 
-  fetch(SHEET_URL)
-    .then(res => res.text())
-    .then(csv => {
-      parseCSV(csv).forEach(row => addIncidentMarker(normalizeRow(row)));
-    })
-    .catch(err => console.error('Incident load failed:', err));
-}
+        fetch(SHEET_URL)
+          .then(res => res.text())
+          .then(csv => {
+            parseCSV(csv).forEach(row => addIncidentMarker(normalizeRow(row)));
+          })
+          .catch(err => console.error('Incident load failed:', err));
+      }
 
-function addIncidentMarker(row) {
-  if (!row.location) return;
+      function addIncidentMarker(row) {
+        if (!row.location) return;
 
-  const [lat, lng] = row.location.split(',').map(Number);
-  if (isNaN(lat) || isNaN(lng)) return;
+        const [lat, lng] = row.location.split(',').map(Number);
+        if (isNaN(lat) || isNaN(lng)) return;
 
-  const popup = buildIncidentPopup(row);
+        const popup = buildIncidentPopup(row);
 
-  L.marker([lat, lng])
-    .bindPopup(popup)
-    .addTo(incidentLayer);
-}
+        L.marker([lat, lng]).bindPopup(popup).addTo(incidentLayer);
+      }
 
-/*********************************************************
- * DRAFT MARKER (WRITE SIDE)
- *********************************************************/
+      /*********************************************************
+       * DRAFT MARKER (WRITE SIDE)
+       *********************************************************/
 
-function enableDraftMarker() {
-  map.on('click', (e) => {
-    const { lat, lng } = e.latlng;
+      function enableDraftMarker() {
+        map.on('click', e => {
+          const { lat, lng } = e.latlng;
 
-    draftLayer.clearLayers();
+          draftLayer.clearLayers();
 
-    draftMarker = L.marker([lat, lng], {
-      draggable: true,
-      opacity: 0.85
-    }).addTo(draftLayer);
+          draftMarker = L.marker([lat, lng], {
+            draggable: true,
+            opacity: 0.85
+          }).addTo(draftLayer);
 
-    updateLocationInput(lat, lng);
+          updateLocationInput(lat, lng);
 
-    draftMarker.on('dragend', (ev) => {
-      const pos = ev.target.getLatLng();
-      updateLocationInput(pos.lat, pos.lng);
-    });
-  });
-}
+          draftMarker.on('dragend', ev => {
+            const pos = ev.target.getLatLng();
+            updateLocationInput(pos.lat, pos.lng);
+          });
+        });
+      }
 
-/*********************************************************
- * LAZY LOAD TRIGGER
- *********************************************************/
+      /*********************************************************
+       * LAZY LOAD TRIGGER
+       *********************************************************/
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (!els.map) return;
+      document.addEventListener('DOMContentLoaded', () => {
+        if (!els.map) return;
 
-  const observer = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      initMap();
-      observer.disconnect();
-    }
-  }, { rootMargin: '200px' });
+        const observer = new IntersectionObserver(
+          entries => {
+            if (entries[0].isIntersecting) {
+              initMap();
+              observer.disconnect();
+            }
+          },
+          { rootMargin: '200px' }
+        );
 
-  observer.observe(els.map);
-});
+        observer.observe(els.map);
+      });
 
-function looksLikeCoordinates(value) {
-  return /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(value);
-}
+      function looksLikeCoordinates(value) {
+        return /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(value);
+      }
 
-async function geocodeLocationText(text) {
-  const url =
-    "https://nominatim.openstreetmap.org/search?" +
-    new URLSearchParams({
-      q: text,
-      format: "json",
-      limit: 1
-    });
+      async function geocodeLocationText(text) {
+        const url =
+          'https://nominatim.openstreetmap.org/search?' +
+          new URLSearchParams({
+            q: text,
+            format: 'json',
+            limit: 1
+          });
 
-  const res = await fetch(url, {
-    headers: {
-      Accept: "application/json"
-    }
-  });
+        const res = await fetch(url, {
+          headers: {
+            Accept: 'application/json'
+          }
+        });
 
-  if (!res.ok) return null;
+        if (!res.ok) return null;
 
-  const results = await res.json();
-  if (!results.length) return null;
+        const results = await res.json();
+        if (!results.length) return null;
 
-  const lat = Number(results[0].lat);
-  const lng = Number(results[0].lon);
+        const lat = Number(results[0].lat);
+        const lng = Number(results[0].lon);
 
-  if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+        if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
 
-  return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-}
-     
-     
+        return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      }
+
       /* --- Constants --- */
       const GOOGLE_FORM_BASE =
-        "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true";
-const POLICE_NUMBER = "100";
+        'https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true';
+      const POLICE_NUMBER = '100';
 
       const KEYS = {
-        name: "sjw-user-name",
-        age: "sjw-user-age",
-        emergency: "sjw-user-emergency-contact",
+        name: 'sjw-user-name',
+        age: 'sjw-user-age',
+        emergency: 'sjw-user-emergency-contact'
       };
 
       /* --- Translations --- */
       const translations = {
         en: {
-          title: "South JLM Watch",
-          meta: "A simple community safety reporting demo (south Jerusalem)",
+          title: 'South JLM Watch',
+          meta: 'A simple community safety reporting demo (south Jerusalem)',
           offline:
-            "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
-          callPolice: "Police 📞",
-          toggle: "עברית 🇮🇱",
-          userHeading: "Your info",
-          hint: "Saved locally on this device",
-          emergencyContact: "Emergency Contact",
-          name: "Name",
-          age: "Age",
-          location: "Location",
-          date: "Date",
-          time: "Time",
-          save: "Save",
-          clear: "Clear",
-          select: "Select incident type(s)",
-          selected: "selected",
-          description: "Description",
-          submit: "Submit",
-          submitAnother: "Submit another report",
+            '⚠️ Offline mode: Reporting and map viewing require an internet connection.',
+          callPolice: 'Police 📞',
+          toggle: 'עברית 🇮🇱',
+          userHeading: 'Your info',
+          hint: 'Saved locally on this device',
+          emergencyContact: 'Emergency Contact',
+          name: 'Name',
+          age: 'Age',
+          location: 'Location',
+          date: 'Date',
+          time: 'Time',
+          save: 'Save',
+          clear: 'Clear',
+          select: 'Select incident type(s)',
+          selected: 'selected',
+          description: 'Description',
+          submit: 'Submit',
+          submitAnother: 'Submit another report',
           prefillHint:
-            "The form will be prefilled with your location, cached name & age, and the current date/time.",
-          about: "About",
-          desc: "This is a website dedicated to keeping kids safe on the streets.",
+            'The form will be prefilled with your location, cached name & age, and the current date/time.',
+          about: 'About',
+          desc: 'This is a website dedicated to keeping kids safe on the streets.',
           privacy:
-            "No authentication. Public data only. Do not include personal or sensitive information.",
+            'No authentication. Public data only. Do not include personal or sensitive information.',
           mapHint:
-            "Click on the map to drop a pin. The location field will be set to it automatically.",
-          typeModalTitle: "Select all that apply",
-          disturbingStaring: "Disturbing staring",
-          followingOnFoot: "Following on foot",
-          followingInCar: "Following in car",
-          mockingOrPointing: "Mocking or pointing",
-          whistlingOrCatcalling: "Whistling or catcalling",
-          honking: "Honking",
-          yelling: "Yelling",
-          unwantedConversationAttempt: "Unwanted conversation attempt",
-          unwantedPickupAttempt: "Unwanted pickup attempt",
-          other: "Other (describe below)",
-          done: "Done",
+            'Click on the map to drop a pin. The location field will be set to it automatically.',
+          typeModalTitle: 'Select all that apply',
+          disturbingStaring: 'Disturbing staring',
+          followingOnFoot: 'Following on foot',
+          followingInCar: 'Following in car',
+          mockingOrPointing: 'Mocking or pointing',
+          whistlingOrCatcalling: 'Whistling or catcalling',
+          honking: 'Honking',
+          yelling: 'Yelling',
+          unwantedConversationAttempt: 'Unwanted conversation attempt',
+          unwantedPickupAttempt: 'Unwanted pickup attempt',
+          other: 'Other (describe below)',
+          done: 'Done'
         },
         he: {
-          title: "משמר דרום ירושלים",
-          meta: "גרסת הדגמה לדיווח קהילתי (דרום ירושלים)",
-          offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
-          callPolice: " למשטרה 📞",
-          toggle: "English 🇺🇸",
-          userHeading: "המידע שלך",
-          hint: "נשמר מקומית במכשיר זה",
-          emergencyContact: "איש קשר חירום",
-          name: "שם",
-          age: "גיל",
-          location: "מיקום",
-          date: "תאריך",
-          time: "זמן",
-          save: "שמור",
-          clear: "מחק",
-          select: "בחרו מתוך האופציות הבאות",
-          selected: "נבחרו",
-          description: "הסבר",
-          submit: "הגשת תלונה",
-          submitAnother: "להגיש עוד תלונה",
-          prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
-          about: "אודות",
-          desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
+          title: 'משמר דרום ירושלים',
+          meta: 'גרסת הדגמה לדיווח קהילתי (דרום ירושלים)',
+          offline: '⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.',
+          callPolice: ' למשטרה 📞',
+          toggle: 'English 🇺🇸',
+          userHeading: 'המידע שלך',
+          hint: 'נשמר מקומית במכשיר זה',
+          emergencyContact: 'איש קשר חירום',
+          name: 'שם',
+          age: 'גיל',
+          location: 'מיקום',
+          date: 'תאריך',
+          time: 'זמן',
+          save: 'שמור',
+          clear: 'מחק',
+          select: 'בחרו מתוך האופציות הבאות',
+          selected: 'נבחרו',
+          description: 'הסבר',
+          submit: 'הגשת תלונה',
+          submitAnother: 'להגיש עוד תלונה',
+          prefillHint: 'הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.',
+          about: 'אודות',
+          desc: 'זה אתר שמוקדש לשמירה על ילדינו ברחוב.',
           privacy:
-            "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
-          mapHint:
-            "לחיצה על המפה יעדכן את שדה המיקום בטופס למעלה",
-          typeModalTitle: "בחר/י את כל האפשרויות המתאימות",
-          disturbingStaring: "בהייה מטרידה",
-          followingOnFoot: "מעקב רגלי",
-          followingInCar: "מעקב ברכב",
-          mockingOrPointing: "לעג או הצבעה",
-          whistlingOrCatcalling: "שריקות או קריאות",
-          honking: "צפירה",
-          yelling: "צעקות",
-          unwantedConversationAttempt: "ניסיון שיחה לא רצוי",
-          unwantedPickupAttempt: "ניסיון התחלה לא רצוי",
-          other: "אחר (פירוט למטה)",
-          done: "סיים",
-        },
+            'ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.',
+          mapHint: 'לחיצה על המפה יעדכן את שדה המיקום בטופס למעלה',
+          typeModalTitle: 'בחר/י את כל האפשרויות המתאימות',
+          disturbingStaring: 'בהייה מטרידה',
+          followingOnFoot: 'מעקב רגלי',
+          followingInCar: 'מעקב ברכב',
+          mockingOrPointing: 'לעג או הצבעה',
+          whistlingOrCatcalling: 'שריקות או קריאות',
+          honking: 'צפירה',
+          yelling: 'צעקות',
+          unwantedConversationAttempt: 'ניסיון שיחה לא רצוי',
+          unwantedPickupAttempt: 'ניסיון התחלה לא רצוי',
+          other: 'אחר (פירוט למטה)',
+          done: 'סיים'
+        }
       };
 
       const placeholders = {
         en: {
-          currentLocation: "Current Location",
-          currentDate: "Current Date",
-          currentTime: "Current Time",
+          currentLocation: 'Current Location',
+          currentDate: 'Current Date',
+          currentTime: 'Current Time'
         },
         he: {
-          currentLocation: "מיקום נוכחי",
-          currentDate: "תאריך עדכני",
-          currentTime: "זמן נוכחי",
-        },
+          currentLocation: 'מיקום נוכחי',
+          currentDate: 'תאריך עדכני',
+          currentTime: 'זמן נוכחי'
+        }
       };
 
       /* --- Status --- */
@@ -1105,41 +1111,40 @@ const POLICE_NUMBER = "100";
         els.status.textContent = text;
         clearTimeout(showStatus._t);
         if (ms > 0)
-          showStatus._t = setTimeout(() => (els.status.textContent = ""), ms);
+          showStatus._t = setTimeout(() => (els.status.textContent = ''), ms);
       }
 
       /* --- Language --- */
-      let currentLang = localStorage.getItem("sjw-lang") || "he";
+      let currentLang = localStorage.getItem('sjw-lang') || 'he';
       function updateText(lang) {
-        document.querySelectorAll("[data-i18n]").forEach((el) => {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
           const key = el.dataset.i18n;
           if (translations[lang] && translations[lang][key])
             el.textContent = translations[lang][key];
         });
-        document.querySelectorAll("[data-i18nplaceholder]").forEach((el) => {
+        document.querySelectorAll('[data-i18nplaceholder]').forEach(el => {
           const key = el.dataset.i18nplaceholder;
           if (placeholders[lang] && placeholders[lang][key])
             el.placeholder = placeholders[lang][key];
         });
 
-        if (els.map) els.map.src = mapUrls[lang] || mapUrls.en;
         updateButtonText();
       }
 
       function applyLang(lang) {
         currentLang = lang;
         els.html.lang = lang;
-        els.html.dir = lang === "he" ? "rtl" : "ltr";
-        localStorage.setItem("sjw-lang", lang);
+        els.html.dir = lang === 'he' ? 'rtl' : 'ltr';
+        localStorage.setItem('sjw-lang', lang);
         updateText(lang);
-        els.langToggle.setAttribute("aria-pressed", lang === "he");
+        els.langToggle.setAttribute('aria-pressed', lang === 'he');
       }
 
-      els.langToggle.addEventListener("click", () =>
-        applyLang(currentLang === "en" ? "he" : "en")
+      els.langToggle.addEventListener('click', () =>
+        applyLang(currentLang === 'en' ? 'he' : 'en')
       );
-      els.langToggle.addEventListener("keydown", (e) => {
-        if (["Enter", " "].includes(e.key)) {
+      els.langToggle.addEventListener('keydown', e => {
+        if (['Enter', ' '].includes(e.key)) {
           e.preventDefault();
           e.target.click();
         }
@@ -1147,14 +1152,14 @@ const POLICE_NUMBER = "100";
 
       /* --- User cache --- */
       function loadUser() {
-        els.name.value = localStorage.getItem(KEYS.name) || "";
-        els.age.value = localStorage.getItem(KEYS.age) || "";
-        els.emergency.value = localStorage.getItem(KEYS.emergency) || "";
+        els.name.value = localStorage.getItem(KEYS.name) || '';
+        els.age.value = localStorage.getItem(KEYS.age) || '';
+        els.emergency.value = localStorage.getItem(KEYS.emergency) || '';
       }
 
       function saveName() {
         const val = els.name.value.trim();
-        const stored = localStorage.getItem(KEYS.name) || "";
+        const stored = localStorage.getItem(KEYS.name) || '';
 
         if (val === stored) return;
 
@@ -1162,7 +1167,7 @@ const POLICE_NUMBER = "100";
           ? localStorage.setItem(KEYS.name, val)
           : localStorage.removeItem(KEYS.name);
 
-        showStatus(currentLang === "en" ? "Name saved" : "השם נשמר", 2000);
+        showStatus(currentLang === 'en' ? 'Name saved' : 'השם נשמר', 2000);
         updateNameState();
       }
 
@@ -1170,15 +1175,15 @@ const POLICE_NUMBER = "100";
         if (localStorage.getItem(KEYS.name) === null) return;
 
         localStorage.removeItem(KEYS.name);
-        els.name.value = "";
+        els.name.value = '';
 
-        showStatus(currentLang === "en" ? "Name cleared" : "השם נמחק", 2000);
+        showStatus(currentLang === 'en' ? 'Name cleared' : 'השם נמחק', 2000);
         updateNameState();
       }
 
       function saveAge() {
         const val = els.age.value.trim();
-        const stored = localStorage.getItem(KEYS.age) || "";
+        const stored = localStorage.getItem(KEYS.age) || '';
 
         if (val === stored) return;
 
@@ -1186,7 +1191,7 @@ const POLICE_NUMBER = "100";
           ? localStorage.setItem(KEYS.age, val)
           : localStorage.removeItem(KEYS.age);
 
-        showStatus(currentLang === "en" ? "Age saved" : "גיל נשמר", 2000);
+        showStatus(currentLang === 'en' ? 'Age saved' : 'גיל נשמר', 2000);
         updateAgeState();
       }
 
@@ -1194,40 +1199,40 @@ const POLICE_NUMBER = "100";
         if (localStorage.getItem(KEYS.age) === null) return;
 
         localStorage.removeItem(KEYS.age);
-        els.age.value = "";
+        els.age.value = '';
 
-        showStatus(currentLang === "en" ? "Age cleared" : "גיל נמחק", 2000);
+        showStatus(currentLang === 'en' ? 'Age cleared' : 'גיל נמחק', 2000);
         updateAgeState();
       }
 
       function updateNameState() {
         const val = els.name.value.trim();
-        const stored = localStorage.getItem(KEYS.name) || "";
+        const stored = localStorage.getItem(KEYS.name) || '';
 
         els.saveName.disabled = val === stored;
-        els.clearName.disabled = stored === "";
+        els.clearName.disabled = stored === '';
       }
 
       function updateAgeState() {
         const val = els.age.value.trim();
-        const stored = localStorage.getItem(KEYS.age) || "";
+        const stored = localStorage.getItem(KEYS.age) || '';
 
         els.saveAge.disabled = val === stored;
-        els.clearAge.disabled = stored === "";
+        els.clearAge.disabled = stored === '';
       }
 
-      els.saveName.addEventListener("click", saveName);
-      els.clearName.addEventListener("click", clearName);
+      els.saveName.addEventListener('click', saveName);
+      els.clearName.addEventListener('click', clearName);
 
-      els.saveAge.addEventListener("click", saveAge);
-      els.clearAge.addEventListener("click", clearAge);
+      els.saveAge.addEventListener('click', saveAge);
+      els.clearAge.addEventListener('click', clearAge);
 
-      els.name.addEventListener("input", updateNameState);
-      els.age.addEventListener("input", updateAgeState);
+      els.name.addEventListener('input', updateNameState);
+      els.age.addEventListener('input', updateAgeState);
 
       function saveEmergency() {
         const val = els.emergency.value.trim();
-        const stored = localStorage.getItem(KEYS.emergency) || "";
+        const stored = localStorage.getItem(KEYS.emergency) || '';
 
         if (val === stored) return;
 
@@ -1235,7 +1240,12 @@ const POLICE_NUMBER = "100";
           ? localStorage.setItem(KEYS.emergency, val)
           : localStorage.removeItem(KEYS.emergency);
 
-        showStatus(currentLang === "en" ? "Emergency contact saved" : "איש קשר חירום נשמר", 2000);
+        showStatus(
+          currentLang === 'en'
+            ? 'Emergency contact saved'
+            : 'איש קשר חירום נשמר',
+          2000
+        );
         updateEmergencyState();
       }
 
@@ -1243,78 +1253,83 @@ const POLICE_NUMBER = "100";
         if (localStorage.getItem(KEYS.emergency) === null) return;
 
         localStorage.removeItem(KEYS.emergency);
-        els.emergency.value = "";
+        els.emergency.value = '';
 
-        showStatus(currentLang === "en" ? "Emergency contact cleared" : "איש קשר חירום נמחק", 2000);
+        showStatus(
+          currentLang === 'en'
+            ? 'Emergency contact cleared'
+            : 'איש קשר חירום נמחק',
+          2000
+        );
         updateEmergencyState();
       }
 
       function updateEmergencyState() {
         const val = els.emergency.value.trim();
-        const stored = localStorage.getItem(KEYS.emergency) || "";
+        const stored = localStorage.getItem(KEYS.emergency) || '';
 
         els.saveEmergency.disabled = val === stored;
-        els.clearEmergency.disabled = stored === "";
+        els.clearEmergency.disabled = stored === '';
         els.buttons.emergency.disabled = !stored;
       }
 
-      els.saveEmergency.addEventListener("click", saveEmergency);
-      els.clearEmergency.addEventListener("click", clearEmergency);
-      els.emergency.addEventListener("input", updateEmergencyState);
+      els.saveEmergency.addEventListener('click', saveEmergency);
+      els.clearEmergency.addEventListener('click', clearEmergency);
+      els.emergency.addEventListener('input', updateEmergencyState);
 
       /* --- Call buttons --- */
       els.buttons.police.addEventListener(
-        "click",
+        'click',
         () => (window.location.href = `tel:${POLICE_NUMBER}`)
       );
 
-      els.buttons.emergency.addEventListener("click", () => {
+      els.buttons.emergency.addEventListener('click', () => {
         const number = localStorage.getItem(KEYS.emergency);
         window.location.href = `tel:${number}`;
       });
 
       // /* --- Offline Detection --- */
       function updateOnlineStatus() {
-        els.main.classList.toggle("offline", !navigator.onLine);
+        els.main.classList.toggle('offline', !navigator.onLine);
         els.offlineBanner.hidden = navigator.onLine;
         els.submitButton.disabled = !navigator.onLine;
       }
 
-      window.addEventListener("online", updateOnlineStatus);
-      window.addEventListener("offline", updateOnlineStatus);
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
 
       /* --- Input Type Hack --- */
-      els.formDate.addEventListener("click", () => {
-        if (els.formDate.type !== "date") els.formDate.type = "date";
+      els.formDate.addEventListener('click', () => {
+        if (els.formDate.type !== 'date') els.formDate.type = 'date';
       });
 
-      els.formTime.addEventListener("click", () => {
-        if (els.formTime.type !== "time") els.formTime.type = "time";
+      els.formTime.addEventListener('click', () => {
+        if (els.formTime.type !== 'time') els.formTime.type = 'time';
       });
 
       /* --- Modal --- */
 
       let lastFocusedElement = null;
 
-      els.openBtn.addEventListener("click", () => {
+      els.openBtn.addEventListener('click', () => {
         lastFocusedElement = document.activeElement;
         els.modal.showModal();
       });
 
-      els.modal.addEventListener("close", () => {
+      els.modal.addEventListener('close', () => {
         if (lastFocusedElement) {
           lastFocusedElement.focus();
         }
         updateButtonText();
       });
 
-      els.modal.addEventListener("click", (e) => {
+      els.modal.addEventListener('click', e => {
         if (e.target === els.modal) {
           els.modal.close();
         }
       });
 
-      els.closeBtn.addEventListener("click", () => {
+      els.closeBtn.addEventListener('click', () => {
         els.modal.close();
       });
 
@@ -1329,7 +1344,7 @@ const POLICE_NUMBER = "100";
           els.openBtn.textContent = checked[0].nextElementSibling.textContent;
         } else {
           els.openBtn.textContent =
-            translations[currentLang].selected + " " + checked.length;
+            translations[currentLang].selected + ' ' + checked.length;
         }
       }
 
@@ -1337,37 +1352,37 @@ const POLICE_NUMBER = "100";
 
       // Helper to get geolocation as a promise
       const getLocation = () =>
-        new Promise((resolve) => {
-          if (!navigator.geolocation) return resolve("unknown");
+        new Promise(resolve => {
+          if (!navigator.geolocation) return resolve('unknown');
 
           navigator.geolocation.getCurrentPosition(
-            (pos) => resolve(`${pos.coords.latitude}, ${pos.coords.longitude}`),
-            (err) => {
-              console.warn("Geolocation error:", err);
-              resolve("unknown");
+            pos => resolve(`${pos.coords.latitude}, ${pos.coords.longitude}`),
+            err => {
+              console.warn('Geolocation error:', err);
+              resolve('unknown');
             },
             {
               enableHighAccuracy: true, // try for more precise location
               timeout: 5000, // wait up to 5 seconds
-              maximumAge: 0, // don't use cached location
+              maximumAge: 0 // don't use cached location
             }
           );
         });
 
       function finalizeSubmit() {
         els.form.submit();
-        els.formSection.style.display = "none";
+        els.formSection.style.display = 'none';
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
       }
 
-      els.form.addEventListener("submit", async (e) => {
+      els.form.addEventListener('submit', async e => {
         e.preventDefault();
 
         const now = new Date();
 
         // Fill date and time if empty
-        els.formDate.value ||= now.toISOString().split("T")[0];
+        els.formDate.value ||= now.toISOString().split('T')[0];
         els.formTime.value ||= now.toTimeString().slice(0, 5);
 
         // Fill location or convert text → coordinates
@@ -1376,7 +1391,7 @@ const POLICE_NUMBER = "100";
         } else if (!looksLikeCoordinates(els.location.value)) {
           const coords = await geocodeLocationText(els.location.value);
           if (!coords) {
-            alert("Could not resolve location. Please be more specific.");
+            alert('Could not resolve location. Please be more specific.');
             return;
           }
           els.location.value = coords;
@@ -1390,23 +1405,23 @@ const POLICE_NUMBER = "100";
           'input[name="entry.373709611"]'
         );
 
-        checkboxes.forEach((cb) => {
+        checkboxes.forEach(cb => {
           cb.checked = false;
         });
 
         updateButtonText();
       }
 
-      els.anotherReport.addEventListener("click", () => {
-        els.formSection.style.display = "block";
+      els.anotherReport.addEventListener('click', () => {
+        els.formSection.style.display = 'block';
         els.successMessage.hidden = true;
         els.anotherReport.hidden = true;
-        els.location.value = "";
-        els.formDate.value = "";
-        els.formDate.type = "text";
-        els.formTime.value = "";
-        els.formTime.type = "text";
-        els.formDesc.value = "";
+        els.location.value = '';
+        els.formDate.value = '';
+        els.formDate.type = 'text';
+        els.formTime.value = '';
+        els.formTime.type = 'text';
+        els.formDesc.value = '';
 
         resumed = false;
       });
@@ -1420,12 +1435,12 @@ const POLICE_NUMBER = "100";
       applyLang(currentLang);
 
       /* --- Service Worker --- */
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
           navigator.serviceWorker
-            .register("/jwatch/sw.js", { scope: "/jwatch/" })
-            .then((reg) => console.log("SW registered:", reg.scope))
-            .catch((err) => console.warn("SW register failed:", err));
+            .register('/jwatch/sw.js', { scope: '/jwatch/' })
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.warn('SW register failed:', err));
         });
       }
     </script>
