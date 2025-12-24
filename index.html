@@ -811,7 +811,7 @@ async function initMap() {
 
   // Load Leaflet assets
   loadCSS('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
-  await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
+  await Promise.all([loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'), loadScript("https://unpkg.com/papaparse@5.4.1/papaparse.min.js")]);
 
   // Create map
   map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
@@ -838,29 +838,78 @@ async function initMap() {
  * DATA LOADING (READ SIDE)
  *********************************************************/
 
+function normalizeRow(raw) {
+  return {
+    timestamp: raw["Timestamp"],
+    name: raw["Your name (optional)"],
+    age: raw["Age"],
+    location: raw["Location of incident (address and/or coordinates) "],
+    date: raw["Date of incident (YYYY-MM-DD)"],
+    time: raw["Time of incident (HH:MM (24h))"],
+    incident_type: raw["Type of incident "],
+    description: raw["Description of incident and/or individuals"]
+  };
+}
+
+function escapeHTML(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[c]));
+}
+
+ function parseCSV(csvText) {
+  const result = Papa.parse(csvText, {
+    header: true,
+    skipEmptyLines: true
+  });
+  return result.data;
+}
+
+function buildIncidentPopup(row) {
+  const fields = [
+    ["Type", row.incident_type],
+    ["Description", row.description],
+    ["Date", row.date],
+    ["Time", row.time],
+    ["Location", row.location],
+    ["Age", row.age],
+    ["Reported by", row.name],
+    ["Submitted", row.timestamp]
+  ];
+
+  return `
+    <div class="popup">
+      <strong>${row.incident_type || "Incident"}</strong>
+      <table>
+        ${fields
+          .filter(([, value]) => value)
+          .map(
+            ([label, value]) => `
+              <tr>
+                <td><strong>${label}</strong></td>
+                <td>${escapeHTML(value)}</td>
+              </tr>
+            `
+          )
+          .join("")}
+      </table>
+    </div>
+  `;
+}
+
 function loadIncidents() {
   if (!SHEET_URL) return;
 
   fetch(SHEET_URL)
     .then(res => res.text())
     .then(csv => {
-      parseCSV(csv).forEach(addIncidentMarker);
+      parseCSV(csv).forEach(row => addIncidentMarker(normalizeRow(row)));
     })
     .catch(err => console.error('Incident load failed:', err));
-}
-
-function parseCSV(csv) {
-  const lines = csv.trim().split('\n');
-  const headers = lines.shift().split(',');
-
-  return lines.map(line => {
-    const values = line.split(',');
-    const obj = {};
-    headers.forEach((h, i) => {
-      obj[h.trim()] = values[i]?.trim();
-    });
-    return obj;
-  });
 }
 
 function addIncidentMarker(row) {
@@ -869,10 +918,7 @@ function addIncidentMarker(row) {
   const [lat, lng] = row.location.split(',').map(Number);
   if (isNaN(lat) || isNaN(lng)) return;
 
-  const popup = `
-    <strong>${row.incident_type || 'Incident'}</strong><br>
-    ${row.description || ''}
-  `;
+  const popup = buildIncidentPopup(row);
 
   L.marker([lat, lng])
     .bindPopup(popup)
