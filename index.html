@@ -251,36 +251,28 @@
         font-size: 1rem;
       }
 
+      /* Hide when closed */
+      dialog:not([open]) {
+        display: none;
+      }
+
+      /* Let the browser control positioning */
       dialog {
-        position: fixed;
-        inset: 0;
-        margin: 0;
-        padding: 0;
         border: none;
+        padding: 1rem;
+        border-radius: 12px;
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        background: transparent;
-        z-index: 1000;
-      }
-
-      /* Native dialog backdrop */
-      dialog::backdrop {
-        background: rgba(0, 0, 0, 0.4);
-      }
-
-      .modal-sheet {
         width: min(90vw, 480px);
         max-height: 80vh;
 
-        background: #fff;
-        border-radius: 12px;
-        padding: 1rem;
-
         overflow-y: auto;
+        overflow-x: hidden;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Backdrop */
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.4);
       }
 
       /* Reset list appearance */
@@ -1025,7 +1017,7 @@
           save: 'Save',
           clear: 'Clear',
           select: 'Select incident type(s)',
-          selected: 'selected',
+          selected: 'Selected',
           description: 'Description',
           submit: 'Submit',
           submitAnother: 'Submit another report',
