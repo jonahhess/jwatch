@@ -223,10 +223,13 @@
         width: 100%;
         font-size: var(--text-base);
       }
-      
-      input[type="date"], input[type="time"] {
-                width: calc(100% - 16px);
-                }
+
+      @supports (-webkit-touch-callout: none) {
+        input[type='date'],
+        input[type='time'] {
+          width: calc(100% - 16px);
+        }
+      }
 
       textarea {
         border-color: lightgrey;
@@ -334,9 +337,9 @@
         border-radius: 6px;
         border: 1px solid #ccc;
       }
-      
+
       #submit {
-      color: var(--color-text)
+        color: var(--color-text);
       }
     </style>
   </head>
@@ -520,11 +523,7 @@
 
             <!-- Submit -->
             <div class="form-row">
-              <button
-                id="submit"
-                type="submit"
-                data-i18n="submit"
-              ></button>
+              <button id="submit" type="submit" data-i18n="submit"></button>
             </div>
           </div>
         </form>
@@ -1272,15 +1271,15 @@
       els.formDate.addEventListener('click', () => {
         if (els.formDate.type !== 'date') {
           els.formDate.type = 'date';
-          els.formDate.focus();
-          }
+          els.formDate.click();
+        }
       });
 
       els.formTime.addEventListener('click', () => {
         if (els.formTime.type !== 'time') {
           els.formTime.type = 'time';
-          els.formTime.focus();
-          }
+          els.formTime.click();
+        }
       });
 
       /* --- Modal --- */
