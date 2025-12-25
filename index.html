@@ -1270,11 +1270,17 @@
 
       /* --- Input Type Hack --- */
       els.formDate.addEventListener('click', () => {
-        if (els.formDate.type !== 'date') els.formDate.type = 'date';
+        if (els.formDate.type !== 'date') {
+          els.formDate.type = 'date';
+          els.formDate.focus();
+          }
       });
 
       els.formTime.addEventListener('click', () => {
-        if (els.formTime.type !== 'time') els.formTime.type = 'time';
+        if (els.formTime.type !== 'time') {
+          els.formTime.type = 'time';
+          els.formTime.focus();
+          }
       });
 
       /* --- Modal --- */
