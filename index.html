@@ -81,7 +81,7 @@
         -webkit-text-size-adjust: 100%;
       }
 
-      .title-meta {
+      #title-meta {
         display: grid;
         grid-template-columns: auto 1fr;
         grid-template-rows: auto auto;
@@ -104,7 +104,7 @@
       }
 
       /* Title */
-      .title-meta h1 {
+      #title {
         grid-column: 2;
         grid-row: 1;
 
@@ -113,8 +113,7 @@
         line-height: 1.2;
       }
 
-      /* Meta text below title */
-      .title-meta .meta {
+      #meta {
         grid-column: 2;
         grid-row: 2;
         font-size: var(--text-small);
@@ -125,12 +124,12 @@
         margin: var(--space-2);
       }
 
-      .container {
+      main {
         padding-left: var(--space-3);
         padding-right: var(--space-3);
       }
 
-      .offline-banner {
+      #offline-banner {
         background-color: #fffbcc;
         color: var(--color-muted);
         padding: var(--space-2) var(--space-3);
@@ -330,30 +329,24 @@
   </head>
 
   <body>
-    <main class="container" id="main">
-      <div
-        id="offline-banner"
-        class="offline-banner"
-        hidden
-        data-i18n="offline"
-      ></div>
+    <main>
+      <div id="offline-banner" hidden data-i18n="offline"></div>
 
       <header>
-        <div class="title-meta">
+        <div id="title-meta">
           <div id="logo-container">
             <img src="favicon.ico" alt="South Jerusalem Watch Logo" />
           </div>
-          <h1 data-i18n="title"></h1>
-          <div class="meta" data-i18n="meta"></div>
+          <h1 id="title" data-i18n="title"></h1>
+          <div id="meta" data-i18n="meta"></div>
         </div>
 
         <div id="status" role="status" aria-live="polite"></div>
 
         <!-- Button Section -->
-        <section class="card inline-controls" id="button-section">
+        <section class="card inline-controls">
           <button
             id="call-police"
-            class="call-button"
             aria-pressed="false"
             aria-label="Call Police"
             data-i18n="callPolice"
@@ -385,7 +378,6 @@
             ></button>
             <button
               id="call-emergency-contact"
-              class="call-button"
               aria-pressed="false"
               aria-label="Call Emergency Contact"
             >
@@ -398,7 +390,7 @@
       <!--- Form entries-->
       <section class="card" id="form-section">
         <form
-          id="google-form"
+          id="form"
           action="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/formResponse"
           method="POST"
           target="hidden_iframe"
@@ -502,7 +494,7 @@
               </label>
 
               <!-- Hidden container for generated inputs -->
-              <div id="type-hidden-inputs"></div>
+              <input id="type-hidden-inputs" name="entry.373709611" hidden />
             </div>
 
             <!-- Description -->
@@ -531,16 +523,17 @@
           id="hidden_iframe"
           style="display: none"
         ></iframe>
+        <button id="another-report" data-i18n="submitAnother" hidden></button>
       </section>
-
-      <button id="another-report" data-i18n="submitAnother" hidden></button>
 
       <!-- Map section -->
       <section class="card" id="map-section">
         <div id="map"></div>
         <div id="hint" data-i18n="mapHint"></div>
       </section>
-      <section id="about-section" class="card">
+
+      <!-- About Section -->
+      <section class="card">
         <h2 data-i18n="about"></h2>
         <p data-i18n="desc"></p>
       </section>
@@ -560,7 +553,7 @@
                 <input
                   type="checkbox"
                   name="entry.373709611"
-                  value="disturbingStaring"
+                  value="Disturbing staring"
                 />
                 <span data-i18n="disturbingStaring"></span>
               </label>
@@ -571,7 +564,7 @@
                 <input
                   type="checkbox"
                   name="entry.373709611"
-                  value="followingOnFoot"
+                  value="Following on foot"
                 />
                 <span data-i18n="followingOnFoot"></span>
               </label>
@@ -582,7 +575,7 @@
                 <input
                   type="checkbox"
                   name="entry.373709611"
-                  value="followingInCar"
+                  value="Following in car"
                 />
                 <span data-i18n="followingInCar"></span>
               </label>
@@ -593,7 +586,7 @@
                 <input
                   type="checkbox"
                   name="entry.373709611"
-                  value="mockingOrPointing"
+                  value="Mocking or pointing"
                 />
                 <span data-i18n="mockingOrPointing"></span>
               </label>
@@ -604,7 +597,7 @@
                 <input
                   type="checkbox"
                   name="entry.373709611"
-                  value="whistlingOrCatcalling"
+                  value="Whistling or catcalling"
                 />
                 <span data-i18n="whistlingOrCatcalling"></span>
               </label>
@@ -612,14 +605,14 @@
 
             <li>
               <label>
-                <input type="checkbox" name="entry.373709611" value="honking" />
+                <input type="checkbox" name="entry.373709611" value="Honking" />
                 <span data-i18n="honking"></span>
               </label>
             </li>
 
             <li>
               <label>
-                <input type="checkbox" name="entry.373709611" value="yelling" />
+                <input type="checkbox" name="entry.373709611" value="Yelling" />
                 <span data-i18n="yelling"></span>
               </label>
             </li>
@@ -629,7 +622,7 @@
                 <input
                   type="checkbox"
                   name="entry.373709611"
-                  value="unwantedConversationAttempt"
+                  value="Unwanted conversation attempt"
                 />
                 <span data-i18n="unwantedConversationAttempt"></span>
               </label>
@@ -640,7 +633,7 @@
                 <input
                   type="checkbox"
                   name="entry.373709611"
-                  value="unwantedPickupAttempt"
+                  value="Unwanted pickup attempt"
                 />
                 <span data-i18n="unwantedPickupAttempt"></span>
               </label>
@@ -648,7 +641,7 @@
 
             <li>
               <label>
-                <input type="checkbox" name="entry.373709611" value="other" />
+                <input type="checkbox" name="entry.373709611" value="Other" />
                 <span data-i18n="other"></span>
               </label>
             </li>
@@ -676,14 +669,10 @@
 
       const els = {
         html: document.documentElement,
-        main: $('main'),
         offlineBanner: $('offline-banner'),
         status: $('status'),
-        userToggle: $('user-info-toggle'),
-        userContent: $('user-info-content'),
         langToggle: $('lang-toggle'),
-        formSection: $('form-section'),
-        form: $('google-form'),
+        form: $('form'),
         location: $('location'),
         formDate: $('form-date'),
         formTime: $('form-time'),
@@ -696,19 +685,18 @@
           police: $('call-police'),
           emergency: $('call-emergency-contact')
         },
+        emergency: $('user-emergency-contact'),
+        saveEmergency: $('save-emergency'),
+        clearEmergency: $('clear-emergency'),
         name: $('user-name'),
         age: $('user-age'),
         saveName: $('save-name'),
         clearName: $('clear-name'),
         saveAge: $('save-age'),
         clearAge: $('clear-age'),
-        emergency: $('user-emergency-contact'),
-        saveEmergency: $('save-emergency'),
-        clearEmergency: $('clear-emergency'),
         modal: $('type-modal'),
         openBtn: $('open-type-picker'),
         closeBtn: $('close-type-picker'),
-        listItems: document.querySelectorAll('.option-list li'),
         hiddenInputs: $('type-hidden-inputs')
       };
 
@@ -850,7 +838,6 @@
       <strong>${row.incident_type || 'Incident'}</strong>
       <table>
         ${fields
-          .filter(([, value]) => value)
           .map(
             ([label, value]) => `
               <tr>
@@ -1261,7 +1248,6 @@
 
       // /* --- Offline Detection --- */
       function updateOnlineStatus() {
-        els.main.classList.toggle('offline', !navigator.onLine);
         els.offlineBanner.hidden = navigator.onLine;
         els.submitButton.disabled = !navigator.onLine;
       }
@@ -1321,7 +1307,6 @@
 
       /* --- Submit Form --- */
 
-      // Helper to get geolocation as a promise
       const getLocation = () =>
         new Promise(resolve => {
           if (!navigator.geolocation) return resolve('unknown');
@@ -1340,11 +1325,26 @@
           );
         });
 
+      function resetIncidentTypes() {
+        const checkboxes = document.querySelectorAll(
+          'input[name="entry.373709611"]'
+        );
+
+        checkboxes.forEach(cb => {
+          cb.checked = false;
+        });
+
+        updateButtonText();
+      }
+
       function finalizeSubmit() {
         els.form.submit();
-        els.formSection.style.display = 'none';
+        els.form.style.display = 'none';
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
+        resetIncidentTypes();
+        loadIncidents();
+        enableDraftMarker();
       }
 
       els.form.addEventListener('submit', async e => {
@@ -1368,23 +1368,20 @@
           els.location.value = coords;
         }
 
+        // add incidents to form
+        const checked = document.querySelectorAll(
+          'input[name="entry.373709611"]:checked'
+        );
+
+        // todo: fill in input
+        els.hiddenInputs.value = Array.from(checked)
+          .map(option => option.value)
+          .join(', ');
         finalizeSubmit();
       });
 
-      function resetIncidentTypes() {
-        const checkboxes = document.querySelectorAll(
-          'input[name="entry.373709611"]'
-        );
-
-        checkboxes.forEach(cb => {
-          cb.checked = false;
-        });
-
-        updateButtonText();
-      }
-
       els.anotherReport.addEventListener('click', () => {
-        els.formSection.style.display = 'block';
+        els.form.style.display = 'block';
         els.successMessage.hidden = true;
         els.anotherReport.hidden = true;
         els.location.value = '';
