@@ -1275,21 +1275,6 @@
       window.addEventListener('online', updateOnlineStatus);
       window.addEventListener('offline', updateOnlineStatus);
 
-      /* --- Input Type Hack --- */
-      els.formDate.addEventListener('click', () => {
-        if (els.formDate.type !== 'date') {
-          els.formDate.type = 'date';
-          els.formDate.click();
-        }
-      });
-
-      els.formTime.addEventListener('click', () => {
-        if (els.formTime.type !== 'time') {
-          els.formTime.type = 'time';
-          els.formTime.click();
-        }
-      });
-
       /* --- Modal --- */
 
       let lastFocusedElement = null;
