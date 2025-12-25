@@ -351,20 +351,14 @@
       #submit-button {
         color: black;
       }
-      
-      input[type="date"],
-input[type="time"],
-input[type="datetime-local"] {
-  webkit-appearance: none;
-}
 
-/* Specific pseudo-element fix for finer control over the internal text part */
-input::-webkit-datetime-edit {
-  line-height: 1;
-  padding: 0;
-  /* Optional: adjust margin if a slight difference persists */
-  /* margin-bottom: -2px; */
-}
+      /* Specific pseudo-element fix for finer control over the internal text part */
+      input::-webkit-datetime-edit {
+        line-height: 1;
+        padding: 0;
+        /* Optional: adjust margin if a slight difference persists */
+        /* margin-bottom: -2px; */
+      }
     </style>
   </head>
 
@@ -1035,7 +1029,7 @@ input::-webkit-datetime-edit {
           time: 'Time',
           save: 'Save',
           clear: 'Clear',
-          type: "Incident Type",
+          type: 'Incident Type',
           select: 'Select incident type(s)',
           selected: 'Selected',
           description: 'Description',
@@ -1078,7 +1072,7 @@ input::-webkit-datetime-edit {
           time: 'זמן',
           save: 'שמור',
           clear: 'מחק',
-          type: "סוג תקרית",
+          type: 'סוג תקרית',
           select: 'בחרו מתוך האופציות הבאות',
           selected: 'נבחרו',
           description: 'הסבר',
