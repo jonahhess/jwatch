@@ -836,6 +836,8 @@
       function setReadMode() {
         currentMode = MapMode.READ;
 
+        map.off("click", onDraftClick);
+
         draftLayer.clearLayers();
         draftMarker = null;
 
@@ -863,6 +865,7 @@
         const { lat, lng } = e.latlng;
 
         draftLayer.clearLayers();
+        draftMarker = null;
 
         draftMarker = L.marker([lat, lng], {
           draggable: true,
