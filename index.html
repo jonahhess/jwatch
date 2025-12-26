@@ -42,7 +42,7 @@
         --space: 0.75rem;
 
         /* Typography */
-        --font-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        --font-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
           Roboto, Helvetica, Arial, sans-serif;
 
         --text-base: 1rem;
@@ -193,7 +193,7 @@
         border: 1px solid var(--color-border);
       }
 
-      html[dir='rtl'] {
+      html[dir="rtl"] {
         direction: rtl;
       }
 
@@ -233,8 +233,8 @@
         button {
           -webkit-tap-highlight-color: initial;
         }
-        input[type='date'],
-        input[type='time'] {
+        input[type="date"],
+        input[type="time"] {
           width: calc(100% - 16px);
         }
       }
@@ -261,6 +261,7 @@
       }
 
       #open-type-picker {
+        color: var(--color-text);
         width: var(100% - 16px);
       }
 
@@ -313,7 +314,7 @@
         transition: background 0.2s, border-color 0.2s;
       }
 
-      .option-list input[type='checkbox'] {
+      .option-list input[type="checkbox"] {
         position: absolute;
         opacity: 0;
         pointer-events: none;
@@ -328,7 +329,7 @@
       }
 
       .option-list input:checked + span::before {
-        content: '✓';
+        content: "✓";
         display: inline-block;
         margin-inline-end: var(--space-2);
       }
@@ -337,15 +338,67 @@
         outline: 2px so;
       }
 
+      /* ===============================
+   Base container for the map
+   =============================== */
+      .map-section {
+        width: 100%; /* full width of parent */
+        height: 400px; /* reserve space for CLS */
+        min-height: 400px; /* don't get too small on mobile */
+        max-height: 600px; /* optional max */
+        position: relative; /* for positioning popover inside */
+        border: 1px solid #ccc;
+        background: #f0f0f0; /* placeholder while map loads */
+      }
+
+      /* ===============================
+   Base READ mode — normal map
+   =============================== */
       #map {
-        height: 400px;
-        margin-bottom: var(--space);
+        display: block;
+        width: 100%;
+        max-width: 100vw;
+        height: 400px; /* fill parent container */
+        margin-bottom: var(--space, 16px);
         border-radius: 6px;
         border: 1px solid #ccc;
+
+        /* reset transform/position in read mode */
+        position: static;
+        top: auto;
+        left: auto;
+        transform: none;
+      }
+
+      /* ===============================
+   WRITE mode — centered popover
+   =============================== */
+      #map.popover-open {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        width: 90vw;
+        max-width: 600px;
+        height: 70vh;
+        max-height: 450px;
+
+        border-radius: 12px;
+        z-index: 9999;
+        opacity: 0;
+
+        /* Smooth transition */
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      /* Animate to fully visible */
+      #map.popover-open.open {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
       }
 
       #submit {
-        background-color: #80ccff;
+        color: var(--color-text);
       }
     </style>
   </head>
@@ -469,12 +522,24 @@
             <div class="form-row">
               <label>
                 <span data-i18n="location"></span>
-                <input
-                  id="location"
-                  type="text"
-                  name="entry.1771840150"
-                  data-i18nplaceholder="currentLocation"
-                />
+                <div class="inline-controls">
+                  <input
+                    id="location"
+                    type="text"
+                    name="entry.1771840150"
+                    data-i18nplaceholder="currentLocation"
+                  />
+                  <button
+                    id="pick-location"
+                    type="button"
+                    popovertarget="map"
+                    popovertargetaction="toggle"
+                    style="max-width: fit-content"
+                    aria-label="Pick location on map"
+                  >
+                    📍
+                  </button>
+                </div>
               </label>
             </div>
 
@@ -550,7 +615,7 @@
 
       <!-- Map section -->
       <section class="card" id="map-section">
-        <div id="map"></div>
+        <div id="map" popover="auto"></div>
         <div id="hint" data-i18n="mapHint"></div>
       </section>
 
@@ -687,40 +752,50 @@
 
     <script>
       /* --- DOM helpers --- */
-      const $ = id => document.getElementById(id);
+      const $ = (id) => document.getElementById(id);
 
       const els = {
         html: document.documentElement,
-        offlineBanner: $('offline-banner'),
-        status: $('status'),
-        langToggle: $('lang-toggle'),
-        form: $('form'),
-        location: $('location'),
-        formDate: $('form-date'),
-        formTime: $('form-time'),
-        formDesc: $('form-desc'),
-        submitButton: $('submit'),
-        successMessage: $('form-success'),
-        anotherReport: $('another-report'),
-        map: $('map'),
+        offlineBanner: $("offline-banner"),
+        status: $("status"),
+        langToggle: $("lang-toggle"),
+        form: $("form"),
+        location: $("location"),
+        pickBtn: $("pick-location"),
+        formDate: $("form-date"),
+        formTime: $("form-time"),
+        formDesc: $("form-desc"),
+        submitButton: $("submit"),
+        successMessage: $("form-success"),
+        anotherReport: $("another-report"),
+        mapSection: $("map-section"),
+        map: $("map"),
         buttons: {
-          police: $('call-police'),
-          emergency: $('call-emergency-contact')
+          police: $("call-police"),
+          emergency: $("call-emergency-contact"),
         },
-        emergency: $('user-emergency-contact'),
-        saveEmergency: $('save-emergency'),
-        clearEmergency: $('clear-emergency'),
-        name: $('user-name'),
-        age: $('user-age'),
-        saveName: $('save-name'),
-        clearName: $('clear-name'),
-        saveAge: $('save-age'),
-        clearAge: $('clear-age'),
-        modal: $('type-modal'),
-        openBtn: $('open-type-picker'),
-        closeBtn: $('close-type-picker'),
-        hiddenInputs: $('type-hidden-inputs')
+        emergency: $("user-emergency-contact"),
+        saveEmergency: $("save-emergency"),
+        clearEmergency: $("clear-emergency"),
+        name: $("user-name"),
+        age: $("user-age"),
+        saveName: $("save-name"),
+        clearName: $("clear-name"),
+        saveAge: $("save-age"),
+        clearAge: $("clear-age"),
+        modal: $("type-modal"),
+        openBtn: $("open-type-picker"),
+        closeBtn: $("close-type-picker"),
+        hiddenInputs: $("type-hidden-inputs"),
       };
+
+      /* Map Logic */
+      const MapMode = {
+        READ: "read",
+        WRITE: "write",
+      };
+
+      let currentMode = MapMode.READ;
 
       /*********************************************************
        * CONFIG
@@ -730,7 +805,7 @@
       const MAP_ZOOM = 13;
 
       const SHEET_URL =
-        'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5GK9JffVcBGw4sN4Wda3jKCIdGBibjFMsHHIc1Xsc85sJvAVXson-B7v2L5imp-PdQy623QxA8J_R/pub?output=csv';
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5GK9JffVcBGw4sN4Wda3jKCIdGBibjFMsHHIc1Xsc85sJvAVXson-B7v2L5imp-PdQy623QxA8J_R/pub?output=csv";
 
       /*********************************************************
        * STATE
@@ -748,7 +823,7 @@
 
       function loadScript(src) {
         return new Promise((resolve, reject) => {
-          const s = document.createElement('script');
+          const s = document.createElement("script");
           s.src = src;
           s.onload = resolve;
           s.onerror = reject;
@@ -757,8 +832,8 @@
       }
 
       function loadCSS(href) {
-        const l = document.createElement('link');
-        l.rel = 'stylesheet';
+        const l = document.createElement("link");
+        l.rel = "stylesheet";
         l.href = href;
         document.head.appendChild(l);
       }
@@ -772,22 +847,69 @@
        * MAP INITIALIZATION
        *********************************************************/
 
+      function setReadMode() {
+        currentMode = MapMode.READ;
+
+        map.off("click", onDraftClick);
+
+        draftLayer.clearLayers();
+        draftMarker = null;
+
+        map.dragging.enable();
+        map.scrollWheelZoom.enable();
+
+        // Ensure Leaflet knows container is visible
+        requestAnimationFrame(() => map.invalidateSize());
+      }
+
+      function setWriteMode() {
+        currentMode = MapMode.WRITE;
+
+        draftLayer.clearLayers();
+        draftMarker = null;
+
+        map.dragging.enable();
+        map.scrollWheelZoom.enable();
+
+        requestAnimationFrame(() => map.invalidateSize());
+        map.on("click", onDraftClick);
+      }
+
+      function onDraftClick(e) {
+        const { lat, lng } = e.latlng;
+
+        draftLayer.clearLayers();
+        draftMarker = null;
+
+        draftMarker = L.marker([lat, lng], {
+          draggable: true,
+          opacity: 0.85,
+        }).addTo(draftLayer);
+
+        updateLocationInput(lat, lng);
+
+        draftMarker.on("dragend", (ev) => {
+          const pos = ev.target.getLatLng();
+          updateLocationInput(pos.lat, pos.lng);
+        });
+      }
+
       async function initMap() {
         if (mapInitialized) return;
         mapInitialized = true;
 
         // Load Leaflet assets
-        loadCSS('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+        loadCSS("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
         await Promise.all([
-          loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'),
-          loadScript('https://unpkg.com/papaparse@5.4.1/papaparse.min.js')
+          loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"),
+          loadScript("https://unpkg.com/papaparse@5.4.1/papaparse.min.js"),
         ]);
 
         // Create map
-        map = L.map('map').setView(MAP_CENTER, MAP_ZOOM);
+        map = L.map("map").setView(MAP_CENTER, MAP_ZOOM);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap contributors",
         }).addTo(map);
 
         // Layers
@@ -797,11 +919,7 @@
         // Load incidents
         loadIncidents();
 
-        // Enable draft marker placement
-        enableDraftMarker();
-
-        // Fix size if container was hidden
-        setTimeout(() => map.invalidateSize(), 0);
+        setReadMode();
       }
 
       /*********************************************************
@@ -810,27 +928,27 @@
 
       function normalizeRow(raw) {
         return {
-          timestamp: raw['Timestamp'],
-          name: raw['Your name (optional)'],
-          age: raw['Age'],
-          location: raw['Location of incident (address and/or coordinates) '],
-          date: raw['Date of incident (YYYY-MM-DD)'],
-          time: raw['Time of incident (HH:MM (24h))'],
-          incident_type: raw['Type of incident '],
-          description: raw['Description of incident and/or individuals']
+          timestamp: raw["Timestamp"],
+          name: raw["Your name (optional)"],
+          age: raw["Age"],
+          location: raw["Location of incident (address and/or coordinates) "],
+          date: raw["Date of incident (YYYY-MM-DD)"],
+          time: raw["Time of incident (HH:MM (24h))"],
+          incident_type: raw["Type of incident "],
+          description: raw["Description of incident and/or individuals"],
         };
       }
 
       function escapeHTML(str) {
         return String(str).replace(
           /[&<>"']/g,
-          c =>
+          (c) =>
             ({
-              '&': '&amp;',
-              '<': '&lt;',
-              '>': '&gt;',
-              '"': '&quot;',
-              "'": '&#39;'
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
             }[c])
         );
       }
@@ -838,26 +956,26 @@
       function parseCSV(csvText) {
         const result = Papa.parse(csvText, {
           header: true,
-          skipEmptyLines: true
+          skipEmptyLines: true,
         });
         return result.data;
       }
 
       function buildIncidentPopup(row) {
         const fields = [
-          ['Type', row.incident_type],
-          ['Description', row.description],
-          ['Date', row.date],
-          ['Time', row.time],
-          ['Location', row.location],
-          ['Age', row.age],
-          ['Reported by', row.name],
-          ['Submitted', row.timestamp]
+          ["Type", row.incident_type],
+          ["Description", row.description],
+          ["Date", row.date],
+          ["Time", row.time],
+          ["Location", row.location],
+          ["Age", row.age],
+          ["Reported by", row.name],
+          ["Submitted", row.timestamp],
         ];
 
         return `
     <div class="popup">
-      <strong>${row.incident_type || 'Incident'}</strong>
+      <strong>${row.incident_type || "Incident"}</strong>
       <table>
         ${fields
           .map(
@@ -868,7 +986,7 @@
               </tr>
             `
           )
-          .join('')}
+          .join("")}
       </table>
     </div>
   `;
@@ -878,17 +996,19 @@
         if (!SHEET_URL) return;
 
         fetch(SHEET_URL)
-          .then(res => res.text())
-          .then(csv => {
-            parseCSV(csv).forEach(row => addIncidentMarker(normalizeRow(row)));
+          .then((res) => res.text())
+          .then((csv) => {
+            parseCSV(csv).forEach((row) =>
+              addIncidentMarker(normalizeRow(row))
+            );
           })
-          .catch(err => console.error('Incident load failed:', err));
+          .catch((err) => console.error("Incident load failed:", err));
       }
 
       function addIncidentMarker(row) {
         if (!row.location) return;
 
-        const [lat, lng] = row.location.split(',').map(Number);
+        const [lat, lng] = row.location.split(",").map(Number);
         if (isNaN(lat) || isNaN(lng)) return;
 
         const popup = buildIncidentPopup(row);
@@ -897,47 +1017,23 @@
       }
 
       /*********************************************************
-       * DRAFT MARKER (WRITE SIDE)
-       *********************************************************/
-
-      function enableDraftMarker() {
-        map.on('click', e => {
-          const { lat, lng } = e.latlng;
-
-          draftLayer.clearLayers();
-
-          draftMarker = L.marker([lat, lng], {
-            draggable: true,
-            opacity: 0.85
-          }).addTo(draftLayer);
-
-          updateLocationInput(lat, lng);
-
-          draftMarker.on('dragend', ev => {
-            const pos = ev.target.getLatLng();
-            updateLocationInput(pos.lat, pos.lng);
-          });
-        });
-      }
-
-      /*********************************************************
        * LAZY LOAD TRIGGER
        *********************************************************/
 
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener("DOMContentLoaded", () => {
         if (!els.map) return;
 
         const observer = new IntersectionObserver(
-          entries => {
+          (entries) => {
             if (entries[0].isIntersecting) {
               initMap();
               observer.disconnect();
             }
           },
-          { rootMargin: '200px' }
+          { rootMargin: "200px" }
         );
 
-        observer.observe(els.map);
+        observer.observe(els.mapSection);
       });
 
       function looksLikeCoordinates(value) {
@@ -946,17 +1042,17 @@
 
       async function geocodeLocationText(text) {
         const url =
-          'https://nominatim.openstreetmap.org/search?' +
+          "https://nominatim.openstreetmap.org/search?" +
           new URLSearchParams({
             q: text,
-            format: 'json',
-            limit: 1
+            format: "json",
+            limit: 1,
           });
 
         const res = await fetch(url, {
           headers: {
-            Accept: 'application/json'
-          }
+            Accept: "application/json",
+          },
         });
 
         if (!res.ok) return null;
@@ -972,117 +1068,154 @@
         return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       }
 
+      function scrollPopoverToCenter() {
+        const viewportHeight = window.innerHeight;
+        const popoverRect = els.map.getBoundingClientRect();
+        const popoverHeight = popoverRect.height;
+
+        // Calculate the scroll so that the popover's center is in viewport center
+        const scrollTop =
+          window.scrollY +
+          popoverRect.top -
+          (viewportHeight - popoverHeight) / 2;
+
+        window.scrollTo({
+          top: scrollTop,
+          behavior: "smooth",
+        });
+      }
+
+      els.map.addEventListener("beforetoggle", async (e) => {
+        if (e.newState === "open") {
+          await initMap();
+          setWriteMode();
+
+          // Scroll page so the button is near the top
+          els.pickBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+
+          requestAnimationFrame(() => {
+            map.invalidateSize();
+            scrollPopoverToCenter();
+            els.map.classList.add("popover-open");
+            setTimeout(() => els.map.classList.add("open"), 50);
+          });
+        } else {
+          setReadMode();
+          els.map.classList.remove("open");
+        }
+      });
+
       /* --- Constants --- */
       const GOOGLE_FORM_BASE =
-        'https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true';
-      const POLICE_NUMBER = '100';
+        "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true";
+      const POLICE_NUMBER = "100";
 
       const KEYS = {
-        name: 'sjw-user-name',
-        age: 'sjw-user-age',
-        emergency: 'sjw-user-emergency-contact'
+        name: "sjw-user-name",
+        age: "sjw-user-age",
+        emergency: "sjw-user-emergency-contact",
       };
 
       /* --- Translations --- */
       const translations = {
         en: {
-          title: 'South JLM Watch',
-          meta: 'A simple community safety reporting demo (south Jerusalem)',
+          title: "South JLM Watch",
+          meta: "A simple community safety reporting demo (south Jerusalem)",
           offline:
-            '⚠️ Offline mode: Reporting and map viewing require an internet connection.',
-          callPolice: 'Police 📞',
-          toggle: 'עברית 🇮🇱',
-          userHeading: 'Your info',
-          hint: 'Saved locally on this device',
-          emergencyContact: 'Emergency Contact',
-          name: 'Name',
-          age: 'Age',
-          location: 'Location',
-          date: 'Date',
-          time: 'Time',
-          save: 'Save',
-          clear: 'Clear',
-          type: 'Incident Type',
-          select: 'Select incident type(s)',
-          selected: 'Selected',
-          description: 'Description',
-          submit: 'Submit',
-          submitAnother: 'Submit another report',
+            "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
+          callPolice: "Police 📞",
+          toggle: "עברית 🇮🇱",
+          userHeading: "Your info",
+          hint: "Saved locally on this device",
+          emergencyContact: "Emergency Contact",
+          name: "Name",
+          age: "Age",
+          location: "Location",
+          date: "Date",
+          time: "Time",
+          save: "Save",
+          clear: "Clear",
+          type: "Incident Type",
+          select: "Select incident type(s)",
+          selected: "Selected",
+          description: "Description",
+          submit: "Submit",
+          submitAnother: "Submit another report",
           prefillHint:
-            'The form will be prefilled with your location, cached name & age, and the current date/time.',
-          about: 'About',
-          desc: 'This is a website dedicated to keeping kids safe on the streets.',
+            "The form will be prefilled with your location, cached name & age, and the current date/time.",
+          about: "About",
+          desc: "This is a website dedicated to keeping kids safe on the streets.",
           privacy:
-            'No authentication. Public data only. Do not include personal or sensitive information.',
+            "No authentication. Public data only. Do not include personal or sensitive information.",
           mapHint:
-            'Click on the map to drop a pin. The location field will be set to it automatically.',
-          typeModalTitle: 'Select all that apply',
-          disturbingStaring: 'Disturbing staring',
-          followingOnFoot: 'Following on foot',
-          followingInCar: 'Following in car',
-          mockingOrPointing: 'Mocking or pointing',
-          whistlingOrCatcalling: 'Whistling or catcalling',
-          honking: 'Honking',
-          yelling: 'Yelling',
-          unwantedConversationAttempt: 'Unwanted conversation attempt',
-          unwantedPickupAttempt: 'Unwanted pickup attempt',
-          other: 'Other (describe below)',
-          done: 'Done'
+            "Click on the map to drop a pin. The location field will be set to it automatically.",
+          typeModalTitle: "Select all that apply",
+          disturbingStaring: "Disturbing staring",
+          followingOnFoot: "Following on foot",
+          followingInCar: "Following in car",
+          mockingOrPointing: "Mocking or pointing",
+          whistlingOrCatcalling: "Whistling or catcalling",
+          honking: "Honking",
+          yelling: "Yelling",
+          unwantedConversationAttempt: "Unwanted conversation attempt",
+          unwantedPickupAttempt: "Unwanted pickup attempt",
+          other: "Other (describe below)",
+          done: "Done",
         },
         he: {
-          title: 'משמר דרום ירושלים',
-          meta: 'גרסת הדגמה לדיווח קהילתי (דרום ירושלים)',
-          offline: '⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.',
-          callPolice: ' למשטרה 📞',
-          toggle: 'English 🇺🇸',
-          userHeading: 'המידע שלך',
-          hint: 'נשמר מקומית במכשיר זה',
-          emergencyContact: 'איש קשר חירום',
-          name: 'שם',
-          age: 'גיל',
-          location: 'מיקום',
-          date: 'תאריך',
-          time: 'זמן',
-          save: 'שמור',
-          clear: 'מחק',
-          type: 'סוג תקרית',
-          select: 'בחרו מתוך האופציות הבאות',
-          selected: 'נבחרו',
-          description: 'הסבר',
-          submit: 'הגשת תלונה',
-          submitAnother: 'להגיש עוד תלונה',
-          prefillHint: 'הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.',
-          about: 'אודות',
-          desc: 'זה אתר שמוקדש לשמירה על ילדינו ברחוב.',
+          title: "משמר דרום ירושלים",
+          meta: "גרסת הדגמה לדיווח קהילתי (דרום ירושלים)",
+          offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
+          callPolice: " למשטרה 📞",
+          toggle: "English 🇺🇸",
+          userHeading: "המידע שלך",
+          hint: "נשמר מקומית במכשיר זה",
+          emergencyContact: "איש קשר חירום",
+          name: "שם",
+          age: "גיל",
+          location: "מיקום",
+          date: "תאריך",
+          time: "זמן",
+          save: "שמור",
+          clear: "מחק",
+          type: "סוג תקרית",
+          select: "בחרו מתוך האופציות הבאות",
+          selected: "נבחרו",
+          description: "הסבר",
+          submit: "הגשת תלונה",
+          submitAnother: "להגיש עוד תלונה",
+          prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
+          about: "אודות",
+          desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
           privacy:
-            'ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.',
-          mapHint: 'לחיצה על המפה יעדכן את שדה המיקום בטופס למעלה',
-          typeModalTitle: 'בחר/י את כל האפשרויות המתאימות',
-          disturbingStaring: 'בהייה מטרידה',
-          followingOnFoot: 'מעקב רגלי',
-          followingInCar: 'מעקב ברכב',
-          mockingOrPointing: 'לעג או הצבעה',
-          whistlingOrCatcalling: 'שריקות או קריאות',
-          honking: 'צפירה',
-          yelling: 'צעקות',
-          unwantedConversationAttempt: 'ניסיון שיחה לא רצוי',
-          unwantedPickupAttempt: 'ניסיון התחלה לא רצוי',
-          other: 'אחר (פירוט למטה)',
-          done: 'סיים'
-        }
+            "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
+          mapHint: "לחיצה על המפה יעדכן את שדה המיקום בטופס למעלה",
+          typeModalTitle: "בחר/י את כל האפשרויות המתאימות",
+          disturbingStaring: "בהייה מטרידה",
+          followingOnFoot: "מעקב רגלי",
+          followingInCar: "מעקב ברכב",
+          mockingOrPointing: "לעג או הצבעה",
+          whistlingOrCatcalling: "שריקות או קריאות",
+          honking: "צפירה",
+          yelling: "צעקות",
+          unwantedConversationAttempt: "ניסיון שיחה לא רצוי",
+          unwantedPickupAttempt: "ניסיון התחלה לא רצוי",
+          other: "אחר (פירוט למטה)",
+          done: "סיים",
+        },
       };
 
       const placeholders = {
         en: {
-          currentLocation: 'Current Location',
-          currentDate: 'Current Date',
-          currentTime: 'Current Time'
+          currentLocation: "Current Location",
+          currentDate: "Current Date",
+          currentTime: "Current Time",
         },
         he: {
-          currentLocation: 'מיקום נוכחי',
-          currentDate: 'תאריך עדכני',
-          currentTime: 'זמן נוכחי'
-        }
+          currentLocation: "מיקום נוכחי",
+          currentDate: "תאריך עדכני",
+          currentTime: "זמן נוכחי",
+        },
       };
 
       /* --- Status --- */
@@ -1091,18 +1224,18 @@
         els.status.textContent = text;
         clearTimeout(showStatus._t);
         if (ms > 0)
-          showStatus._t = setTimeout(() => (els.status.textContent = ''), ms);
+          showStatus._t = setTimeout(() => (els.status.textContent = ""), ms);
       }
 
       /* --- Language --- */
-      let currentLang = localStorage.getItem('sjw-lang') || 'he';
+      let currentLang = localStorage.getItem("sjw-lang") || "he";
       function updateText(lang) {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
           const key = el.dataset.i18n;
           if (translations[lang] && translations[lang][key])
             el.textContent = translations[lang][key];
         });
-        document.querySelectorAll('[data-i18nplaceholder]').forEach(el => {
+        document.querySelectorAll("[data-i18nplaceholder]").forEach((el) => {
           const key = el.dataset.i18nplaceholder;
           if (placeholders[lang] && placeholders[lang][key])
             el.placeholder = placeholders[lang][key];
@@ -1114,17 +1247,17 @@
       function applyLang(lang) {
         currentLang = lang;
         els.html.lang = lang;
-        els.html.dir = lang === 'he' ? 'rtl' : 'ltr';
-        localStorage.setItem('sjw-lang', lang);
+        els.html.dir = lang === "he" ? "rtl" : "ltr";
+        localStorage.setItem("sjw-lang", lang);
         updateText(lang);
-        els.langToggle.setAttribute('aria-pressed', lang === 'he');
+        els.langToggle.setAttribute("aria-pressed", lang === "he");
       }
 
-      els.langToggle.addEventListener('click', () =>
-        applyLang(currentLang === 'en' ? 'he' : 'en')
+      els.langToggle.addEventListener("click", () =>
+        applyLang(currentLang === "en" ? "he" : "en")
       );
-      els.langToggle.addEventListener('keydown', e => {
-        if (['Enter', ' '].includes(e.key)) {
+      els.langToggle.addEventListener("keydown", (e) => {
+        if (["Enter", " "].includes(e.key)) {
           e.preventDefault();
           e.target.click();
         }
@@ -1132,14 +1265,14 @@
 
       /* --- User cache --- */
       function loadUser() {
-        els.name.value = localStorage.getItem(KEYS.name) || '';
-        els.age.value = localStorage.getItem(KEYS.age) || '';
-        els.emergency.value = localStorage.getItem(KEYS.emergency) || '';
+        els.name.value = localStorage.getItem(KEYS.name) || "";
+        els.age.value = localStorage.getItem(KEYS.age) || "";
+        els.emergency.value = localStorage.getItem(KEYS.emergency) || "";
       }
 
       function saveName() {
         const val = els.name.value.trim();
-        const stored = localStorage.getItem(KEYS.name) || '';
+        const stored = localStorage.getItem(KEYS.name) || "";
 
         if (val === stored) return;
 
@@ -1147,7 +1280,7 @@
           ? localStorage.setItem(KEYS.name, val)
           : localStorage.removeItem(KEYS.name);
 
-        showStatus(currentLang === 'en' ? 'Name saved' : 'השם נשמר', 2000);
+        showStatus(currentLang === "en" ? "Name saved" : "השם נשמר", 2000);
         updateNameState();
       }
 
@@ -1155,15 +1288,15 @@
         if (localStorage.getItem(KEYS.name) === null) return;
 
         localStorage.removeItem(KEYS.name);
-        els.name.value = '';
+        els.name.value = "";
 
-        showStatus(currentLang === 'en' ? 'Name cleared' : 'השם נמחק', 2000);
+        showStatus(currentLang === "en" ? "Name cleared" : "השם נמחק", 2000);
         updateNameState();
       }
 
       function saveAge() {
         const val = els.age.value.trim();
-        const stored = localStorage.getItem(KEYS.age) || '';
+        const stored = localStorage.getItem(KEYS.age) || "";
 
         if (val === stored) return;
 
@@ -1171,7 +1304,7 @@
           ? localStorage.setItem(KEYS.age, val)
           : localStorage.removeItem(KEYS.age);
 
-        showStatus(currentLang === 'en' ? 'Age saved' : 'גיל נשמר', 2000);
+        showStatus(currentLang === "en" ? "Age saved" : "גיל נשמר", 2000);
         updateAgeState();
       }
 
@@ -1179,40 +1312,40 @@
         if (localStorage.getItem(KEYS.age) === null) return;
 
         localStorage.removeItem(KEYS.age);
-        els.age.value = '';
+        els.age.value = "";
 
-        showStatus(currentLang === 'en' ? 'Age cleared' : 'גיל נמחק', 2000);
+        showStatus(currentLang === "en" ? "Age cleared" : "גיל נמחק", 2000);
         updateAgeState();
       }
 
       function updateNameState() {
         const val = els.name.value.trim();
-        const stored = localStorage.getItem(KEYS.name) || '';
+        const stored = localStorage.getItem(KEYS.name) || "";
 
         els.saveName.disabled = val === stored;
-        els.clearName.disabled = stored === '';
+        els.clearName.disabled = stored === "";
       }
 
       function updateAgeState() {
         const val = els.age.value.trim();
-        const stored = localStorage.getItem(KEYS.age) || '';
+        const stored = localStorage.getItem(KEYS.age) || "";
 
         els.saveAge.disabled = val === stored;
-        els.clearAge.disabled = stored === '';
+        els.clearAge.disabled = stored === "";
       }
 
-      els.saveName.addEventListener('click', saveName);
-      els.clearName.addEventListener('click', clearName);
+      els.saveName.addEventListener("click", saveName);
+      els.clearName.addEventListener("click", clearName);
 
-      els.saveAge.addEventListener('click', saveAge);
-      els.clearAge.addEventListener('click', clearAge);
+      els.saveAge.addEventListener("click", saveAge);
+      els.clearAge.addEventListener("click", clearAge);
 
-      els.name.addEventListener('input', updateNameState);
-      els.age.addEventListener('input', updateAgeState);
+      els.name.addEventListener("input", updateNameState);
+      els.age.addEventListener("input", updateAgeState);
 
       function saveEmergency() {
         const val = els.emergency.value.trim();
-        const stored = localStorage.getItem(KEYS.emergency) || '';
+        const stored = localStorage.getItem(KEYS.emergency) || "";
 
         if (val === stored) return;
 
@@ -1221,9 +1354,9 @@
           : localStorage.removeItem(KEYS.emergency);
 
         showStatus(
-          currentLang === 'en'
-            ? 'Emergency contact saved'
-            : 'איש קשר חירום נשמר',
+          currentLang === "en"
+            ? "Emergency contact saved"
+            : "איש קשר חירום נשמר",
           2000
         );
         updateEmergencyState();
@@ -1233,12 +1366,12 @@
         if (localStorage.getItem(KEYS.emergency) === null) return;
 
         localStorage.removeItem(KEYS.emergency);
-        els.emergency.value = '';
+        els.emergency.value = "";
 
         showStatus(
-          currentLang === 'en'
-            ? 'Emergency contact cleared'
-            : 'איש קשר חירום נמחק',
+          currentLang === "en"
+            ? "Emergency contact cleared"
+            : "איש קשר חירום נמחק",
           2000
         );
         updateEmergencyState();
@@ -1246,24 +1379,24 @@
 
       function updateEmergencyState() {
         const val = els.emergency.value.trim();
-        const stored = localStorage.getItem(KEYS.emergency) || '';
+        const stored = localStorage.getItem(KEYS.emergency) || "";
 
         els.saveEmergency.disabled = val === stored;
-        els.clearEmergency.disabled = stored === '';
+        els.clearEmergency.disabled = stored === "";
         els.buttons.emergency.disabled = !stored;
       }
 
-      els.saveEmergency.addEventListener('click', saveEmergency);
-      els.clearEmergency.addEventListener('click', clearEmergency);
-      els.emergency.addEventListener('input', updateEmergencyState);
+      els.saveEmergency.addEventListener("click", saveEmergency);
+      els.clearEmergency.addEventListener("click", clearEmergency);
+      els.emergency.addEventListener("input", updateEmergencyState);
 
       /* --- Call buttons --- */
       els.buttons.police.addEventListener(
-        'click',
+        "click",
         () => (window.location.href = `tel:${POLICE_NUMBER}`)
       );
 
-      els.buttons.emergency.addEventListener('click', () => {
+      els.buttons.emergency.addEventListener("click", () => {
         const number = localStorage.getItem(KEYS.emergency);
         window.location.href = `tel:${number}`;
       });
@@ -1274,32 +1407,32 @@
         els.submitButton.disabled = !navigator.onLine;
       }
 
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
+      window.addEventListener("online", updateOnlineStatus);
+      window.addEventListener("offline", updateOnlineStatus);
 
       /* --- Modal --- */
 
       let lastFocusedElement = null;
 
-      els.openBtn.addEventListener('click', () => {
+      els.openBtn.addEventListener("click", () => {
         lastFocusedElement = document.activeElement;
         els.modal.showModal();
       });
 
-      els.modal.addEventListener('close', () => {
+      els.modal.addEventListener("close", () => {
         if (lastFocusedElement) {
           lastFocusedElement.focus();
         }
         updateButtonText();
       });
 
-      els.modal.addEventListener('click', e => {
+      els.modal.addEventListener("click", (e) => {
         if (e.target === els.modal) {
           els.modal.close();
         }
       });
 
-      els.closeBtn.addEventListener('click', () => {
+      els.closeBtn.addEventListener("click", () => {
         els.modal.close();
       });
 
@@ -1314,26 +1447,26 @@
           els.openBtn.textContent = checked[0].nextElementSibling.textContent;
         } else {
           els.openBtn.textContent =
-            translations[currentLang].selected + ' ' + checked.length;
+            translations[currentLang].selected + " " + checked.length;
         }
       }
 
       /* --- Submit Form --- */
 
       const getLocation = () =>
-        new Promise(resolve => {
-          if (!navigator.geolocation) return resolve('unknown');
+        new Promise((resolve) => {
+          if (!navigator.geolocation) return resolve("unknown");
 
           navigator.geolocation.getCurrentPosition(
-            pos => resolve(`${pos.coords.latitude}, ${pos.coords.longitude}`),
-            err => {
-              console.warn('Geolocation error:', err);
-              resolve('unknown');
+            (pos) => resolve(`${pos.coords.latitude}, ${pos.coords.longitude}`),
+            (err) => {
+              console.warn("Geolocation error:", err);
+              resolve("unknown");
             },
             {
               enableHighAccuracy: true, // try for more precise location
               timeout: 5000, // wait up to 5 seconds
-              maximumAge: 0 // don't use cached location
+              maximumAge: 0, // don't use cached location
             }
           );
         });
@@ -1343,7 +1476,7 @@
           'input[name="entry.373709611"]'
         );
 
-        checkboxes.forEach(cb => {
+        checkboxes.forEach((cb) => {
           cb.checked = false;
         });
 
@@ -1352,21 +1485,20 @@
 
       function finalizeSubmit() {
         els.form.submit();
-        els.form.style.display = 'none';
+        els.form.style.display = "none";
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
         resetIncidentTypes();
         loadIncidents();
-        enableDraftMarker();
       }
 
-      els.form.addEventListener('submit', async e => {
+      els.form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const now = new Date();
 
         // Fill date and time if empty
-        els.formDate.value ||= now.toISOString().split('T')[0];
+        els.formDate.value ||= now.toISOString().split("T")[0];
         els.formTime.value ||= now.toTimeString().slice(0, 5);
 
         // Fill location or convert text → coordinates
@@ -1375,7 +1507,7 @@
         } else if (!looksLikeCoordinates(els.location.value)) {
           const coords = await geocodeLocationText(els.location.value);
           if (!coords) {
-            alert('Could not resolve location. Please be more specific.');
+            alert("Could not resolve location. Please be more specific.");
             return;
           }
           els.location.value = coords;
@@ -1388,21 +1520,21 @@
 
         // todo: fill in input
         els.hiddenInputs.value = Array.from(checked)
-          .map(option => option.value)
-          .join(', ');
+          .map((option) => option.value)
+          .join(", ");
         finalizeSubmit();
       });
 
-      els.anotherReport.addEventListener('click', () => {
-        els.form.style.display = 'block';
+      els.anotherReport.addEventListener("click", () => {
+        els.form.style.display = "block";
         els.successMessage.hidden = true;
         els.anotherReport.hidden = true;
-        els.location.value = '';
-        els.formDate.value = '';
-        els.formDate.type = 'text';
-        els.formTime.value = '';
-        els.formTime.type = 'text';
-        els.formDesc.value = '';
+        els.location.value = "";
+        els.formDate.value = "";
+        els.formDate.type = "text";
+        els.formTime.value = "";
+        els.formTime.type = "text";
+        els.formDesc.value = "";
 
         resumed = false;
       });
@@ -1416,12 +1548,12 @@
       applyLang(currentLang);
 
       /* --- Service Worker --- */
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
           navigator.serviceWorker
-            .register('/jwatch/sw.js', { scope: '/jwatch/' })
-            .then(reg => console.log('SW registered:', reg.scope))
-            .catch(err => console.warn('SW register failed:', err));
+            .register("/jwatch/sw.js", { scope: "/jwatch/" })
+            .then((reg) => console.log("SW registered:", reg.scope))
+            .catch((err) => console.warn("SW register failed:", err));
         });
       }
     </script>
