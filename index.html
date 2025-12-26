@@ -338,11 +338,49 @@
         outline: 2px so;
       }
 
+      /* CSS: flexible, responsive container */
+      .map-section {
+        width: 100%; /* full width of parent */
+        height: 50vh; /* 50% of viewport height, adjust as needed */
+        min-height: 300px; /* don't get too small */
+        border: 1px solid #ccc;
+      }
+
+      /* Base READ mode — normal map in page flow */
       #map {
-        height: 400px;
+        display: block; /* ensure block-level element */
+        width: 100%; /* fill parent container */
+        height: 400px; /* explicit height so Leaflet renders tiles */
         margin-bottom: var(--space);
         border-radius: 6px;
         border: 1px solid #ccc;
+
+        /* reset transform/position in read mode */
+        position: static;
+        top: auto;
+        left: auto;
+        transform: none;
+      }
+
+      /* WRITE mode — centered popover */
+      #map:popover-open {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        width: min(90vw, 600px);
+        height: min(70vh, 450px);
+
+        border-radius: 12px;
+        z-index: 9999;
+        opacity: 0;
+      }
+
+      /* Animate to fully visible after paint */
+      #map:popover-open.open {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
       }
 
       #submit {
@@ -470,12 +508,24 @@
             <div class="form-row">
               <label>
                 <span data-i18n="location"></span>
-                <input
-                  id="location"
-                  type="text"
-                  name="entry.1771840150"
-                  data-i18nplaceholder="currentLocation"
-                />
+                <div class="inline-controls">
+                  <input
+                    id="location"
+                    type="text"
+                    name="entry.1771840150"
+                    data-i18nplaceholder="currentLocation"
+                  />
+                  <button
+                    id="pick-location"
+                    type="button"
+                    popovertarget="map"
+                    popovertargetaction="toggle"
+                    style="max-width: fit-content"
+                    aria-label="Pick location on map"
+                  >
+                    📍
+                  </button>
+                </div>
               </label>
             </div>
 
@@ -551,7 +601,7 @@
 
       <!-- Map section -->
       <section class="card" id="map-section">
-        <div id="map"></div>
+        <div id="map" popover="auto"></div>
         <div id="hint" data-i18n="mapHint"></div>
       </section>
 
@@ -697,12 +747,14 @@
         langToggle: $("lang-toggle"),
         form: $("form"),
         location: $("location"),
+        pickBtn: $("pick-location"),
         formDate: $("form-date"),
         formTime: $("form-time"),
         formDesc: $("form-desc"),
         submitButton: $("submit"),
         successMessage: $("form-success"),
         anotherReport: $("another-report"),
+        mapSection: $("map-section"),
         map: $("map"),
         buttons: {
           police: $("call-police"),
@@ -722,6 +774,14 @@
         closeBtn: $("close-type-picker"),
         hiddenInputs: $("type-hidden-inputs"),
       };
+
+      /* Map Logic */
+      const MapMode = {
+        READ: "read",
+        WRITE: "write",
+      };
+
+      let currentMode = MapMode.READ;
 
       /*********************************************************
        * CONFIG
@@ -773,6 +833,50 @@
        * MAP INITIALIZATION
        *********************************************************/
 
+      function setReadMode() {
+        currentMode = MapMode.READ;
+
+        draftLayer.clearLayers();
+        draftMarker = null;
+
+        map.dragging.enable();
+        map.scrollWheelZoom.enable();
+
+        // Ensure Leaflet knows container is visible
+        requestAnimationFrame(() => map.invalidateSize());
+      }
+
+      function setWriteMode() {
+        currentMode = MapMode.WRITE;
+
+        draftLayer.clearLayers();
+        draftMarker = null;
+
+        map.dragging.enable();
+        map.scrollWheelZoom.enable();
+
+        requestAnimationFrame(() => map.invalidateSize());
+        map.on("click", onDraftClick);
+      }
+
+      function onDraftClick(e) {
+        const { lat, lng } = e.latlng;
+
+        draftLayer.clearLayers();
+
+        draftMarker = L.marker([lat, lng], {
+          draggable: true,
+          opacity: 0.85,
+        }).addTo(draftLayer);
+
+        updateLocationInput(lat, lng);
+
+        draftMarker.on("dragend", (ev) => {
+          const pos = ev.target.getLatLng();
+          updateLocationInput(pos.lat, pos.lng);
+        });
+      }
+
       async function initMap() {
         if (mapInitialized) return;
         mapInitialized = true;
@@ -798,11 +902,7 @@
         // Load incidents
         loadIncidents();
 
-        // Enable draft marker placement
-        enableDraftMarker();
-
-        // Fix size if container was hidden
-        setTimeout(() => map.invalidateSize(), 0);
+        setReadMode();
       }
 
       /*********************************************************
@@ -900,30 +1000,6 @@
       }
 
       /*********************************************************
-       * DRAFT MARKER (WRITE SIDE)
-       *********************************************************/
-
-      function enableDraftMarker() {
-        map.on("click", (e) => {
-          const { lat, lng } = e.latlng;
-
-          draftLayer.clearLayers();
-
-          draftMarker = L.marker([lat, lng], {
-            draggable: true,
-            opacity: 0.85,
-          }).addTo(draftLayer);
-
-          updateLocationInput(lat, lng);
-
-          draftMarker.on("dragend", (ev) => {
-            const pos = ev.target.getLatLng();
-            updateLocationInput(pos.lat, pos.lng);
-          });
-        });
-      }
-
-      /*********************************************************
        * LAZY LOAD TRIGGER
        *********************************************************/
 
@@ -940,7 +1016,7 @@
           { rootMargin: "200px" }
         );
 
-        observer.observe(els.map);
+        observer.observe(els.mapSection);
       });
 
       function looksLikeCoordinates(value) {
@@ -974,6 +1050,42 @@
 
         return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       }
+
+      function scrollPopoverToCenter() {
+        const viewportHeight = window.innerHeight;
+        const popoverRect = els.map.getBoundingClientRect();
+        const popoverHeight = popoverRect.height;
+
+        // Calculate the scroll so that the popover's center is in viewport center
+        const scrollTop =
+          window.scrollY +
+          popoverRect.top -
+          (viewportHeight - popoverHeight) / 2;
+
+        window.scrollTo({
+          top: scrollTop,
+          behavior: "smooth",
+        });
+      }
+
+      els.map.addEventListener("beforetoggle", async (e) => {
+        if (e.newState === "open") {
+          await initMap();
+          setWriteMode();
+
+          // Scroll page so the button is near the top
+          els.pickBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+
+          requestAnimationFrame(() => {
+            map.invalidateSize();
+            scrollPopoverToCenter();
+            els.map.classList.add("open");
+          });
+        } else {
+          setReadMode();
+          els.map.classList.remove("open");
+        }
+      });
 
       /* --- Constants --- */
       const GOOGLE_FORM_BASE =
@@ -1360,7 +1472,6 @@
         els.anotherReport.hidden = false;
         resetIncidentTypes();
         loadIncidents();
-        enableDraftMarker();
       }
 
       els.form.addEventListener("submit", async (e) => {
