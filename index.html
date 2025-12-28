@@ -644,7 +644,6 @@
       <!-- Map section -->
       <section class="card" id="map-section">
         <div id="map"></div>
-        <div id="hint" data-i18n="mapHint"></div>
       </section>
 
       <!-- About Section -->
@@ -770,13 +769,6 @@
         </div>
       </dialog>
     </main>
-
-    <!-- Leaflet JS -->
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
 
     <script>
       /* --- DOM helpers --- */
@@ -1115,7 +1107,6 @@
       const translations = {
         en: {
           title: "South JLM Watch",
-          meta: "A simple community safety reporting demo (south Jerusalem)",
           offline:
             "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
           callPolice: "Police 📞",
@@ -1142,8 +1133,6 @@
           desc: "This is a website dedicated to keeping kids safe on the streets.",
           privacy:
             "No authentication. Public data only. Do not include personal or sensitive information.",
-          mapHint:
-            "Click on the map to drop a pin. The location field will be set to it automatically.",
           typeModalTitle: "Select all that apply",
           disturbingStaring: "Disturbing staring",
           followingOnFoot: "Following on foot",
@@ -1159,7 +1148,6 @@
         },
         he: {
           title: "משמר דרום ירושלים",
-          meta: "גרסת הדגמה לדיווח קהילתי (דרום ירושלים)",
           offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
           callPolice: " למשטרה 📞",
           toggle: "English 🇺🇸",
@@ -1184,7 +1172,6 @@
           desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
           privacy:
             "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
-          mapHint: "לחיצה על המפה יעדכן את שדה המיקום בטופס למעלה",
           typeModalTitle: "בחר/י את כל האפשרויות המתאימות",
           disturbingStaring: "בהייה מטרידה",
           followingOnFoot: "מעקב רגלי",
