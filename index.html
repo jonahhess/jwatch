@@ -80,17 +80,12 @@
       }
 
       #title-meta {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        grid-template-rows: auto auto;
-        column-gap: var(--space);
+        display: flex;
         align-items: center;
+        gap: var(--space);
       }
 
-      /* Logo: align with title row only */
       #logo-container {
-        grid-column: 1;
-        grid-row: 1;
         margin-top: var(--space);
       }
 
@@ -101,21 +96,16 @@
         display: block;
       }
 
-      /* Title */
       #title {
-        grid-column: 2;
-        grid-row: 1;
-
         margin: 0;
         font-size: var(--text-large);
         line-height: 1.2;
       }
 
-      #meta {
-        grid-column: 2;
-        grid-row: 2;
-        font-size: var(--text-small);
-        color: var(--color-muted);
+      /* New addition */
+      #align-end {
+        margin-inline-start: auto;
+        gap: var(--space);
       }
 
       section {
@@ -432,26 +422,23 @@
             <img src="favicon.ico" alt="South Jerusalem Watch Logo" />
           </div>
           <h1 id="title" data-i18n="title"></h1>
-          <div id="meta" data-i18n="meta"></div>
+
+          <div id="align-end">
+            <button
+              id="call-police"
+              aria-pressed="false"
+              aria-label="Call Police"
+              data-i18n="callPolice"
+            ></button>
+            <button
+              id="lang-toggle"
+              aria-pressed="false"
+              aria-label="Toggle language"
+              data-i18n="toggle"
+            ></button>
+          </div>
         </div>
-
         <div id="status" role="status" aria-live="polite"></div>
-
-        <!-- Button Section -->
-        <section class="card inline-controls">
-          <button
-            id="call-police"
-            aria-pressed="false"
-            aria-label="Call Police"
-            data-i18n="callPolice"
-          ></button>
-          <button
-            id="lang-toggle"
-            aria-pressed="false"
-            aria-label="Toggle language"
-            data-i18n="toggle"
-          ></button>
-        </section>
       </header>
 
       <!-- Emergency Contact Section -->
