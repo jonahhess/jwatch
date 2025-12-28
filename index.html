@@ -339,8 +339,10 @@
         outline: 2px so;
       }
 
-      #map {
+      #map,
+      #map-2 {
         height: 400px;
+        min-width: 400px;
         margin-bottom: var(--space);
         border-radius: 6px;
         border: 1px solid #ccc;
@@ -348,6 +350,74 @@
 
       #submit {
         color: var(--color-text);
+      }
+
+      .popover {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--space-2);
+        padding: calc(var(--space-3) * 1.5);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        max-width: min(28rem, 90vw);
+        position: relative;
+      }
+
+      /* Close button */
+      .popover-close {
+        position: absolute;
+        inset-block-start: 0; /* top */
+        inset-inline-end: 0; /* right in LTR, left in RTL */
+
+        width: 1.75rem;
+        height: 1.75rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #eee;
+        color: #555;
+
+        border: none;
+        border-radius: 0.375rem;
+
+        font-size: var(--text-large);
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      @media (hover: hover) {
+        button:hover {
+          background: #f0f0f0;
+        }
+        .popover-close:hover {
+          background: #ddd;
+        }
+      }
+
+      .popover-close:active {
+        background: #ccc;
+      }
+
+      /* Wider variant for forms */
+      .popover--wide {
+        max-width: min(32rem, 95vw);
+      }
+
+      /* Optional: animation */
+      .popover:popover-open {
+        animation: fade-in 120ms ease-out;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   </head>
@@ -478,8 +548,42 @@
                     name="entry.1771840150"
                     data-i18nplaceholder="currentLocation"
                   />
-                  <button type="button" id="search" data-i18n="search"></button>
-                  <button id="pin" type="button">📍</button>
+                  <button
+                    type="button"
+                    id="search-location"
+                    data-i18n="searchLocation"
+                    disabled
+                  ></button>
+                  <button
+                    type="button"
+                    id="clear-location"
+                    data-i18n="clear"
+                    disabled
+                  ></button>
+                  <button
+                    id="pin"
+                    popovertarget="location-picker"
+                    popovertargetaction="toggle"
+                    type="button"
+                  >
+                    📍
+                  </button>
+                  <div
+                    id="location-picker"
+                    popover
+                    class="popover popover--wide"
+                  >
+                    <button
+                      type="button"
+                      class="popover-close"
+                      popovertarget="location-picker"
+                      popovertargetaction="hide"
+                      aria-label="Close"
+                    >
+                      ✕
+                    </button>
+                    <div id="map-2"></div>
+                  </div>
                 </div>
               </label>
             </div>
@@ -539,7 +643,7 @@
 
             <!-- Submit -->
             <div class="form-row">
-              <button id="submit" type="submit" data-i18n="submit"></button>
+              <button id="submitBtn" type="submit" data-i18n="submit"></button>
             </div>
           </div>
         </form>
@@ -705,10 +809,14 @@
         formDate: $("form-date"),
         formTime: $("form-time"),
         formDesc: $("form-desc"),
-        submitButton: $("submit"),
+        submitButton: $("submitBtn"),
         successMessage: $("form-success"),
         anotherReport: $("another-report"),
         map: $("map"),
+        searchLocation: $("search-location"),
+        clearLocation: $("clear-location"),
+        popover: $("location-picker"),
+        map2: $("map-2"),
         buttons: {
           police: $("call-police"),
           emergency: $("call-emergency-contact"),
@@ -739,213 +847,242 @@
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5GK9JffVcBGw4sN4Wda3jKCIdGBibjFMsHHIc1Xsc85sJvAVXson-B7v2L5imp-PdQy623QxA8J_R/pub?output=csv";
 
       /*********************************************************
-       * STATE
+       * SHARED LOADER
        *********************************************************/
 
-      let mapInitialized = false;
-      let map;
-      let incidentLayer;
-      let draftLayer;
-      let draftMarker;
+      const LeafletLoader = (() => {
+        let loaded = false;
 
-      /*********************************************************
-       * UTILITIES
-       *********************************************************/
+        function loadScript(src) {
+          return new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+          });
+        }
 
-      function loadScript(src) {
-        return new Promise((resolve, reject) => {
-          const s = document.createElement("script");
-          s.src = src;
-          s.onload = resolve;
-          s.onerror = reject;
-          document.head.appendChild(s);
-        });
+        function loadCSS(href) {
+          const l = document.createElement("link");
+          l.rel = "stylesheet";
+          l.href = href;
+          document.head.appendChild(l);
+        }
+
+        async function load() {
+          if (loaded) return;
+
+          loadCSS("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
+
+          await Promise.all([
+            loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"),
+            loadScript("https://unpkg.com/papaparse@5.4.1/papaparse.min.js"),
+          ]);
+
+          loaded = true;
+        }
+
+        return { load };
+      })();
+
+      class BaseMap {
+        constructor(containerId, { center, zoom }) {
+          this.containerId = containerId;
+          this.center = center;
+          this.zoom = zoom;
+          this.map = null;
+        }
+
+        async init() {
+          await LeafletLoader.load();
+
+          this.map = L.map(this.containerId, {
+            zoomControl: true,
+          }).setView(this.center, this.zoom);
+
+          this.tileLayer = L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            { attribution: "&copy; OpenStreetMap contributors" }
+          ).addTo(this.map);
+
+          // One correct invalidate, after tiles exist
+          this.tileLayer.once("load", () => {
+            this.map.invalidateSize();
+          });
+        }
       }
 
-      function loadCSS(href) {
-        const l = document.createElement("link");
-        l.rel = "stylesheet";
-        l.href = href;
-        document.head.appendChild(l);
-      }
+      class WriteMap extends BaseMap {
+        constructor(containerId, { center, zoom, onChange }) {
+          super(containerId, { center, zoom });
+          this.onChange = onChange;
+          this.markerLayer = null;
+          this.marker = null;
+        }
 
-      function updateLocationInput(lat, lng) {
-        if (!els.location) return;
-        els.location.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-      }
+        async init() {
+          await super.init();
 
-      /*********************************************************
-       * MAP INITIALIZATION
-       *********************************************************/
+          this.markerLayer = L.layerGroup().addTo(this.map);
 
-      async function initMap() {
-        if (mapInitialized) return;
-        mapInitialized = true;
+          // click handler to place marker
+          this.map.on("click", (e) => {
+            this.setMarker(e.latlng);
+          });
+        }
 
-        // Load Leaflet assets
-        loadCSS("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
-        await Promise.all([
-          loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"),
-          loadScript("https://unpkg.com/papaparse@5.4.1/papaparse.min.js"),
-        ]);
+        setMarker(latlng) {
+          // remove existing marker
+          this.markerLayer.clearLayers();
 
-        // Create map
-        map = L.map("map").setView(MAP_CENTER, MAP_ZOOM);
-
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "&copy; OpenStreetMap contributors",
-        }).addTo(map);
-
-        // Layers
-        incidentLayer = L.layerGroup().addTo(map);
-        draftLayer = L.layerGroup().addTo(map);
-
-        // Load incidents
-        loadIncidents();
-
-        // Enable draft marker placement
-        enableDraftMarker();
-
-        // Fix size if container was hidden
-        setTimeout(() => map.invalidateSize(), 0);
-      }
-
-      /*********************************************************
-       * DATA LOADING (READ SIDE)
-       *********************************************************/
-
-      function normalizeRow(raw) {
-        return {
-          timestamp: raw["Timestamp"],
-          name: raw["Your name (optional)"],
-          age: raw["Age"],
-          location: raw["Location of incident (address and/or coordinates) "],
-          date: raw["Date of incident (YYYY-MM-DD)"],
-          time: raw["Time of incident (HH:MM (24h))"],
-          incident_type: raw["Type of incident "],
-          description: raw["Description of incident and/or individuals"],
-        };
-      }
-
-      function escapeHTML(str) {
-        return String(str).replace(
-          /[&<>"']/g,
-          (c) =>
-            ({
-              "&": "&amp;",
-              "<": "&lt;",
-              ">": "&gt;",
-              '"': "&quot;",
-              "'": "&#39;",
-            }[c])
-        );
-      }
-
-      function parseCSV(csvText) {
-        const result = Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-        });
-        return result.data;
-      }
-
-      function buildIncidentPopup(row) {
-        const fields = [
-          ["Type", row.incident_type],
-          ["Description", row.description],
-          ["Date", row.date],
-          ["Time", row.time],
-          ["Location", row.location],
-          ["Age", row.age],
-          ["Reported by", row.name],
-          ["Submitted", row.timestamp],
-        ];
-
-        return `
-    <div class="popup">
-      <strong>${row.incident_type || "Incident"}</strong>
-      <table>
-        ${fields
-          .map(
-            ([label, value]) => `
-              <tr>
-                <td><strong>${label}</strong></td>
-                <td>${escapeHTML(value)}</td>
-              </tr>
-            `
-          )
-          .join("")}
-      </table>
-    </div>
-  `;
-      }
-
-      function loadIncidents() {
-        if (!SHEET_URL) return;
-
-        fetch(SHEET_URL)
-          .then((res) => res.text())
-          .then((csv) => {
-            parseCSV(csv).forEach((row) =>
-              addIncidentMarker(normalizeRow(row))
-            );
-          })
-          .catch((err) => console.error("Incident load failed:", err));
-      }
-
-      function addIncidentMarker(row) {
-        if (!row.location) return;
-
-        const [lat, lng] = row.location.split(",").map(Number);
-        if (isNaN(lat) || isNaN(lng)) return;
-
-        const popup = buildIncidentPopup(row);
-
-        L.marker([lat, lng]).bindPopup(popup).addTo(incidentLayer);
-      }
-
-      /*********************************************************
-       * DRAFT MARKER (WRITE SIDE)
-       *********************************************************/
-
-      function enableDraftMarker() {
-        map.on("click", (e) => {
-          const { lat, lng } = e.latlng;
-
-          draftLayer.clearLayers();
-
-          draftMarker = L.marker([lat, lng], {
+          // add new marker
+          this.marker = L.marker(latlng, {
             draggable: true,
             opacity: 0.85,
-          }).addTo(draftLayer);
+          }).addTo(this.markerLayer);
 
-          updateLocationInput(lat, lng);
+          // report location to callback
+          this.emit(latlng);
 
-          draftMarker.on("dragend", (ev) => {
-            const pos = ev.target.getLatLng();
-            updateLocationInput(pos.lat, pos.lng);
+          // update callback on drag
+          this.marker.on("dragend", (ev) => {
+            this.emit(ev.target.getLatLng());
           });
-        });
+        }
+
+        emit({ lat, lng }) {
+          if (typeof this.onChange === "function") {
+            this.onChange({ lat: +lat.toFixed(6), lng: +lng.toFixed(6) });
+          }
+        }
       }
 
-      /*********************************************************
-       * LAZY LOAD TRIGGER
-       *********************************************************/
+      class ReadMap extends BaseMap {
+        constructor(containerId, { center, zoom, sheetUrl }) {
+          super(containerId, { center, zoom });
+          this.sheetUrl = sheetUrl;
+          this.incidentLayer = null;
+        }
 
-      document.addEventListener("DOMContentLoaded", () => {
+        async init() {
+          await super.init();
+          this.incidentLayer = L.layerGroup().addTo(this.map);
+          this.loadIncidents();
+        }
+
+        escapeHTML(str) {
+          return String(str).replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              }[c])
+          );
+        }
+
+        normalizeRow(raw) {
+          return {
+            timestamp: raw["Timestamp"],
+            name: raw["Your name (optional)"],
+            age: raw["Age"],
+            location: raw["Location of incident (address and/or coordinates) "],
+            date: raw["Date of incident (YYYY-MM-DD)"],
+            time: raw["Time of incident (HH:MM (24h))"],
+            incident_type: raw["Type of incident "],
+            description: raw["Description of incident and/or individuals"],
+          };
+        }
+
+        buildPopup(row) {
+          const fields = [
+            ["Type", row.incident_type],
+            ["Description", row.description],
+            ["Date", row.date],
+            ["Time", row.time],
+            ["Location", row.location],
+            ["Age", row.age],
+            ["Reported by", row.name],
+            ["Submitted", row.timestamp],
+          ];
+
+          return `
+      <div class="popup">
+        <strong>${row.incident_type || "Incident"}</strong>
+        <table>
+          ${fields
+            .map(
+              ([label, value]) => `
+            <tr><td><strong>${label}</strong></td><td>${this.escapeHTML(
+                value
+              )}</td></tr>
+          `
+            )
+            .join("")}
+        </table>
+      </div>
+    `;
+        }
+
+        async loadIncidents() {
+          if (!this.sheetUrl) return;
+
+          const res = await fetch(this.sheetUrl);
+          const csvText = await res.text();
+
+          const { data } = Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+          });
+
+          data.map(this.normalizeRow).forEach((row) => this.addMarker(row));
+        }
+
+        addMarker(row) {
+          if (!row.location) return;
+
+          const [lat, lng] = row.location.split(",").map(Number);
+          if (isNaN(lat) || isNaN(lng)) return;
+
+          const popup = this.buildPopup(row);
+          L.marker([lat, lng]).bindPopup(popup).addTo(this.incidentLayer);
+        }
+      }
+
+      let readMap;
+
+      document.addEventListener("DOMContentLoaded", async () => {
         if (!els.map) return;
 
-        const observer = new IntersectionObserver(
-          (entries) => {
-            if (entries[0].isIntersecting) {
-              initMap();
-              observer.disconnect();
-            }
-          },
-          { rootMargin: "200px" }
-        );
+        readMap = new ReadMap("map", {
+          center: MAP_CENTER,
+          zoom: MAP_ZOOM,
+          sheetUrl: SHEET_URL,
+        });
 
-        observer.observe(els.map);
+        await readMap.init();
+      });
+
+      let writeMap;
+
+      els.popover.addEventListener("toggle", (e) => {
+        if (e.newState === "open" && !writeMap) {
+          requestAnimationFrame(() => {
+            writeMap = new WriteMap("map-2", {
+              center: MAP_CENTER,
+              zoom: MAP_ZOOM,
+              onChange: ({ lat, lng }) => {
+                els.location.value = `${lat}, ${lng}`;
+              },
+            });
+
+            writeMap.init();
+          });
+        }
       });
 
       function looksLikeCoordinates(value) {
@@ -1000,13 +1137,12 @@
             "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
           callPolice: "Police 📞",
           toggle: "עברית 🇮🇱",
-          userHeading: "Your info",
           hint: "Saved locally on this device",
           emergencyContact: "Emergency Contact",
           name: "Name",
           age: "Age",
           location: "Location",
-          search: "Search",
+          searchLocation: "Search",
           date: "Date",
           time: "Time",
           save: "Save",
@@ -1044,13 +1180,12 @@
           offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
           callPolice: " למשטרה 📞",
           toggle: "English 🇺🇸",
-          userHeading: "המידע שלך",
           hint: "נשמר מקומית במכשיר זה",
           emergencyContact: "איש קשר חירום",
           name: "שם",
           age: "גיל",
           location: "מיקום",
-          search: "חיפוש",
+          searchLocation: "חיפוש",
           date: "תאריך",
           time: "זמן",
           save: "שמור",
@@ -1328,8 +1463,6 @@
         }
       }
 
-      /* --- Submit Form --- */
-
       const getLocation = () =>
         new Promise((resolve) => {
           if (!navigator.geolocation) return resolve("unknown");
@@ -1366,13 +1499,10 @@
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
         resetIncidentTypes();
-        loadIncidents();
-        enableDraftMarker();
       }
 
       els.form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const now = new Date();
 
         // Fill date and time if empty
@@ -1396,7 +1526,6 @@
           'input[name="entry.373709611"]:checked'
         );
 
-        // todo: fill in input
         els.hiddenInputs.value = Array.from(checked)
           .map((option) => option.value)
           .join(", ");
@@ -1415,6 +1544,36 @@
         els.formDesc.value = "";
 
         resumed = false;
+      });
+
+      els.searchLocation.addEventListener(
+        "click",
+        async () => (els.location.value = await geocodeLocationText())
+      );
+      els.clearLocation.addEventListener(
+        "click",
+        () => (els.location.value = "")
+      );
+
+      function isLikelySearchableQuery(input) {
+        if (typeof input !== "string") return false;
+
+        const s = input.trim();
+        if (!s) return false;
+
+        // Reject pure numbers
+        if (/^\p{N}+$/u.test(s)) return false;
+
+        // Must contain at least one letter
+        if (!/\p{L}/u.test(s)) return false;
+        return true;
+      }
+
+      els.location.addEventListener("input", () => {
+        els.searchLocation.disabled = !isLikelySearchableQuery(
+          els.location.value
+        );
+        els.clearLocation.disabled = !els.location.value.trim();
       });
 
       /* --- Init --- */
