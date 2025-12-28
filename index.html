@@ -1076,6 +1076,8 @@
               const [lat, lng] = val.split(",").map(Number);
               writeMap.map.setView([lat, lng], MAP_ZOOM);
               writeMap.setMarker({ lat, lng });
+            } else {
+              writeMap.map.setView(MAP_CENTER);
             }
 
             return;
@@ -1118,6 +1120,7 @@
         const res = await fetch(url, {
           headers: {
             Accept: "application/json",
+            "User-Agent": "SJWatch/1.0 (jonahhessdev@gmail.com)",
           },
         });
 
@@ -1556,10 +1559,10 @@
         resumed = false;
       });
 
-      els.searchLocation.addEventListener(
-        "click",
-        async () => (els.location.value = await geocodeLocationText())
-      );
+      els.searchLocation.addEventListener("click", async () => {
+        els.location.value = await geocodeLocationText();
+        els.searchLocation.disabled = true;
+      });
       els.clearLocation.addEventListener("click", () => {
         if (writeMap) writeMap.reset();
         els.location.value = "";
