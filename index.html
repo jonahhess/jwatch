@@ -1109,6 +1109,7 @@
       }
 
       async function geocodeLocationText(text) {
+        console.log(text);
         const url =
           "https://nominatim.openstreetmap.org/search?" +
           new URLSearchParams({
@@ -1116,6 +1117,8 @@
             format: "json",
             limit: 1,
           });
+
+        console.log(url);
 
         const res = await fetch(url, {
           headers: {
@@ -1560,7 +1563,7 @@
       });
 
       els.searchLocation.addEventListener("click", async () => {
-        els.location.value = await geocodeLocationText();
+        els.location.value = await geocodeLocationText(els.location.value);
         els.searchLocation.disabled = true;
       });
       els.clearLocation.addEventListener("click", () => {
