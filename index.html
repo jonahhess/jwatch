@@ -106,6 +106,7 @@
       #align-end {
         margin-inline-start: auto;
         gap: var(--space);
+        display: flex;
       }
 
       section {
@@ -428,8 +429,9 @@
               id="call-police"
               aria-pressed="false"
               aria-label="Call Police"
-              data-i18n="callPolice"
-            ></button>
+            >
+              👮
+            </button>
             <button
               id="lang-toggle"
               aria-pressed="false"
@@ -466,6 +468,9 @@
 
       <!--- Form entries-->
       <section class="card" id="form-section">
+        <label>
+          <span data-i18n="reportIncident"></span>
+        </label>
         <form
           id="form"
           action="https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/formResponse"
@@ -894,6 +899,8 @@
           this.onChange = onChange;
           this.markerLayer = null;
           this.marker = null;
+          this.initialCenter = center;
+          this.initialZoom = zoom;
         }
 
         async init() {
@@ -930,6 +937,18 @@
           if (typeof this.onChange === "function") {
             this.onChange({ lat: +lat.toFixed(6), lng: +lng.toFixed(6) });
           }
+        }
+
+        reset() {
+          // Remove marker
+          this.markerLayer.clearLayers();
+          this.marker = null;
+
+          // Restore initial center and zoom
+          this.map.setView(this.initialCenter, this.initialZoom);
+
+          // Optional: clear the input field
+          if (this.onChange) this.onChange({ lat: null, lng: null });
         }
       }
 
@@ -986,21 +1005,21 @@
           ];
 
           return `
-      <div class="popup">
-        <strong>${row.incident_type || "Incident"}</strong>
-        <table>
-          ${fields
-            .map(
-              ([label, value]) => `
-            <tr><td><strong>${label}</strong></td><td>${this.escapeHTML(
-                value
-              )}</td></tr>
-          `
-            )
-            .join("")}
-        </table>
-      </div>
-    `;
+          <div class="popup">
+            <strong>${row.incident_type || "Incident"}</strong>
+            <table>
+              ${fields
+                .map(
+                  ([label, value]) => `
+                <tr><td><strong>${label}</strong></td><td>${this.escapeHTML(
+                    value
+                  )}</td></tr>
+              `
+                )
+                .join("")}
+            </table>
+          </div>
+        `;
         }
 
         async loadIncidents() {
@@ -1045,19 +1064,42 @@
       let writeMap;
 
       els.popover.addEventListener("toggle", (e) => {
-        if (e.newState === "open" && !writeMap) {
-          requestAnimationFrame(() => {
-            writeMap = new WriteMap("map-2", {
-              center: MAP_CENTER,
-              zoom: MAP_ZOOM,
-              onChange: ({ lat, lng }) => {
-                els.location.value = `${lat}, ${lng}`;
-              },
-            });
+        if (e.newState !== "open") return;
 
-            writeMap.init();
+        requestAnimationFrame(() => {
+          // If map is already initialized, just invalidate and recenter
+          if (writeMap) {
+            writeMap.map.invalidateSize();
+
+            const val = els.location.value;
+            if (looksLikeCoordinates(val)) {
+              const [lat, lng] = val.split(",").map(Number);
+              writeMap.map.setView([lat, lng], MAP_ZOOM);
+              writeMap.setMarker({ lat, lng });
+            }
+
+            return;
+          }
+
+          // Otherwise, create the map
+          writeMap = new WriteMap("map-2", {
+            center: MAP_CENTER,
+            zoom: MAP_ZOOM,
+            onChange: ({ lat, lng }) => {
+              els.location.value = `${lat}, ${lng}`;
+            },
           });
-        }
+
+          writeMap.init().then(() => {
+            // After init, if input has valid coordinates, center + marker
+            const val = els.location.value;
+            if (looksLikeCoordinates(val)) {
+              const [lat, lng] = val.split(",").map(Number);
+              writeMap.map.setView([lat, lng], MAP_ZOOM);
+              writeMap.setMarker({ lat, lng });
+            }
+          });
+        });
       });
 
       function looksLikeCoordinates(value) {
@@ -1109,10 +1151,9 @@
           title: "South JLM Watch",
           offline:
             "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
-          callPolice: "Police 📞",
-          toggle: "עברית 🇮🇱",
-          hint: "Saved locally on this device",
+          toggle: "🇮🇱",
           emergencyContact: "Emergency Contact",
+          reportIncident: "Report an Incident",
           name: "Name",
           age: "Age",
           location: "Location",
@@ -1149,10 +1190,9 @@
         he: {
           title: "משמר דרום ירושלים",
           offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
-          callPolice: " למשטרה 📞",
-          toggle: "English 🇺🇸",
-          hint: "נשמר מקומית במכשיר זה",
+          toggle: "🇺🇸",
           emergencyContact: "איש קשר חירום",
+          reportIncident: "טופס להגשת תלונה",
           name: "שם",
           age: "גיל",
           location: "מיקום",
@@ -1520,10 +1560,10 @@
         "click",
         async () => (els.location.value = await geocodeLocationText())
       );
-      els.clearLocation.addEventListener(
-        "click",
-        () => (els.location.value = "")
-      );
+      els.clearLocation.addEventListener("click", () => {
+        if (writeMap) writeMap.reset();
+        els.location.value = "";
+      });
 
       function isLikelySearchableQuery(input) {
         if (typeof input !== "string") return false;
