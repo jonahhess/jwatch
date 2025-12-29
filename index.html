@@ -314,6 +314,7 @@
         max-width: min(28rem, 90vw);
         position: relative;
         width: 50%;
+        overflow-x: hidden;
       }
 
       .popover-close {
@@ -410,13 +411,9 @@
         <label>
           <span data-i18n="emergencyContact"></span>
           <div class="inline-controls">
-            <input id="user-emergency-contact" inputmode="tel" />
-            <button id="save-emergency" type="button" data-i18n="save"></button>
-            <button
-              id="clear-emergency"
-              type="button"
-              data-i18n="clear"
-            ></button>
+            <input id="user-emergency-contact" type="number" />
+            <button id="save-emergency" type="button">💾</button>
+            <button id="clear-emergency" type="button">🗑</button>
             <button
               id="call-emergency-contact"
               aria-pressed="false"
@@ -451,16 +448,8 @@
                     name="entry.1563137864"
                     autocomplete="name"
                   />
-                  <button
-                    id="save-name"
-                    type="button"
-                    data-i18n="save"
-                  ></button>
-                  <button
-                    id="clear-name"
-                    type="button"
-                    data-i18n="clear"
-                  ></button>
+                  <button id="save-name" type="button">💾</button>
+                  <button id="clear-name" type="button">🗑</button>
                 </div>
               </label>
             </div>
@@ -477,12 +466,8 @@
                     min="0"
                     value="0"
                   />
-                  <button id="save-age" type="button" data-i18n="save"></button>
-                  <button
-                    id="clear-age"
-                    type="button"
-                    data-i18n="clear"
-                  ></button>
+                  <button id="save-age" type="button">💾</button>
+                  <button id="clear-age" type="button">🗑</button>
                 </div>
               </label>
             </div>
@@ -586,7 +571,7 @@
                   ✕
                 </button>
 
-                <h3 data-i18n="typeModalTitle"></h3>
+                <h3 data-i18n="typePickerTitle"></h3>
 
                 <ul class="option-list">
                   <li>
@@ -747,6 +732,7 @@
       <section class="card">
         <h2 data-i18n="about"></h2>
         <p data-i18n="desc"></p>
+        <p data-i18n="installGuide"></p>
       </section>
 
       <noscript class="card">
@@ -1126,6 +1112,8 @@
           offline:
             "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
           toggle: "🇮🇱",
+          saved: "saved",
+          cleared: "cleared",
           emergencyContact: "Emergency Contact",
           reportIncident: "Report an Incident",
           name: "Name",
@@ -1134,8 +1122,6 @@
           searchLocation: "🔎",
           date: "Date",
           time: "Time",
-          save: "💾",
-          clear: "🗑",
           type: "Incident Type",
           select: "Select incident type(s)",
           selected: "Selected",
@@ -1148,7 +1134,7 @@
           desc: "This is a website dedicated to keeping kids safe on the streets.",
           privacy:
             "No authentication. Public data only. Do not include personal or sensitive information.",
-          typeModalTitle: "Select all that apply",
+          typePickerTitle: "Select all that apply",
           disturbingStaring: "Disturbing staring",
           followingOnFoot: "Following on foot",
           followingInCar: "Following in car",
@@ -1160,11 +1146,15 @@
           unwantedPickupAttempt: "Unwanted pickup attempt",
           other: "Other (describe below)",
           done: "Done",
+          installGuide:
+            "To install on iOS: From the browser, click the 3 dots icon, Share, More, Add to home screen, (open as web app selected) and press Add",
         },
         he: {
           title: "משמר דרום ירושלים",
           offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
           toggle: "🇺🇸",
+          saved: "נשמר",
+          cleared: "נמחק",
           emergencyContact: "איש קשר חירום",
           reportIncident: "טופס להגשת תלונה",
           name: "שם",
@@ -1173,8 +1163,6 @@
           searchLocation: "🔍",
           date: "תאריך",
           time: "זמן",
-          save: "💾",
-          clear: "🗑",
           type: "סוג תקרית",
           select: "בחרו מתוך האופציות הבאות",
           selected: "נבחרו",
@@ -1186,7 +1174,7 @@
           desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
           privacy:
             "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
-          typeModalTitle: "בחר/י את כל האפשרויות המתאימות",
+          typePickerTitle: "בחר/י את כל האפשרויות המתאימות",
           disturbingStaring: "בהייה מטרידה",
           followingOnFoot: "מעקב רגלי",
           followingInCar: "מעקב ברכב",
@@ -1198,6 +1186,8 @@
           unwantedPickupAttempt: "ניסיון התחלה לא רצוי",
           other: "אחר (פירוט למטה)",
           done: "סיים",
+          installGuide:
+            "להתקין על אייפון: בדפדפן לוחצים על 3 נקודות , שתף, עוד, הוסף לדף הבית, והוסף",
         },
       };
 
@@ -1314,31 +1304,6 @@
         updateAgeState();
       }
 
-      function updateNameState() {
-        const val = els.name.value.trim();
-        const stored = localStorage.getItem(KEYS.name) || "";
-
-        els.saveName.disabled = val === stored;
-        els.clearName.disabled = stored === "";
-      }
-
-      function updateAgeState() {
-        const val = els.age.value.trim();
-        const stored = localStorage.getItem(KEYS.age) || "";
-
-        els.saveAge.disabled = val === stored;
-        els.clearAge.disabled = stored === "";
-      }
-
-      els.saveName.addEventListener("click", saveName);
-      els.clearName.addEventListener("click", clearName);
-
-      els.saveAge.addEventListener("click", saveAge);
-      els.clearAge.addEventListener("click", clearAge);
-
-      els.name.addEventListener("input", updateNameState);
-      els.age.addEventListener("input", updateAgeState);
-
       function saveEmergency() {
         const val = els.emergency.value.trim();
         const stored = localStorage.getItem(KEYS.emergency) || "";
@@ -1373,17 +1338,42 @@
         updateEmergencyState();
       }
 
+      function updateNameState() {
+        const val = els.name.value.trim();
+        const stored = localStorage.getItem(KEYS.name) || "";
+
+        els.saveName.disabled = val === stored;
+        els.clearName.disabled = stored === "";
+      }
+
+      function updateAgeState() {
+        const val = els.age.value.trim();
+        const stored = localStorage.getItem(KEYS.age) || "";
+
+        els.saveAge.disabled = val === stored;
+        els.clearAge.disabled = stored === "";
+      }
+
       function updateEmergencyState() {
         const val = els.emergency.value.trim();
         const stored = localStorage.getItem(KEYS.emergency) || "";
 
-        els.saveEmergency.disabled = val === stored || /\p{L}/u.test(val);
+        els.saveEmergency.disabled = val === stored;
         els.clearEmergency.disabled = stored === "";
         els.buttons.emergency.disabled = !stored;
       }
 
+      els.saveName.addEventListener("click", saveName);
+      els.clearName.addEventListener("click", clearName);
+
+      els.saveAge.addEventListener("click", saveAge);
+      els.clearAge.addEventListener("click", clearAge);
+
       els.saveEmergency.addEventListener("click", saveEmergency);
       els.clearEmergency.addEventListener("click", clearEmergency);
+
+      els.name.addEventListener("input", updateNameState);
+      els.age.addEventListener("input", updateAgeState);
       els.emergency.addEventListener("input", updateEmergencyState);
 
       /* --- Call buttons --- */
