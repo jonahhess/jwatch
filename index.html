@@ -509,6 +509,7 @@
                     type="text"
                     name="entry.1771840150"
                     data-i18nplaceholder="currentLocation"
+                    inputmode="text"
                   />
                   <button
                     type="button"
@@ -1554,10 +1555,10 @@
         );
       });
 
-      els.location.addEventListener(
-        "click",
-        () => (els.location.inputMode = "text")
-      );
+      els.location.addEventListener("click", () => {
+        els.location.inputMode = "text";
+        els.location.readOnly = false;
+      });
 
       /* --- Init --- */
       loadUser();
