@@ -1036,7 +1036,14 @@
       let writeMap;
 
       els.popover.addEventListener("toggle", (e) => {
-        if (e.newState !== "open") return;
+        if (e.newState !== "open") {
+          els.location.readOnly = false;
+          els.location.inputMode = "text";
+          return;
+        }
+        els.location.readOnly = true;
+        els.location.inputMode = "none";
+        els.location.blur(); // Remove focus if browser auto-focuses
 
         requestAnimationFrame(() => {
           // If map is already initialized, just invalidate and recenter
@@ -1061,7 +1068,6 @@
             center: MAP_CENTER,
             zoom: MAP_ZOOM,
             onChange: ({ lat, lng }) => {
-              els.location.inputMode = "none";
               els.location.value = `${lat}, ${lng}`;
             },
           });
