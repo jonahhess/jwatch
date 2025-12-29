@@ -211,6 +211,7 @@
       button {
         width: 100%;
         font-size: var(--text-base);
+        min-height: 3rem;
       }
 
       @supports (-webkit-touch-callout: none) {
@@ -353,14 +354,13 @@
         position: relative;
       }
 
-      /* Close button */
       .popover-close {
         position: absolute;
-        inset-block-start: 0; /* top */
-        inset-inline-end: 0; /* right in LTR, left in RTL */
+        inset-block-start: 0;
+        inset-inline-end: 0;
 
-        width: 1.75rem;
-        height: 1.75rem;
+        width: 0.5rem;
+        height: 0.5rem;
 
         display: flex;
         align-items: center;
@@ -543,12 +543,6 @@
                     disabled
                   ></button>
                   <button
-                    type="button"
-                    id="clear-location"
-                    data-i18n="clear"
-                    disabled
-                  ></button>
-                  <button
                     id="pin"
                     popovertarget="location-picker"
                     popovertargetaction="toggle"
@@ -610,12 +604,12 @@
             <div class="form-row">
               <label>
                 <span data-i18n="type"></span>
-                <button
-                  type="button"
-                  id="open-type-picker"
-                  data-i18n="select"
-                ></button>
               </label>
+              <button
+                type="button"
+                id="open-type-picker"
+                data-i18n="select"
+              ></button>
 
               <!-- Hidden container for generated inputs -->
               <input id="type-hidden-inputs" name="entry.373709611" hidden />
@@ -794,7 +788,6 @@
         anotherReport: $("another-report"),
         map: $("map"),
         searchLocation: $("search-location"),
-        clearLocation: $("clear-location"),
         popover: $("location-picker"),
         map2: $("map-2"),
         buttons: {
@@ -899,8 +892,6 @@
           this.onChange = onChange;
           this.markerLayer = null;
           this.marker = null;
-          this.initialCenter = center;
-          this.initialZoom = zoom;
         }
 
         async init() {
@@ -937,18 +928,6 @@
           if (typeof this.onChange === "function") {
             this.onChange({ lat: +lat.toFixed(6), lng: +lng.toFixed(6) });
           }
-        }
-
-        reset() {
-          // Remove marker
-          this.markerLayer.clearLayers();
-          this.marker = null;
-
-          // Restore initial center and zoom
-          this.map.setView(this.initialCenter, this.initialZoom);
-
-          // Optional: clear the input field
-          if (this.onChange) this.onChange({ lat: null, lng: null });
         }
       }
 
@@ -1566,10 +1545,6 @@
         els.location.value = await geocodeLocationText(els.location.value);
         els.searchLocation.disabled = true;
       });
-      els.clearLocation.addEventListener("click", () => {
-        if (writeMap) writeMap.reset();
-        els.location.value = "";
-      });
 
       function isLikelySearchableQuery(input) {
         if (typeof input !== "string") return false;
@@ -1589,7 +1564,6 @@
         els.searchLocation.disabled = !isLikelySearchableQuery(
           els.location.value
         );
-        els.clearLocation.disabled = !els.location.value.trim();
       });
 
       /* --- Init --- */
