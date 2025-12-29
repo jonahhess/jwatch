@@ -1061,8 +1061,8 @@
             center: MAP_CENTER,
             zoom: MAP_ZOOM,
             onChange: ({ lat, lng }) => {
+              els.location.readOnly = true;
               els.location.value = `${lat}, ${lng}`;
-              document.activeElement.blur();
             },
           });
 
@@ -1547,6 +1547,11 @@
           els.location.value
         );
       });
+
+      els.location.addEventListener(
+        "click",
+        () => (els.location.readOnly = false)
+      );
 
       /* --- Init --- */
       loadUser();
