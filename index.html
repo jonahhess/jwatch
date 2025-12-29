@@ -247,10 +247,10 @@
         min-height: 8rem;
       }
 
-      .option-list {
+      .popover-content > * {
         list-style: none;
-        margin: 0;
-        padding: 0;
+        margin: var(--space-2);
+        padding: var(--space-2);
       }
 
       .option-list li {
@@ -305,6 +305,10 @@
         border: 1px solid #ccc;
       }
 
+      #map-2 {
+        margin-inline-start: -0.75rem;
+      }
+
       .popover {
         background: var(--color-surface);
         border: 1px solid var(--color-border);
@@ -317,7 +321,15 @@
         width: 100%;
         max-width: min(28rem, 90vw);
         max-height: 55vh;
-        overflow-x: hidden;
+        overflow: hidden;
+      }
+
+      .popover-content {
+        max-height: 100%;
+        min-height: 50vh;
+        overflow-y: auto; /* scrolls internally */
+        padding-top: 1rem; /* optional, space below close button */
+        scrollbar-width: none;
       }
 
       .popover-close {
@@ -580,128 +592,120 @@
                 >
                   ✕
                 </button>
+                <div class="popover-content">
+                  <h3 data-i18n="typePickerTitle"></h3>
+                  <ul class="option-list">
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Disturbing staring"
+                        />
+                        <span data-i18n="disturbingStaring"></span>
+                      </label>
+                    </li>
 
-                <h3 data-i18n="typePickerTitle"></h3>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Following on foot"
+                        />
+                        <span data-i18n="followingOnFoot"></span>
+                      </label>
+                    </li>
 
-                <ul class="option-list">
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Disturbing staring"
-                      />
-                      <span data-i18n="disturbingStaring"></span>
-                    </label>
-                  </li>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Following in car"
+                        />
+                        <span data-i18n="followingInCar"></span>
+                      </label>
+                    </li>
 
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Following on foot"
-                      />
-                      <span data-i18n="followingOnFoot"></span>
-                    </label>
-                  </li>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Mocking or pointing"
+                        />
+                        <span data-i18n="mockingOrPointing"></span>
+                      </label>
+                    </li>
 
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Following in car"
-                      />
-                      <span data-i18n="followingInCar"></span>
-                    </label>
-                  </li>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Whistling or catcalling"
+                        />
+                        <span data-i18n="whistlingOrCatcalling"></span>
+                      </label>
+                    </li>
 
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Mocking or pointing"
-                      />
-                      <span data-i18n="mockingOrPointing"></span>
-                    </label>
-                  </li>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Honking"
+                        />
+                        <span data-i18n="honking"></span>
+                      </label>
+                    </li>
 
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Whistling or catcalling"
-                      />
-                      <span data-i18n="whistlingOrCatcalling"></span>
-                    </label>
-                  </li>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Yelling"
+                        />
+                        <span data-i18n="yelling"></span>
+                      </label>
+                    </li>
 
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Honking"
-                      />
-                      <span data-i18n="honking"></span>
-                    </label>
-                  </li>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Unwanted conversation attempt"
+                        />
+                        <span data-i18n="unwantedConversationAttempt"></span>
+                      </label>
+                    </li>
 
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Yelling"
-                      />
-                      <span data-i18n="yelling"></span>
-                    </label>
-                  </li>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Unwanted pickup attempt"
+                        />
+                        <span data-i18n="unwantedPickupAttempt"></span>
+                      </label>
+                    </li>
 
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Unwanted conversation attempt"
-                      />
-                      <span data-i18n="unwantedConversationAttempt"></span>
-                    </label>
-                  </li>
-
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Unwanted pickup attempt"
-                      />
-                      <span data-i18n="unwantedPickupAttempt"></span>
-                    </label>
-                  </li>
-
-                  <li>
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="entry.373709611"
-                        value="Other"
-                      />
-                      <span data-i18n="other"></span>
-                    </label>
-                  </li>
-                </ul>
-
-                <button
-                  type="button"
-                  id="close-type-picker"
-                  popovertarget="type-picker"
-                  popovertargetaction="hide"
-                  data-i18n="done"
-                ></button>
+                    <li>
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="entry.373709611"
+                          value="Other"
+                        />
+                        <span data-i18n="other"></span>
+                      </label>
+                    </li>
+                  </ul>
+                </div>
               </div>
 
               <!-- Hidden container for generated inputs -->
