@@ -907,6 +907,10 @@
           });
         }
 
+        clearMarker() {
+          this.markerLayer.clearLayers();
+        }
+
         setMarker(latlng) {
           // remove existing marker
           this.markerLayer.clearLayers();
@@ -1058,6 +1062,7 @@
               writeMap.map.setView([lat, lng], MAP_ZOOM);
               writeMap.setMarker({ lat, lng });
             } else {
+              writeMap.clearMarker();
               writeMap.map.setView(MAP_CENTER);
             }
 
@@ -1144,11 +1149,11 @@
           name: "Name",
           age: "Age",
           location: "Location",
-          searchLocation: "Search",
+          searchLocation: "🔎",
           date: "Date",
           time: "Time",
-          save: "Save",
-          clear: "Clear",
+          save: "💾",
+          clear: "🗑",
           type: "Incident Type",
           select: "Select incident type(s)",
           selected: "Selected",
@@ -1183,11 +1188,11 @@
           name: "שם",
           age: "גיל",
           location: "מיקום",
-          searchLocation: "חיפוש",
+          searchLocation: "🔍",
           date: "תאריך",
           time: "זמן",
-          save: "שמור",
-          clear: "מחק",
+          save: "💾",
+          clear: "🗑",
           type: "סוג תקרית",
           select: "בחרו מתוך האופציות הבאות",
           selected: "נבחרו",
