@@ -297,7 +297,7 @@
 
       #map,
       #map-2 {
-        height: 45vh;
+        aspect-ratio: 1 / 1;
         width: 100%;
         min-width: 100px;
         margin-bottom: var(--space);
@@ -311,10 +311,12 @@
         border-radius: var(--space-2);
         padding: calc(var(--space-3) * 1.5);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+        position: fixed;
+
+        width: 100%;
         max-width: min(28rem, 90vw);
         max-height: 55vh;
-        position: relative;
-        width: 50%;
         overflow-x: hidden;
       }
 
@@ -363,6 +365,13 @@
         to {
           opacity: 1;
           transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .popover {
+          width: 90vw;
+          max-width: 90vw;
         }
       }
 
