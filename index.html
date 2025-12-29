@@ -1062,7 +1062,7 @@
             zoom: MAP_ZOOM,
             onChange: ({ lat, lng }) => {
               els.location.value = `${lat}, ${lng}`;
-              els.location.blur();
+              document.activeElement.blur();
             },
           });
 
