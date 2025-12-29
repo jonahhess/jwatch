@@ -1061,7 +1061,7 @@
             center: MAP_CENTER,
             zoom: MAP_ZOOM,
             onChange: ({ lat, lng }) => {
-              els.location.readOnly = true;
+              els.location.inputMode = "none";
               els.location.value = `${lat}, ${lng}`;
             },
           });
@@ -1550,7 +1550,7 @@
 
       els.location.addEventListener(
         "click",
-        () => (els.location.readOnly = false)
+        () => (els.location.inputMode = "text")
       );
 
       /* --- Init --- */
