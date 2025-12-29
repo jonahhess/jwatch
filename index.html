@@ -212,6 +212,7 @@
         width: 100%;
         font-size: var(--text-base);
         min-height: 3rem;
+        color: var(--color-text);
       }
 
       @supports (-webkit-touch-callout: none) {
@@ -244,43 +245,6 @@
 
       select[multiple] {
         min-height: 8rem;
-      }
-
-      #open-type-picker,
-      #close-type-picker,
-      .option-list {
-        padding: var(--space);
-        font-size: var(--text-base);
-      }
-
-      #open-type-picker {
-        color: var(--color-text);
-        width: var(100% - 16px);
-      }
-
-      #close-type-picker {
-        width: 100%;
-      }
-
-      dialog:not([open]) {
-        display: none;
-      }
-
-      dialog {
-        border: none;
-        padding: var(--space-3);
-        border-radius: 12px;
-
-        width: min(90vw, 480px);
-        max-height: 80vh;
-
-        overflow-y: auto;
-        overflow-x: hidden;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      }
-
-      dialog::backdrop {
-        background: rgba(0, 0, 0, 0.4);
       }
 
       .option-list {
@@ -341,10 +305,6 @@
         border: 1px solid #ccc;
       }
 
-      #submit {
-        color: var(--color-text);
-      }
-
       .popover {
         background: var(--color-surface);
         border: 1px solid var(--color-border);
@@ -379,15 +339,6 @@
         cursor: pointer;
       }
 
-      @media (hover: hover) {
-        button:hover {
-          background: #f0f0f0;
-        }
-        .popover-close:hover {
-          background: #ddd;
-        }
-      }
-
       .popover-close:active {
         background: #ccc;
       }
@@ -410,6 +361,15 @@
         to {
           opacity: 1;
           transform: translateY(0);
+        }
+      }
+
+      @media (hover: hover) {
+        button:hover {
+          background: #f0f0f0;
+        }
+        .popover-close:hover {
+          background: #ddd;
         }
       }
     </style>
@@ -610,8 +570,144 @@
               <button
                 type="button"
                 id="open-type-picker"
+                popovertarget="type-picker"
+                popovertargetaction="toggle"
                 data-i18n="select"
               ></button>
+
+              <div id="type-picker" popover class="popover popover--wide">
+                <button
+                  type="button"
+                  class="popover-close"
+                  popovertarget="type-picker"
+                  popovertargetaction="hide"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+
+                <h3 data-i18n="typeModalTitle"></h3>
+
+                <ul class="option-list">
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Disturbing staring"
+                      />
+                      <span data-i18n="disturbingStaring"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Following on foot"
+                      />
+                      <span data-i18n="followingOnFoot"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Following in car"
+                      />
+                      <span data-i18n="followingInCar"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Mocking or pointing"
+                      />
+                      <span data-i18n="mockingOrPointing"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Whistling or catcalling"
+                      />
+                      <span data-i18n="whistlingOrCatcalling"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Honking"
+                      />
+                      <span data-i18n="honking"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Yelling"
+                      />
+                      <span data-i18n="yelling"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Unwanted conversation attempt"
+                      />
+                      <span data-i18n="unwantedConversationAttempt"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Unwanted pickup attempt"
+                      />
+                      <span data-i18n="unwantedPickupAttempt"></span>
+                    </label>
+                  </li>
+
+                  <li>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="entry.373709611"
+                        value="Other"
+                      />
+                      <span data-i18n="other"></span>
+                    </label>
+                  </li>
+                </ul>
+
+                <button
+                  type="button"
+                  id="close-type-picker"
+                  popovertarget="type-picker"
+                  popovertargetaction="hide"
+                  data-i18n="done"
+                ></button>
+              </div>
 
               <!-- Hidden container for generated inputs -->
               <input id="type-hidden-inputs" name="entry.373709611" hidden />
@@ -656,119 +752,6 @@
       <noscript class="card">
         <strong>JavaScript required for reporting and language toggle.</strong>
       </noscript>
-
-      <!-- Dialog -->
-      <dialog id="type-modal">
-        <div class="modal-sheet">
-          <h3 data-i18n="typeModalTitle"></h3>
-
-          <ul class="option-list">
-            <li>
-              <label>
-                <input
-                  type="checkbox"
-                  name="entry.373709611"
-                  value="Disturbing staring"
-                />
-                <span data-i18n="disturbingStaring"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input
-                  type="checkbox"
-                  name="entry.373709611"
-                  value="Following on foot"
-                />
-                <span data-i18n="followingOnFoot"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input
-                  type="checkbox"
-                  name="entry.373709611"
-                  value="Following in car"
-                />
-                <span data-i18n="followingInCar"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input
-                  type="checkbox"
-                  name="entry.373709611"
-                  value="Mocking or pointing"
-                />
-                <span data-i18n="mockingOrPointing"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input
-                  type="checkbox"
-                  name="entry.373709611"
-                  value="Whistling or catcalling"
-                />
-                <span data-i18n="whistlingOrCatcalling"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input type="checkbox" name="entry.373709611" value="Honking" />
-                <span data-i18n="honking"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input type="checkbox" name="entry.373709611" value="Yelling" />
-                <span data-i18n="yelling"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input
-                  type="checkbox"
-                  name="entry.373709611"
-                  value="Unwanted conversation attempt"
-                />
-                <span data-i18n="unwantedConversationAttempt"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input
-                  type="checkbox"
-                  name="entry.373709611"
-                  value="Unwanted pickup attempt"
-                />
-                <span data-i18n="unwantedPickupAttempt"></span>
-              </label>
-            </li>
-
-            <li>
-              <label>
-                <input type="checkbox" name="entry.373709611" value="Other" />
-                <span data-i18n="other"></span>
-              </label>
-            </li>
-          </ul>
-
-          <button
-            type="button"
-            id="close-type-picker"
-            data-i18n="done"
-          ></button>
-        </div>
-      </dialog>
     </main>
 
     <script>
@@ -805,9 +788,8 @@
         clearName: $("clear-name"),
         saveAge: $("save-age"),
         clearAge: $("clear-age"),
-        modal: $("type-modal"),
+        typePicker: $("type-picker"),
         openBtn: $("open-type-picker"),
-        closeBtn: $("close-type-picker"),
         hiddenInputs: $("type-hidden-inputs"),
       };
 
@@ -1424,30 +1406,10 @@
       window.addEventListener("online", updateOnlineStatus);
       window.addEventListener("offline", updateOnlineStatus);
 
-      /* --- Modal --- */
-
-      let lastFocusedElement = null;
-
-      els.openBtn.addEventListener("click", () => {
-        lastFocusedElement = document.activeElement;
-        els.modal.showModal();
-      });
-
-      els.modal.addEventListener("close", () => {
-        if (lastFocusedElement) {
-          lastFocusedElement.focus();
+      els.typePicker.addEventListener("toggle", (e) => {
+        if (!els.typePicker.matches(":popover-open")) {
+          updateButtonText();
         }
-        updateButtonText();
-      });
-
-      els.modal.addEventListener("click", (e) => {
-        if (e.target === els.modal) {
-          els.modal.close();
-        }
-      });
-
-      els.closeBtn.addEventListener("click", () => {
-        els.modal.close();
       });
 
       function updateButtonText() {
