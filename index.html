@@ -752,7 +752,8 @@
       <section class="card">
         <h2 data-i18n="about"></h2>
         <p data-i18n="desc"></p>
-        <p data-i18n="installGuide"></p>
+        <p data-i18n="installGuideIOS"></p>
+        <p data-i18n="installGuideAndroid"></p>
       </section>
 
       <noscript class="card">
@@ -979,7 +980,6 @@
 
           return `
           <div class="popup">
-            <strong>${row.incident_type || "Incident"}</strong>
             <table>
               ${fields
                 .map(
@@ -1006,6 +1006,7 @@
             skipEmptyLines: true,
           });
 
+          this.incidentLayer.clearLayers();
           data.map(this.normalizeRow).forEach((row) => this.addMarker(row));
         }
 
@@ -1173,8 +1174,10 @@
           unwantedPickupAttempt: "Unwanted pickup attempt",
           other: "Other (describe below)",
           done: "Done",
-          installGuide:
-            "To install on iOS: From the browser, click the 3 dots icon, Share, More, Add to home screen, (open as web app selected) and press Add",
+          installGuideIOS:
+            "To install on iOS: From the browser, click the 3 dots icon, Share, More, Add to home screen, (open as web app selected) and press Add.",
+          installGuideAndroid:
+            "To install on Android: From the browser, click the 3 dots icon and select Add to home screen.",
         },
         he: {
           title: "משמר דרום ירושלים",
@@ -1213,8 +1216,10 @@
           unwantedPickupAttempt: "ניסיון התחלה לא רצוי",
           other: "אחר (פירוט למטה)",
           done: "סיים",
-          installGuide:
-            "להתקין על אייפון: בדפדפן לוחצים על 3 נקודות , שתף, עוד, הוסף לדף הבית, והוסף",
+          installGuideIOS:
+            "להתקין על אייפון: בדפדפן לוחצים על 3 נקודות, שתף, עוד, הוסף לדף הבית, והוסף.",
+          installGuideAndroid:
+            "להתקין על אנדרויד: בדפדפן לוחצים על אפשרויות ובוחרים הוסף לדף הבית.",
         },
       };
 
@@ -1474,12 +1479,13 @@
         updateButtonText();
       }
 
-      function finalizeSubmit() {
+      async function finalizeSubmit() {
         els.form.submit();
         els.form.style.display = "none";
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
         resetIncidentTypes();
+        setTimeout(await readMap.loadIncidents(), 10000);
       }
 
       els.form.addEventListener("submit", async (e) => {
