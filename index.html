@@ -68,7 +68,7 @@
 
       html {
         font-family: var(--font-base);
-        font-size: 100%;
+        font-size: clamp(15px, 0.9vw + 0.5rem, 18px);
         line-height: 1.5;
       }
 
@@ -424,6 +424,9 @@
       ul > li > button:hover {
         background-color: #0d7ceb;
         color: white;
+      }
+      .back-button {
+        margin-bottom: 0.5rem;
       }
     </style>
   </head>
