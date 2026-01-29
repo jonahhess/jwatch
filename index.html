@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="he" dir="rtl">
   <head>
     <meta charset="utf-8" />
@@ -42,8 +42,9 @@
         --space: 0.75rem;
 
         /* Typography */
-        --font-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Helvetica, Arial, sans-serif;
+        --font-base:
+          system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
 
         --text-base: 1rem;
         --text-small: 0.875rem;
@@ -268,7 +269,9 @@
 
         border: 1px solid #ddd;
 
-        transition: background 0.2s, border-color 0.2s;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
       }
 
       .option-list input[type="checkbox"] {
@@ -299,11 +302,11 @@
       #map-2 {
         aspect-ratio: 1 / 1;
         width: 100%;
-        min-width: 100px;
+        min-width: 300px;
         margin-bottom: var(--space);
         border-radius: 6px;
         border: 1px solid #ccc;
-        max-height: 80vh;
+        max-height: 85vh;
       }
 
       #map-2 {
@@ -400,6 +403,28 @@
           background: #ddd;
         }
       }
+      ul {
+        list-style-type: none;
+      }
+      #home > ul {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        height: 100%;
+        padding-bottom: 2.5rem;
+      }
+      ul > li > button {
+        display: block;
+        background-color: #0a66c2;
+        color: white;
+        height: 15vh;
+        max-width: none;
+      }
+      ul > li > button:hover {
+        background-color: #0d7ceb;
+        color: white;
+      }
     </style>
   </head>
 
@@ -433,8 +458,46 @@
         <div id="status" role="status" aria-live="polite"></div>
       </header>
 
+      <!-- New Home Page -->
+      <section id="home" class="card">
+        <ul>
+          <li>
+            <button
+              class="home-button"
+              id="emergency-contact-card"
+              data-i18n="emergencyContact"
+            ></button>
+          </li>
+          <br />
+          <li>
+            <button
+              class="home-button"
+              id="report-card"
+              data-i18n="reportIncident"
+            ></button>
+          </li>
+          <br />
+          <li>
+            <button
+              class="home-button"
+              id="map-card"
+              data-i18n="incidentMap"
+            ></button>
+          </li>
+          <br />
+          <li>
+            <button
+              class="home-button"
+              id="about-card"
+              data-i18n="about"
+            ></button>
+          </li>
+        </ul>
+      </section>
+
       <!-- Emergency Contact Section -->
-      <section class="card">
+      <section id="emergency-contact-section" class="card" hidden>
+        <button class="back-button" data-i18n="back"></button>
         <label>
           <span data-i18n="emergencyContact"></span>
           <div class="inline-controls">
@@ -453,7 +516,8 @@
       </section>
 
       <!--- Form entries-->
-      <section class="card" id="form-section">
+      <section class="card" id="form-section" hidden>
+        <button class="back-button" data-i18n="back"></button>
         <label>
           <span data-i18n="reportIncident"></span>
         </label>
@@ -552,8 +616,8 @@
                 <input
                   id="form-date"
                   type="text"
-                  onfocus="(this.type='date')"
-                  onblur="(this.type='text')"
+                  onfocus="this.type = 'date'"
+                  onblur="this.type = 'text'"
                   name="entry.123356142"
                   data-i18nplaceholder="currentDate"
                 />
@@ -567,8 +631,8 @@
                 <input
                   id="form-time"
                   type="text"
-                  onfocus="(this.type='time')"
-                  onblur="(this.type='text')"
+                  onfocus="this.type = 'time'"
+                  onblur="this.type = 'text'"
                   name="entry.407216857"
                   data-i18nplaceholder="currentTime"
                 />
@@ -744,12 +808,14 @@
       </section>
 
       <!-- Map section -->
-      <section class="card" id="map-section">
+      <section class="card" id="map-section" hidden>
+        <button class="back-button" data-i18n="back"></button>
         <div id="map"></div>
       </section>
 
       <!-- About Section -->
-      <section class="card">
+      <section id="about-section" class="card" hidden>
+        <button class="back-button" data-i18n="back"></button>
         <h2 data-i18n="about"></h2>
         <p data-i18n="desc"></p>
         <p data-i18n="installGuideIOS"></p>
@@ -867,7 +933,7 @@
 
           this.tileLayer = L.tileLayer(
             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            { attribution: "&copy; OpenStreetMap contributors" }
+            { attribution: "&copy; OpenStreetMap contributors" },
           ).addTo(this.map);
 
           // One correct invalidate, after tiles exist
@@ -949,7 +1015,7 @@
                 ">": "&gt;",
                 '"': "&quot;",
                 "'": "&#39;",
-              }[c])
+              })[c],
           );
         }
 
@@ -979,20 +1045,20 @@
           ];
 
           return `
-          <div class="popup">
-            <table>
-              ${fields
-                .map(
-                  ([label, value]) => `
-                <tr><td><strong>${label}</strong></td><td>${this.escapeHTML(
-                    value
+            <div class="popup">
+              <table>
+                ${fields
+                  .map(
+                    ([label, value]) => `
+                  <tr><td><strong>${label}</strong></td><td>${this.escapeHTML(
+                    value,
                   )}</td></tr>
-              `
-                )
-                .join("")}
-            </table>
-          </div>
-        `;
+                `,
+                  )
+                  .join("")}
+              </table>
+            </div>
+          `;
         }
 
         async loadIncidents() {
@@ -1142,6 +1208,8 @@
           toggle: "🇮🇱",
           saved: "saved",
           cleared: "cleared",
+          incidentMap: "Incident Map",
+          back: "Back",
           emergencyContact: "Emergency Contact",
           reportIncident: "Report an Incident",
           name: "Name",
@@ -1185,6 +1253,8 @@
           toggle: "🇺🇸",
           saved: "נשמר",
           cleared: "נמחק",
+          incidentMap: "מפת תקריות",
+          back: "אחורה",
           emergencyContact: "איש קשר חירום",
           reportIncident: "טופס להגשת תלונה",
           name: "שם",
@@ -1272,7 +1342,7 @@
       }
 
       els.langToggle.addEventListener("click", () =>
-        applyLang(currentLang === "en" ? "he" : "en")
+        applyLang(currentLang === "en" ? "he" : "en"),
       );
       els.langToggle.addEventListener("keydown", (e) => {
         if (["Enter", " "].includes(e.key)) {
@@ -1350,7 +1420,7 @@
           currentLang === "en"
             ? "Emergency contact saved"
             : "איש קשר חירום נשמר",
-          2000
+          2000,
         );
         updateEmergencyState();
       }
@@ -1365,7 +1435,7 @@
           currentLang === "en"
             ? "Emergency contact cleared"
             : "איש קשר חירום נמחק",
-          2000
+          2000,
         );
         updateEmergencyState();
       }
@@ -1411,7 +1481,7 @@
       /* --- Call buttons --- */
       els.buttons.police.addEventListener(
         "click",
-        () => (window.location.href = `tel:${POLICE_NUMBER}`)
+        () => (window.location.href = `tel:${POLICE_NUMBER}`),
       );
 
       els.buttons.emergency.addEventListener("click", () => {
@@ -1436,7 +1506,7 @@
 
       function updateButtonText() {
         const checked = document.querySelectorAll(
-          'input[name="entry.373709611"]:checked'
+          'input[name="entry.373709611"]:checked',
         );
 
         if (checked.length === 0) {
@@ -1463,13 +1533,13 @@
               enableHighAccuracy: true, // try for more precise location
               timeout: 5000, // wait up to 5 seconds
               maximumAge: 0, // don't use cached location
-            }
+            },
           );
         });
 
       function resetIncidentTypes() {
         const checkboxes = document.querySelectorAll(
-          'input[name="entry.373709611"]'
+          'input[name="entry.373709611"]',
         );
 
         checkboxes.forEach((cb) => {
@@ -1510,7 +1580,7 @@
 
         // add incidents to form
         const checked = document.querySelectorAll(
-          'input[name="entry.373709611"]:checked'
+          'input[name="entry.373709611"]:checked',
         );
 
         els.hiddenInputs.value = Array.from(checked)
@@ -1554,7 +1624,7 @@
 
       els.location.addEventListener("input", () => {
         els.searchLocation.disabled = !isLikelySearchableQuery(
-          els.location.value
+          els.location.value,
         );
       });
 
@@ -1562,6 +1632,49 @@
         els.location.inputMode = "text";
         els.location.readOnly = false;
       });
+
+      /* --- New Home Page --- */
+      document.querySelectorAll(".home-button").forEach(
+        (btn) =>
+          (btn.onclick = () => {
+            document
+              .querySelectorAll(".card")
+              .forEach((card) => (card.hidden = true));
+            switch (btn.id) {
+              case "emergency-contact-card": {
+                document.getElementById("emergency-contact-section").hidden =
+                  false;
+                break;
+              }
+              case "report-card": {
+                document.getElementById("form-section").hidden = false;
+                break;
+              }
+              case "map-card": {
+                document.getElementById("map-section").hidden = false;
+                readMap.map.invalidateSize();
+                break;
+              }
+              case "about-card": {
+                document.getElementById("about-section").hidden = false;
+                break;
+              }
+              default: {
+                console.log(btn.id);
+              }
+            }
+          }),
+      );
+
+      document.querySelectorAll(".back-button").forEach(
+        (btn) =>
+          (btn.onclick = () => {
+            document
+              .querySelectorAll(".card")
+              .forEach((card) => (card.hidden = true));
+            document.getElementById("home").hidden = false;
+          }),
+      );
 
       /* --- Init --- */
       loadUser();
