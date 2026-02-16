@@ -516,6 +516,29 @@
             <button id="clear-emergency" type="button">🗑</button>
           </div>
         </label>
+          <label>
+            <span data-i18n="name"></span>
+            <div class="inline-controls">
+              <input
+                id="user-name"
+                type="text"
+              />
+              <button id="save-name" type="button">💾</button>
+              <button id="clear-name" type="button">🗑</button>
+            </div>
+          </label>
+          <label>
+            <span data-i18n="age"></span>
+            <div class="inline-controls">
+              <input
+                id="user-age"
+                type="number"
+              />
+              <button id="save-age" type="button">💾</button>
+              <button id="clear-age" type="button">🗑</button>
+            </div>
+          </label>
+        </div>
       </section>
 
       <!--- Form entries-->
@@ -537,13 +560,11 @@
                 <span data-i18n="name"></span>
                 <div class="inline-controls">
                   <input
-                    id="user-name"
+                    id="form-name"
                     type="text"
                     name="entry.1563137864"
                     autocomplete="name"
                   />
-                  <button id="save-name" type="button">💾</button>
-                  <button id="clear-name" type="button">🗑</button>
                 </div>
               </label>
             </div>
@@ -554,14 +575,11 @@
                 <span data-i18n="age"></span>
                 <div class="inline-controls">
                   <input
-                    id="user-age"
+                    id="form-age"
                     type="number"
                     name="entry.552093736"
                     min="0"
-                    value="0"
                   />
-                  <button id="save-age" type="button">💾</button>
-                  <button id="clear-age" type="button">🗑</button>
                 </div>
               </label>
             </div>
@@ -840,6 +858,8 @@
         status: $("status"),
         langToggle: $("lang-toggle"),
         form: $("form"),
+        formName: $("form-name"),
+        formAge: $("form-age"),
         location: $("location"),
         formDate: $("form-date"),
         formTime: $("form-time"),
@@ -1565,7 +1585,9 @@
         e.preventDefault();
         const now = new Date();
 
-        // Fill date and time if empty
+        // Fill if empty
+        els.formName.value ||= els.name.value || ""
+        els.formAge.value ||= els.age.value || "" 
         els.formDate.value ||= now.toISOString().split("T")[0];
         els.formTime.value ||= now.toTimeString().slice(0, 5);
 
@@ -1636,6 +1658,11 @@
         els.location.readOnly = false;
       });
 
+      function updateFormState() {
+        els.formName.placeholder = els.name.value;
+        els.formAge.placeholder = els.age.value;
+      }
+
       /* --- New Home Page --- */
       document.querySelectorAll(".home-button").forEach(
         (btn) =>
@@ -1650,6 +1677,7 @@
                 break;
               }
               case "report-card": {
+                updateFormState()
                 document.getElementById("form-section").hidden = false;
                 break;
               }
