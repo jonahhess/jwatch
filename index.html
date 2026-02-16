@@ -193,7 +193,7 @@
       .form-grid {
         display: grid;
         grid-template-columns: 1fr;
-        row-gap: var(--space-3);
+        row-gap: var(--space-2);
       }
 
       .form-row {
@@ -428,6 +428,11 @@
       .back-button {
         margin-bottom: 0.5rem;
       }
+
+      .home-button {
+        margin-inline-start: -1.3rem;
+        margin-top: 1rem;
+      }
     </style>
   </head>
 
@@ -474,8 +479,8 @@
           <li>
             <button
               class="home-button"
-              id="emergency-contact-card"
-              data-i18n="emergencyContact"
+              id="user-information-card"
+              data-i18n="userInformation"
             ></button>
           </li>
           <br />
@@ -1233,6 +1238,7 @@
           cleared: "cleared",
           incidentMap: "Incident Map",
           back: "Back",
+          userInformation: "User Information",
           emergencyContact: "Emergency Contact",
           reportIncident: "Report an Incident",
           name: "Name",
@@ -1278,6 +1284,7 @@
           cleared: "נמחק",
           incidentMap: "מפת תקריות",
           back: "אחורה",
+          userInformation: "המידע שלי",
           emergencyContact: "איש קשר חירום",
           reportIncident: "טופס להגשת תלונה",
           name: "שם",
@@ -1671,7 +1678,7 @@
               .querySelectorAll(".card")
               .forEach((card) => (card.hidden = true));
             switch (btn.id) {
-              case "emergency-contact-card": {
+              case "user-information-card": {
                 document.getElementById("emergency-contact-section").hidden =
                   false;
                 break;
