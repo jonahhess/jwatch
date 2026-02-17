@@ -285,10 +285,6 @@
         pointer-events: none;
       }
 
-      .option-list label:hover {
-        background: #f5f7fa;
-      }
-
       .option-list input:checked + span {
         font-weight: var(--text-bold);
       }
@@ -407,16 +403,26 @@
         .popover-close:hover {
           background: #ddd;
         }
+        .option-list label:hover {
+        background: #f5f7fa;
+        }
+        ul > li > button:hover {
+          background-color: #0d7ceb;
+          color: white;
+        }
       }
+      
       ul {
         list-style-type: none;
       }
+
+      #home {
+        padding: 0;
+      }
+
       #home > ul {
         display: flex;
         flex-direction: column;
-        align-items: stretch;
-        justify-content: space-evenly;
-        height: 100%;
       }
       ul > li > button {
         display: block;
@@ -424,10 +430,6 @@
         color: white;
         height: 15vh;
         max-width: none;
-      }
-      ul > li > button:hover {
-        background-color: #0d7ceb;
-        color: white;
       }
       .back-button {
         margin-bottom: 0.5rem;
