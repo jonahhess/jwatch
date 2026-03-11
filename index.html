@@ -1037,7 +1037,7 @@
         async init() {
           await super.init();
           this.incidentLayer = L.layerGroup().addTo(this.map);
-          this.loadIncidents();
+          await this.loadIncidents();
         }
 
         escapeHTML(str) {
@@ -1120,6 +1120,12 @@
           const popup = this.buildPopup(row);
           L.marker([lat, lng]).bindPopup(popup).addTo(this.incidentLayer);
         }
+
+        getMarkers() {
+          const markers = [];
+          this.incidentLayer.eachLayer(layer => markers.push(layer.getLatLng()));
+          return markers;
+        } 
       }
 
       let readMap;
@@ -1729,6 +1735,50 @@
       updateOnlineStatus();
       applyLang(currentLang);
 
+      function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of the Earth in kilometers
+
+        // Convert degrees to radians
+        const toRadians = (deg) => deg * (Math.PI / 180);
+        const rlat1 = toRadians(lat1);
+        const rlat2 = toRadians(lat2);
+        const dLat = toRadians(lat2 - lat1);
+        const dLon = toRadians(lon2 - lon1);
+
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(rlat1) * Math.cos(rlat2) *
+          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c; // Distance in kilometers
+
+        return distance;
+      }
+
+      function closestMarker(start, arr) {
+          if (arr.length < 1) {
+              return null;
+          }
+
+          if (arr.length === 1) {
+              return arr[0];
+          }
+          
+          const {lat, lng} = start;
+          let closestDistance = Infinity;
+          let bestMarker = 0;
+          
+          for (const [index, el] of Object.entries(arr)) {
+              let distance = calculateHaversineDistance(lat,lng,el.lat,el.lng);
+              if (distance < closestDistance) {
+                  closestDistance = distance;
+                  bestMarker = index;
+              }
+          }
+
+          return bestMarker;
+      }
       /* --- Service Worker --- */
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
