@@ -43,7 +43,7 @@
 
         /* Typography */
         --font-base:
-          system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
           Helvetica, Arial, sans-serif;
 
         --text-base: 1rem;
@@ -191,7 +191,7 @@
         border: 1px solid var(--color-border);
       }
 
-      html[dir="rtl"] {
+      html[dir='rtl'] {
         direction: rtl;
       }
 
@@ -233,8 +233,8 @@
         button {
           -webkit-tap-highlight-color: initial;
         }
-        input[type="date"],
-        input[type="time"] {
+        input[type='date'],
+        input[type='time'] {
           width: calc(100% - 16px);
         }
       }
@@ -279,7 +279,7 @@
           border-color 0.2s;
       }
 
-      .option-list input[type="checkbox"] {
+      .option-list input[type='checkbox'] {
         position: absolute;
         opacity: 0;
         pointer-events: none;
@@ -290,7 +290,7 @@
       }
 
       .option-list input:checked + span::before {
-        content: "✓";
+        content: '✓';
         display: inline-block;
         margin-inline-end: var(--space-2);
       }
@@ -404,14 +404,14 @@
           background: #ddd;
         }
         .option-list label:hover {
-        background: #f5f7fa;
+          background: #f5f7fa;
         }
         ul > li > button:hover {
           background-color: #0d7ceb;
           color: white;
         }
       }
-      
+
       ul {
         list-style-type: none;
       }
@@ -527,30 +527,22 @@
             <button id="clear-emergency" type="button">🗑</button>
           </div>
         </label>
-          <label>
-            <span data-i18n="name"></span>
-            <div class="inline-controls">
-              <input
-                id="user-name"
-                type="text"
-                autocomplete="name"
-              />
-              <button id="save-name" type="button">💾</button>
-              <button id="clear-name" type="button">🗑</button>
-            </div>
-          </label>
-          <label>
-            <span data-i18n="age"></span>
-            <div class="inline-controls">
-              <input
-                id="user-age"
-                type="number"
-              />
-              <button id="save-age" type="button">💾</button>
-              <button id="clear-age" type="button">🗑</button>
-            </div>
-          </label>
-        </div>
+        <label>
+          <span data-i18n="name"></span>
+          <div class="inline-controls">
+            <input id="user-name" type="text" autocomplete="name" />
+            <button id="save-name" type="button">💾</button>
+            <button id="clear-name" type="button">🗑</button>
+          </div>
+        </label>
+        <label>
+          <span data-i18n="age"></span>
+          <div class="inline-controls">
+            <input id="user-age" type="number" />
+            <button id="save-age" type="button">💾</button>
+            <button id="clear-age" type="button">🗑</button>
+          </div>
+        </label>
       </section>
 
       <!--- Form entries-->
@@ -844,6 +836,7 @@
       <section class="card" id="map-section" hidden>
         <button class="back-button" data-i18n="back"></button>
         <div id="map"></div>
+        <button id="closest-button">Find closest point</button>
       </section>
 
       <!-- About Section -->
@@ -862,43 +855,44 @@
 
     <script>
       /* --- DOM helpers --- */
-      const $ = (id) => document.getElementById(id);
+      const $ = id => document.getElementById(id);
 
       const els = {
         html: document.documentElement,
-        offlineBanner: $("offline-banner"),
-        status: $("status"),
-        langToggle: $("lang-toggle"),
-        form: $("form"),
-        formName: $("form-name"),
-        formAge: $("form-age"),
-        location: $("location"),
-        formDate: $("form-date"),
-        formTime: $("form-time"),
-        formDesc: $("form-desc"),
-        submitButton: $("submitBtn"),
-        successMessage: $("form-success"),
-        anotherReport: $("another-report"),
-        map: $("map"),
-        searchLocation: $("search-location"),
-        popover: $("location-picker"),
-        map2: $("map-2"),
+        offlineBanner: $('offline-banner'),
+        status: $('status'),
+        langToggle: $('lang-toggle'),
+        form: $('form'),
+        formName: $('form-name'),
+        formAge: $('form-age'),
+        location: $('location'),
+        formDate: $('form-date'),
+        formTime: $('form-time'),
+        formDesc: $('form-desc'),
+        submitButton: $('submitBtn'),
+        successMessage: $('form-success'),
+        anotherReport: $('another-report'),
+        map: $('map'),
+        searchLocation: $('search-location'),
+        popover: $('location-picker'),
+        map2: $('map-2'),
         buttons: {
-          police: $("call-police"),
-          emergency: $("call-emergency-contact"),
+          police: $('call-police'),
+          emergency: $('call-emergency-contact')
         },
-        emergency: $("user-emergency-contact"),
-        saveEmergency: $("save-emergency"),
-        clearEmergency: $("clear-emergency"),
-        name: $("user-name"),
-        age: $("user-age"),
-        saveName: $("save-name"),
-        clearName: $("clear-name"),
-        saveAge: $("save-age"),
-        clearAge: $("clear-age"),
-        typePicker: $("type-picker"),
-        openBtn: $("open-type-picker"),
-        hiddenInputs: $("type-hidden-inputs"),
+        emergency: $('user-emergency-contact'),
+        saveEmergency: $('save-emergency'),
+        clearEmergency: $('clear-emergency'),
+        name: $('user-name'),
+        age: $('user-age'),
+        saveName: $('save-name'),
+        clearName: $('clear-name'),
+        saveAge: $('save-age'),
+        clearAge: $('clear-age'),
+        typePicker: $('type-picker'),
+        openBtn: $('open-type-picker'),
+        hiddenInputs: $('type-hidden-inputs'),
+        closestButton: $('closest-button')
       };
 
       /*********************************************************
@@ -909,7 +903,7 @@
       const MAP_ZOOM = 13;
 
       const SHEET_URL =
-        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5GK9JffVcBGw4sN4Wda3jKCIdGBibjFMsHHIc1Xsc85sJvAVXson-B7v2L5imp-PdQy623QxA8J_R/pub?output=csv";
+        'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5GK9JffVcBGw4sN4Wda3jKCIdGBibjFMsHHIc1Xsc85sJvAVXson-B7v2L5imp-PdQy623QxA8J_R/pub?output=csv';
 
       /*********************************************************
        * SHARED LOADER
@@ -920,7 +914,7 @@
 
         function loadScript(src) {
           return new Promise((resolve, reject) => {
-            const s = document.createElement("script");
+            const s = document.createElement('script');
             s.src = src;
             s.onload = resolve;
             s.onerror = reject;
@@ -929,8 +923,8 @@
         }
 
         function loadCSS(href) {
-          const l = document.createElement("link");
-          l.rel = "stylesheet";
+          const l = document.createElement('link');
+          l.rel = 'stylesheet';
           l.href = href;
           document.head.appendChild(l);
         }
@@ -938,11 +932,11 @@
         async function load() {
           if (loaded) return;
 
-          loadCSS("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
+          loadCSS('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 
           await Promise.all([
-            loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"),
-            loadScript("https://unpkg.com/papaparse@5.4.1/papaparse.min.js"),
+            loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'),
+            loadScript('https://unpkg.com/papaparse@5.4.1/papaparse.min.js')
           ]);
 
           loaded = true;
@@ -963,16 +957,16 @@
           await LeafletLoader.load();
 
           this.map = L.map(this.containerId, {
-            zoomControl: true,
+            zoomControl: true
           }).setView(this.center, this.zoom);
 
           this.tileLayer = L.tileLayer(
-            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            { attribution: "&copy; OpenStreetMap contributors" },
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            { attribution: '&copy; OpenStreetMap contributors' }
           ).addTo(this.map);
 
           // One correct invalidate, after tiles exist
-          this.tileLayer.once("load", () => {
+          this.tileLayer.once('load', () => {
             this.map.invalidateSize();
           });
         }
@@ -992,7 +986,7 @@
           this.markerLayer = L.layerGroup().addTo(this.map);
 
           // click handler to place marker
-          this.map.on("click", (e) => {
+          this.map.on('click', e => {
             this.setMarker(e.latlng);
           });
         }
@@ -1008,20 +1002,20 @@
           // add new marker
           this.marker = L.marker(latlng, {
             draggable: true,
-            opacity: 0.85,
+            opacity: 0.85
           }).addTo(this.markerLayer);
 
           // report location to callback
           this.emit(latlng);
 
           // update callback on drag
-          this.marker.on("dragend", (ev) => {
+          this.marker.on('dragend', ev => {
             this.emit(ev.target.getLatLng());
           });
         }
 
         emit({ lat, lng }) {
-          if (typeof this.onChange === "function") {
+          if (typeof this.onChange === 'function') {
             this.onChange({ lat: +lat.toFixed(6), lng: +lng.toFixed(6) });
           }
         }
@@ -1043,40 +1037,40 @@
         escapeHTML(str) {
           return String(str).replace(
             /[&<>"']/g,
-            (c) =>
+            c =>
               ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;",
-              })[c],
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+              })[c]
           );
         }
 
         normalizeRow(raw) {
           return {
-            timestamp: raw["Timestamp"],
-            name: raw["Your name (optional)"],
-            age: raw["Age"],
-            location: raw["Location of incident (address and/or coordinates) "],
-            date: raw["Date of incident (YYYY-MM-DD)"],
-            time: raw["Time of incident (HH:MM (24h))"],
-            incident_type: raw["Type of incident "],
-            description: raw["Description of incident and/or individuals"],
+            timestamp: raw['Timestamp'],
+            name: raw['Your name (optional)'],
+            age: raw['Age'],
+            location: raw['Location of incident (address and/or coordinates) '],
+            date: raw['Date of incident (YYYY-MM-DD)'],
+            time: raw['Time of incident (HH:MM (24h))'],
+            incident_type: raw['Type of incident '],
+            description: raw['Description of incident and/or individuals']
           };
         }
 
         buildPopup(row) {
           const fields = [
-            ["Type", row.incident_type],
-            ["Description", row.description],
-            ["Date", row.date],
-            ["Time", row.time],
-            ["Location", row.location],
-            ["Age", row.age],
-            ["Reported by", row.name],
-            ["Submitted", row.timestamp],
+            ['Type', row.incident_type],
+            ['Description', row.description],
+            ['Date', row.date],
+            ['Time', row.time],
+            ['Location', row.location],
+            ['Age', row.age],
+            ['Reported by', row.name],
+            ['Submitted', row.timestamp]
           ];
 
           return `
@@ -1086,11 +1080,11 @@
                   .map(
                     ([label, value]) => `
                   <tr><td><strong>${label}</strong></td><td>${this.escapeHTML(
-                    value,
+                    value
                   )}</td></tr>
-                `,
+                `
                   )
-                  .join("")}
+                  .join('')}
               </table>
             </div>
           `;
@@ -1104,17 +1098,17 @@
 
           const { data } = Papa.parse(csvText, {
             header: true,
-            skipEmptyLines: true,
+            skipEmptyLines: true
           });
 
           this.incidentLayer.clearLayers();
-          data.map(this.normalizeRow).forEach((row) => this.addMarker(row));
+          data.map(this.normalizeRow).forEach(row => this.addMarker(row));
         }
 
         addMarker(row) {
           if (!row.location) return;
 
-          const [lat, lng] = row.location.split(",").map(Number);
+          const [lat, lng] = row.location.split(',').map(Number);
           if (isNaN(lat) || isNaN(lng)) return;
 
           const popup = this.buildPopup(row);
@@ -1123,20 +1117,22 @@
 
         getMarkers() {
           const markers = [];
-          this.incidentLayer.eachLayer(layer => markers.push(layer.getLatLng()));
+          this.incidentLayer.eachLayer(layer =>
+            markers.push({ layer, latLng: layer.getLatLng() })
+          );
           return markers;
-        } 
+        }
       }
 
       let readMap;
 
-      document.addEventListener("DOMContentLoaded", async () => {
+      document.addEventListener('DOMContentLoaded', async () => {
         if (!els.map) return;
 
-        readMap = new ReadMap("map", {
+        readMap = new ReadMap('map', {
           center: MAP_CENTER,
           zoom: MAP_ZOOM,
-          sheetUrl: SHEET_URL,
+          sheetUrl: SHEET_URL
         });
 
         await readMap.init();
@@ -1144,14 +1140,14 @@
 
       let writeMap;
 
-      els.popover.addEventListener("toggle", (e) => {
-        if (e.newState !== "open") {
+      els.popover.addEventListener('toggle', e => {
+        if (e.newState !== 'open') {
           els.location.readOnly = false;
-          els.location.inputMode = "text";
+          els.location.inputMode = 'text';
           return;
         }
         els.location.readOnly = true;
-        els.location.inputMode = "none";
+        els.location.inputMode = 'none';
         els.location.blur(); // Remove focus if browser auto-focuses
 
         requestAnimationFrame(() => {
@@ -1161,7 +1157,7 @@
 
             const val = els.location.value;
             if (looksLikeCoordinates(val)) {
-              const [lat, lng] = val.split(",").map(Number);
+              const [lat, lng] = val.split(',').map(Number);
               writeMap.map.setView([lat, lng], MAP_ZOOM);
               writeMap.setMarker({ lat, lng });
             } else {
@@ -1173,19 +1169,19 @@
           }
 
           // Otherwise, create the map
-          writeMap = new WriteMap("map-2", {
+          writeMap = new WriteMap('map-2', {
             center: MAP_CENTER,
             zoom: MAP_ZOOM,
             onChange: ({ lat, lng }) => {
               els.location.value = `${lat}, ${lng}`;
-            },
+            }
           });
 
           writeMap.init().then(() => {
             // After init, if input has valid coordinates, center + marker
             const val = els.location.value;
             if (looksLikeCoordinates(val)) {
-              const [lat, lng] = val.split(",").map(Number);
+              const [lat, lng] = val.split(',').map(Number);
               writeMap.map.setView([lat, lng], MAP_ZOOM);
               writeMap.setMarker({ lat, lng });
             }
@@ -1193,27 +1189,75 @@
         });
       });
 
+      function getClosestPoint(myLat, myLon, markers) {
+        if (!markers.length || isNaN(myLat) || isNaN(myLon)) return;
+        let closest;
+        let leastDistance = Infinity;
+
+        for (const marker of markers) {
+          const { lat, lng } = marker.latLng;
+          let currentDistance = calculateHaversineDistance(
+            Number(myLat),
+            Number(myLon),
+            lat,
+            lng
+          );
+          if (currentDistance < leastDistance) {
+            leastDistance = currentDistance;
+            closest = marker;
+          }
+        }
+
+        return closest;
+      }
+
+      els.closestButton.onclick = async () => {
+        const location = await getLocation();
+        if (typeof location !== 'string') {
+          return;
+        }
+
+        const a = location.split(', ');
+
+        var greenIcon = new L.Icon({
+          iconUrl:
+            'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+          shadowUrl:
+            'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+
+        getClosestPoint(
+          Number(a[0]),
+          Number(a[1]),
+          readMap.getMarkers()
+        )?.layer?.setIcon(greenIcon);
+      };
+
       function looksLikeCoordinates(value) {
         return /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(value);
       }
 
       async function geocodeLocationText(text) {
         const url =
-          "https://nominatim.openstreetmap.org/search?" +
+          'https://nominatim.openstreetmap.org/search?' +
           new URLSearchParams({
             q: text,
-            format: "json",
+            format: 'json',
             limit: 1,
-            countrycodes: "il",
-            viewbox: "35.14389,31.712372,35.287743,31.868845",
-            bounded: 1,
+            countrycodes: 'il',
+            viewbox: '35.14389,31.712372,35.287743,31.868845',
+            bounded: 1
           });
 
         const res = await fetch(url, {
           headers: {
-            Accept: "application/json",
-            "User-Agent": "SJWatch/1.0 (jonahhessdev@gmail.com)",
-          },
+            Accept: 'application/json',
+            'User-Agent': 'SJWatch/1.0 (jonahhessdev@gmail.com)'
+          }
         });
 
         if (!res.ok) return null;
@@ -1231,122 +1275,122 @@
 
       /* --- Constants --- */
       const GOOGLE_FORM_BASE =
-        "https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true";
-      const POLICE_NUMBER = "100";
+        'https://docs.google.com/forms/d/e/1FAIpQLSdXEYB3aVM8UUtkrnIdSF6xs2jmmYz9v2zqvz366n5f9U8nqQ/viewform?embedded=true';
+      const POLICE_NUMBER = '100';
 
       const KEYS = {
-        name: "sjw-user-name",
-        age: "sjw-user-age",
-        emergency: "sjw-user-emergency-contact",
+        name: 'sjw-user-name',
+        age: 'sjw-user-age',
+        emergency: 'sjw-user-emergency-contact'
       };
 
       /* --- Translations --- */
       const translations = {
         en: {
-          title: "South JLM Watch",
+          title: 'South JLM Watch',
           offline:
-            "⚠️ Offline mode: Reporting and map viewing require an internet connection.",
-          toggle: "🇮🇱",
-          saved: "saved",
-          cleared: "cleared",
-          incidentMap: "Incident Map",
-          back: "Back",
-          userInformation: "User Information",
-          emergencyContact: "Emergency Contact",
-          reportIncident: "Report an Incident",
-          name: "Name",
-          age: "Age",
-          location: "Location",
-          searchLocation: "🔎",
-          date: "Date",
-          time: "Time",
-          type: "Incident Type",
-          select: "Select incident type(s)",
-          selected: "Selected",
-          description: "Description",
-          submit: "Submit",
-          submitAnother: "Submit another report",
+            '⚠️ Offline mode: Reporting and map viewing require an internet connection.',
+          toggle: '🇮🇱',
+          saved: 'saved',
+          cleared: 'cleared',
+          incidentMap: 'Incident Map',
+          back: 'Back',
+          userInformation: 'User Information',
+          emergencyContact: 'Emergency Contact',
+          reportIncident: 'Report an Incident',
+          name: 'Name',
+          age: 'Age',
+          location: 'Location',
+          searchLocation: '🔎',
+          date: 'Date',
+          time: 'Time',
+          type: 'Incident Type',
+          select: 'Select incident type(s)',
+          selected: 'Selected',
+          description: 'Description',
+          submit: 'Submit',
+          submitAnother: 'Submit another report',
           prefillHint:
-            "The form will be prefilled with your location, cached name & age, and the current date/time.",
-          about: "About",
-          desc: "This is a website dedicated to keeping kids safe on the streets.",
+            'The form will be prefilled with your location, cached name & age, and the current date/time.',
+          about: 'About',
+          desc: 'This is a website dedicated to keeping kids safe on the streets.',
           privacy:
-            "No authentication. Public data only. Do not include personal or sensitive information.",
-          typePickerTitle: "Select all that apply",
-          disturbingStaring: "Disturbing staring",
-          followingOnFoot: "Following on foot",
-          followingInCar: "Following in car",
-          mockingOrPointing: "Mocking or pointing",
-          whistlingOrCatcalling: "Whistling or catcalling",
-          honking: "Honking",
-          yelling: "Yelling",
-          unwantedConversationAttempt: "Unwanted conversation attempt",
-          unwantedPickupAttempt: "Unwanted pickup attempt",
-          other: "Other (describe below)",
-          done: "Done",
+            'No authentication. Public data only. Do not include personal or sensitive information.',
+          typePickerTitle: 'Select all that apply',
+          disturbingStaring: 'Disturbing staring',
+          followingOnFoot: 'Following on foot',
+          followingInCar: 'Following in car',
+          mockingOrPointing: 'Mocking or pointing',
+          whistlingOrCatcalling: 'Whistling or catcalling',
+          honking: 'Honking',
+          yelling: 'Yelling',
+          unwantedConversationAttempt: 'Unwanted conversation attempt',
+          unwantedPickupAttempt: 'Unwanted pickup attempt',
+          other: 'Other (describe below)',
+          done: 'Done',
           installGuideIOS:
-            "To install on iOS: From the browser, click the 3 dots icon, Share, More, Add to home screen, (open as web app selected) and press Add.",
+            'To install on iOS: From the browser, click the 3 dots icon, Share, More, Add to home screen, (open as web app selected) and press Add.',
           installGuideAndroid:
-            "To install on Android: From the browser, click the 3 dots icon and select Add to home screen.",
+            'To install on Android: From the browser, click the 3 dots icon and select Add to home screen.'
         },
         he: {
-          title: "משמר דרום ירושלים",
-          offline: "⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.",
-          toggle: "🇺🇸",
-          saved: "נשמר",
-          cleared: "נמחק",
-          incidentMap: "מפת תקריות",
-          back: "אחורה",
-          userInformation: "המידע שלי",
-          emergencyContact: "איש קשר חירום",
-          reportIncident: "טופס להגשת תלונה",
-          name: "שם",
-          age: "גיל",
-          location: "מיקום",
-          searchLocation: "🔍",
-          date: "תאריך",
-          time: "זמן",
-          type: "סוג תקרית",
-          select: "בחרו מתוך האופציות הבאות",
-          selected: "נבחרו",
-          description: "הסבר",
-          submit: "הגשת תלונה",
-          submitAnother: "להגיש עוד תלונה",
-          prefillHint: "הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.",
-          about: "אודות",
-          desc: "זה אתר שמוקדש לשמירה על ילדינו ברחוב.",
+          title: 'משמר דרום ירושלים',
+          offline: '⚠️ לא מחובר לאינטרנט. הטופס והמפה לא יעבדו.',
+          toggle: '🇺🇸',
+          saved: 'נשמר',
+          cleared: 'נמחק',
+          incidentMap: 'מפת תקריות',
+          back: 'אחורה',
+          userInformation: 'המידע שלי',
+          emergencyContact: 'איש קשר חירום',
+          reportIncident: 'טופס להגשת תלונה',
+          name: 'שם',
+          age: 'גיל',
+          location: 'מיקום',
+          searchLocation: '🔍',
+          date: 'תאריך',
+          time: 'זמן',
+          type: 'סוג תקרית',
+          select: 'בחרו מתוך האופציות הבאות',
+          selected: 'נבחרו',
+          description: 'הסבר',
+          submit: 'הגשת תלונה',
+          submitAnother: 'להגיש עוד תלונה',
+          prefillHint: 'הטופס ימולא במיקום, שם וגיל ושעת/תאריך הדיווח.',
+          about: 'אודות',
+          desc: 'זה אתר שמוקדש לשמירה על ילדינו ברחוב.',
           privacy:
-            "ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.",
-          typePickerTitle: "בחר/י את כל האפשרויות המתאימות",
-          disturbingStaring: "בהייה מטרידה",
-          followingOnFoot: "מעקב רגלי",
-          followingInCar: "מעקב ברכב",
-          mockingOrPointing: "לעג או הצבעה",
-          whistlingOrCatcalling: "שריקות או קריאות",
-          honking: "צפירה",
-          yelling: "צעקות",
-          unwantedConversationAttempt: "ניסיון שיחה לא רצוי",
-          unwantedPickupAttempt: "ניסיון התחלה לא רצוי",
-          other: "אחר (פירוט למטה)",
-          done: "סיים",
+            'ללא אימות. נתונים גלויים לציבור בלבד. אל תכללו מידע אישי או רגיש.',
+          typePickerTitle: 'בחר/י את כל האפשרויות המתאימות',
+          disturbingStaring: 'בהייה מטרידה',
+          followingOnFoot: 'מעקב רגלי',
+          followingInCar: 'מעקב ברכב',
+          mockingOrPointing: 'לעג או הצבעה',
+          whistlingOrCatcalling: 'שריקות או קריאות',
+          honking: 'צפירה',
+          yelling: 'צעקות',
+          unwantedConversationAttempt: 'ניסיון שיחה לא רצוי',
+          unwantedPickupAttempt: 'ניסיון התחלה לא רצוי',
+          other: 'אחר (פירוט למטה)',
+          done: 'סיים',
           installGuideIOS:
-            "להתקין על אייפון: בדפדפן לוחצים על 3 נקודות, שתף, עוד, הוסף לדף הבית, והוסף.",
+            'להתקין על אייפון: בדפדפן לוחצים על 3 נקודות, שתף, עוד, הוסף לדף הבית, והוסף.',
           installGuideAndroid:
-            "להתקין על אנדרויד: בדפדפן לוחצים על אפשרויות ובוחרים הוסף לדף הבית.",
-        },
+            'להתקין על אנדרויד: בדפדפן לוחצים על אפשרויות ובוחרים הוסף לדף הבית.'
+        }
       };
 
       const placeholders = {
         en: {
-          currentLocation: "Current Location",
-          currentDate: "Current Date",
-          currentTime: "Current Time",
+          currentLocation: 'Current Location',
+          currentDate: 'Current Date',
+          currentTime: 'Current Time'
         },
         he: {
-          currentLocation: "מיקום נוכחי",
-          currentDate: "תאריך עדכני",
-          currentTime: "זמן נוכחי",
-        },
+          currentLocation: 'מיקום נוכחי',
+          currentDate: 'תאריך עדכני',
+          currentTime: 'זמן נוכחי'
+        }
       };
 
       /* --- Status --- */
@@ -1355,18 +1399,18 @@
         els.status.textContent = text;
         clearTimeout(showStatus._t);
         if (ms > 0)
-          showStatus._t = setTimeout(() => (els.status.textContent = ""), ms);
+          showStatus._t = setTimeout(() => (els.status.textContent = ''), ms);
       }
 
       /* --- Language --- */
-      let currentLang = localStorage.getItem("sjw-lang") || "he";
+      let currentLang = localStorage.getItem('sjw-lang') || 'he';
       function updateText(lang) {
-        document.querySelectorAll("[data-i18n]").forEach((el) => {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
           const key = el.dataset.i18n;
           if (translations[lang] && translations[lang][key])
             el.textContent = translations[lang][key];
         });
-        document.querySelectorAll("[data-i18nplaceholder]").forEach((el) => {
+        document.querySelectorAll('[data-i18nplaceholder]').forEach(el => {
           const key = el.dataset.i18nplaceholder;
           if (placeholders[lang] && placeholders[lang][key])
             el.placeholder = placeholders[lang][key];
@@ -1378,17 +1422,17 @@
       function applyLang(lang) {
         currentLang = lang;
         els.html.lang = lang;
-        els.html.dir = lang === "he" ? "rtl" : "ltr";
-        localStorage.setItem("sjw-lang", lang);
+        els.html.dir = lang === 'he' ? 'rtl' : 'ltr';
+        localStorage.setItem('sjw-lang', lang);
         updateText(lang);
-        els.langToggle.setAttribute("aria-pressed", lang === "he");
+        els.langToggle.setAttribute('aria-pressed', lang === 'he');
       }
 
-      els.langToggle.addEventListener("click", () =>
-        applyLang(currentLang === "en" ? "he" : "en"),
+      els.langToggle.addEventListener('click', () =>
+        applyLang(currentLang === 'en' ? 'he' : 'en')
       );
-      els.langToggle.addEventListener("keydown", (e) => {
-        if (["Enter", " "].includes(e.key)) {
+      els.langToggle.addEventListener('keydown', e => {
+        if (['Enter', ' '].includes(e.key)) {
           e.preventDefault();
           e.target.click();
         }
@@ -1396,14 +1440,14 @@
 
       /* --- User cache --- */
       function loadUser() {
-        els.name.value = localStorage.getItem(KEYS.name) || "";
-        els.age.value = localStorage.getItem(KEYS.age) || "";
-        els.emergency.value = localStorage.getItem(KEYS.emergency) || "";
+        els.name.value = localStorage.getItem(KEYS.name) || '';
+        els.age.value = localStorage.getItem(KEYS.age) || '';
+        els.emergency.value = localStorage.getItem(KEYS.emergency) || '';
       }
 
       function saveName() {
         const val = els.name.value.trim();
-        const stored = localStorage.getItem(KEYS.name) || "";
+        const stored = localStorage.getItem(KEYS.name) || '';
 
         if (val === stored) return;
 
@@ -1411,7 +1455,7 @@
           ? localStorage.setItem(KEYS.name, val)
           : localStorage.removeItem(KEYS.name);
 
-        showStatus(currentLang === "en" ? "Name saved" : "השם נשמר", 2000);
+        showStatus(currentLang === 'en' ? 'Name saved' : 'השם נשמר', 2000);
         updateNameState();
       }
 
@@ -1419,15 +1463,15 @@
         if (localStorage.getItem(KEYS.name) === null) return;
 
         localStorage.removeItem(KEYS.name);
-        els.name.value = "";
+        els.name.value = '';
 
-        showStatus(currentLang === "en" ? "Name cleared" : "השם נמחק", 2000);
+        showStatus(currentLang === 'en' ? 'Name cleared' : 'השם נמחק', 2000);
         updateNameState();
       }
 
       function saveAge() {
         const val = els.age.value.trim();
-        const stored = localStorage.getItem(KEYS.age) || "";
+        const stored = localStorage.getItem(KEYS.age) || '';
 
         if (val === stored) return;
 
@@ -1435,7 +1479,7 @@
           ? localStorage.setItem(KEYS.age, val)
           : localStorage.removeItem(KEYS.age);
 
-        showStatus(currentLang === "en" ? "Age saved" : "גיל נשמר", 2000);
+        showStatus(currentLang === 'en' ? 'Age saved' : 'גיל נשמר', 2000);
         updateAgeState();
       }
 
@@ -1443,15 +1487,15 @@
         if (localStorage.getItem(KEYS.age) === null) return;
 
         localStorage.removeItem(KEYS.age);
-        els.age.value = "";
+        els.age.value = '';
 
-        showStatus(currentLang === "en" ? "Age cleared" : "גיל נמחק", 2000);
+        showStatus(currentLang === 'en' ? 'Age cleared' : 'גיל נמחק', 2000);
         updateAgeState();
       }
 
       function saveEmergency() {
         const val = els.emergency.value.trim();
-        const stored = localStorage.getItem(KEYS.emergency) || "";
+        const stored = localStorage.getItem(KEYS.emergency) || '';
 
         if (val === stored) return;
 
@@ -1460,10 +1504,10 @@
           : localStorage.removeItem(KEYS.emergency);
 
         showStatus(
-          currentLang === "en"
-            ? "Emergency contact saved"
-            : "איש קשר חירום נשמר",
-          2000,
+          currentLang === 'en'
+            ? 'Emergency contact saved'
+            : 'איש קשר חירום נשמר',
+          2000
         );
         updateEmergencyState();
       }
@@ -1472,62 +1516,62 @@
         if (localStorage.getItem(KEYS.emergency) === null) return;
 
         localStorage.removeItem(KEYS.emergency);
-        els.emergency.value = "";
+        els.emergency.value = '';
 
         showStatus(
-          currentLang === "en"
-            ? "Emergency contact cleared"
-            : "איש קשר חירום נמחק",
-          2000,
+          currentLang === 'en'
+            ? 'Emergency contact cleared'
+            : 'איש קשר חירום נמחק',
+          2000
         );
         updateEmergencyState();
       }
 
       function updateNameState() {
         const val = els.name.value.trim();
-        const stored = localStorage.getItem(KEYS.name) || "";
+        const stored = localStorage.getItem(KEYS.name) || '';
 
         els.saveName.disabled = val === stored;
-        els.clearName.disabled = stored === "";
+        els.clearName.disabled = stored === '';
       }
 
       function updateAgeState() {
         const val = els.age.value.trim();
-        const stored = localStorage.getItem(KEYS.age) || "";
+        const stored = localStorage.getItem(KEYS.age) || '';
 
         els.saveAge.disabled = val === stored;
-        els.clearAge.disabled = stored === "";
+        els.clearAge.disabled = stored === '';
       }
 
       function updateEmergencyState() {
         const val = els.emergency.value.trim();
-        const stored = localStorage.getItem(KEYS.emergency) || "";
+        const stored = localStorage.getItem(KEYS.emergency) || '';
 
         els.saveEmergency.disabled = val === stored;
-        els.clearEmergency.disabled = stored === "";
+        els.clearEmergency.disabled = stored === '';
         els.buttons.emergency.disabled = !stored;
       }
 
-      els.saveName.addEventListener("click", saveName);
-      els.clearName.addEventListener("click", clearName);
+      els.saveName.addEventListener('click', saveName);
+      els.clearName.addEventListener('click', clearName);
 
-      els.saveAge.addEventListener("click", saveAge);
-      els.clearAge.addEventListener("click", clearAge);
+      els.saveAge.addEventListener('click', saveAge);
+      els.clearAge.addEventListener('click', clearAge);
 
-      els.saveEmergency.addEventListener("click", saveEmergency);
-      els.clearEmergency.addEventListener("click", clearEmergency);
+      els.saveEmergency.addEventListener('click', saveEmergency);
+      els.clearEmergency.addEventListener('click', clearEmergency);
 
-      els.name.addEventListener("input", updateNameState);
-      els.age.addEventListener("input", updateAgeState);
-      els.emergency.addEventListener("input", updateEmergencyState);
+      els.name.addEventListener('input', updateNameState);
+      els.age.addEventListener('input', updateAgeState);
+      els.emergency.addEventListener('input', updateEmergencyState);
 
       /* --- Call buttons --- */
       els.buttons.police.addEventListener(
-        "click",
-        () => (window.location.href = `tel:${POLICE_NUMBER}`),
+        'click',
+        () => (window.location.href = `tel:${POLICE_NUMBER}`)
       );
 
-      els.buttons.emergency.addEventListener("click", () => {
+      els.buttons.emergency.addEventListener('click', () => {
         const number = localStorage.getItem(KEYS.emergency);
         window.location.href = `tel:${number}`;
       });
@@ -1538,18 +1582,18 @@
         els.submitButton.disabled = !navigator.onLine;
       }
 
-      window.addEventListener("online", updateOnlineStatus);
-      window.addEventListener("offline", updateOnlineStatus);
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
 
-      els.typePicker.addEventListener("toggle", (e) => {
-        if (!els.typePicker.matches(":popover-open")) {
+      els.typePicker.addEventListener('toggle', e => {
+        if (!els.typePicker.matches(':popover-open')) {
           updateButtonText();
         }
       });
 
       function updateButtonText() {
         const checked = document.querySelectorAll(
-          'input[name="entry.373709611"]:checked',
+          'input[name="entry.373709611"]:checked'
         );
 
         if (checked.length === 0) {
@@ -1558,34 +1602,34 @@
           els.openBtn.textContent = checked[0].nextElementSibling.textContent;
         } else {
           els.openBtn.textContent =
-            translations[currentLang].selected + " " + checked.length;
+            translations[currentLang].selected + ' ' + checked.length;
         }
       }
 
       const getLocation = () =>
-        new Promise((resolve) => {
-          if (!navigator.geolocation) return resolve("unknown");
+        new Promise(resolve => {
+          if (!navigator.geolocation) return resolve('unknown');
 
           navigator.geolocation.getCurrentPosition(
-            (pos) => resolve(`${pos.coords.latitude}, ${pos.coords.longitude}`),
-            (err) => {
-              console.warn("Geolocation error:", err);
-              resolve("unknown");
+            pos => resolve(`${pos.coords.latitude}, ${pos.coords.longitude}`),
+            err => {
+              console.warn('Geolocation error:', err);
+              resolve('unknown');
             },
             {
               enableHighAccuracy: true, // try for more precise location
               timeout: 5000, // wait up to 5 seconds
-              maximumAge: 0, // don't use cached location
-            },
+              maximumAge: 0 // don't use cached location
+            }
           );
         });
 
       function resetIncidentTypes() {
         const checkboxes = document.querySelectorAll(
-          'input[name="entry.373709611"]',
+          'input[name="entry.373709611"]'
         );
 
-        checkboxes.forEach((cb) => {
+        checkboxes.forEach(cb => {
           cb.checked = false;
         });
 
@@ -1594,21 +1638,21 @@
 
       async function finalizeSubmit() {
         els.form.submit();
-        els.form.style.display = "none";
+        els.form.style.display = 'none';
         els.successMessage.hidden = false;
         els.anotherReport.hidden = false;
         resetIncidentTypes();
         setTimeout(await readMap.loadIncidents(), 10000);
       }
 
-      els.form.addEventListener("submit", async (e) => {
+      els.form.addEventListener('submit', async e => {
         e.preventDefault();
         const now = new Date();
 
         // Fill if empty
-        els.formName.value ||= els.name.value || ""
-        els.formAge.value ||= els.age.value || "" 
-        els.formDate.value ||= now.toISOString().split("T")[0];
+        els.formName.value ||= els.name.value || '';
+        els.formAge.value ||= els.age.value || '';
+        els.formDate.value ||= now.toISOString().split('T')[0];
         els.formTime.value ||= now.toTimeString().slice(0, 5);
 
         // Fill location or convert text → coordinates
@@ -1617,7 +1661,7 @@
         } else if (!looksLikeCoordinates(els.location.value)) {
           const coords = await geocodeLocationText(els.location.value);
           if (!coords) {
-            alert("Could not resolve location. Please be more specific.");
+            alert('Could not resolve location. Please be more specific.');
             return;
           }
           els.location.value = coords;
@@ -1625,36 +1669,36 @@
 
         // add incidents to form
         const checked = document.querySelectorAll(
-          'input[name="entry.373709611"]:checked',
+          'input[name="entry.373709611"]:checked'
         );
 
         els.hiddenInputs.value = Array.from(checked)
-          .map((option) => option.value)
-          .join(", ");
+          .map(option => option.value)
+          .join(', ');
         finalizeSubmit();
       });
 
-      els.anotherReport.addEventListener("click", () => {
-        els.form.style.display = "block";
+      els.anotherReport.addEventListener('click', () => {
+        els.form.style.display = 'block';
         els.successMessage.hidden = true;
         els.anotherReport.hidden = true;
-        els.location.value = "";
-        els.formDate.value = "";
-        els.formDate.type = "text";
-        els.formTime.value = "";
-        els.formTime.type = "text";
-        els.formDesc.value = "";
+        els.location.value = '';
+        els.formDate.value = '';
+        els.formDate.type = 'text';
+        els.formTime.value = '';
+        els.formTime.type = 'text';
+        els.formDesc.value = '';
 
         resumed = false;
       });
 
-      els.searchLocation.addEventListener("click", async () => {
+      els.searchLocation.addEventListener('click', async () => {
         els.location.value = await geocodeLocationText(els.location.value);
         els.searchLocation.disabled = true;
       });
 
       function isLikelySearchableQuery(input) {
-        if (typeof input !== "string") return false;
+        if (typeof input !== 'string') return false;
 
         const s = input.trim();
         if (!s) return false;
@@ -1667,14 +1711,14 @@
         return true;
       }
 
-      els.location.addEventListener("input", () => {
+      els.location.addEventListener('input', () => {
         els.searchLocation.disabled = !isLikelySearchableQuery(
-          els.location.value,
+          els.location.value
         );
       });
 
-      els.location.addEventListener("click", () => {
-        els.location.inputMode = "text";
+      els.location.addEventListener('click', () => {
+        els.location.inputMode = 'text';
         els.location.readOnly = false;
       });
 
@@ -1684,47 +1728,47 @@
       }
 
       /* --- New Home Page --- */
-      document.querySelectorAll(".home-button").forEach(
-        (btn) =>
+      document.querySelectorAll('.home-button').forEach(
+        btn =>
           (btn.onclick = () => {
             document
-              .querySelectorAll(".card")
-              .forEach((card) => (card.hidden = true));
+              .querySelectorAll('.card')
+              .forEach(card => (card.hidden = true));
             switch (btn.id) {
-              case "user-information-card": {
-                document.getElementById("emergency-contact-section").hidden =
+              case 'user-information-card': {
+                document.getElementById('emergency-contact-section').hidden =
                   false;
                 break;
               }
-              case "report-card": {
-                updateFormState()
-                document.getElementById("form-section").hidden = false;
+              case 'report-card': {
+                updateFormState();
+                document.getElementById('form-section').hidden = false;
                 break;
               }
-              case "map-card": {
-                document.getElementById("map-section").hidden = false;
+              case 'map-card': {
+                document.getElementById('map-section').hidden = false;
                 readMap.map.invalidateSize();
                 break;
               }
-              case "about-card": {
-                document.getElementById("about-section").hidden = false;
+              case 'about-card': {
+                document.getElementById('about-section').hidden = false;
                 break;
               }
               default: {
                 console.log(btn.id);
               }
             }
-          }),
+          })
       );
 
-      document.querySelectorAll(".back-button").forEach(
-        (btn) =>
+      document.querySelectorAll('.back-button').forEach(
+        btn =>
           (btn.onclick = () => {
             document
-              .querySelectorAll(".card")
-              .forEach((card) => (card.hidden = true));
-            document.getElementById("home").hidden = false;
-          }),
+              .querySelectorAll('.card')
+              .forEach(card => (card.hidden = true));
+            document.getElementById('home').hidden = false;
+          })
       );
 
       /* --- Init --- */
@@ -1739,7 +1783,7 @@
         const R = 6371; // Radius of the Earth in kilometers
 
         // Convert degrees to radians
-        const toRadians = (deg) => deg * (Math.PI / 180);
+        const toRadians = deg => deg * (Math.PI / 180);
         const rlat1 = toRadians(lat1);
         const rlat2 = toRadians(lat2);
         const dLat = toRadians(lat2 - lat1);
@@ -1747,45 +1791,24 @@
 
         const a =
           Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(rlat1) * Math.cos(rlat2) *
-          Math.sin(dLon / 2) * Math.sin(dLon / 2);
-          
+          Math.cos(rlat1) *
+            Math.cos(rlat2) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c; // Distance in kilometers
 
         return distance;
       }
 
-      function closestMarker(start, arr) {
-          if (arr.length < 1) {
-              return null;
-          }
-
-          if (arr.length === 1) {
-              return arr[0];
-          }
-          
-          const {lat, lng} = start;
-          let closestDistance = Infinity;
-          let bestMarker = 0;
-          
-          for (const [index, el] of Object.entries(arr)) {
-              let distance = calculateHaversineDistance(lat,lng,el.lat,el.lng);
-              if (distance < closestDistance) {
-                  closestDistance = distance;
-                  bestMarker = index;
-              }
-          }
-
-          return bestMarker;
-      }
       /* --- Service Worker --- */
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
           navigator.serviceWorker
-            .register("/jwatch/sw.js", { scope: "/jwatch/" })
-            .then((reg) => console.log("SW registered:", reg.scope))
-            .catch((err) => console.warn("SW register failed:", err));
+            .register('/jwatch/sw.js', { scope: '/jwatch/' })
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.warn('SW register failed:', err));
         });
       }
     </script>
